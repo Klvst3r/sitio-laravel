@@ -1,0 +1,90 @@
+2.3 Rutas con nombres en Laravel
+
+Las rutas anteriormente descritas de tipo get:
+
+Route::view('/', 'welcome');
+Route::view('/contacto', 'contact');
+Route::view('/blog', 'blog');
+Route::view('/about', 'about');
+
+Retornan un avista HTML cadauna, todas estan funcionando pero no queremos navegar a traves de una url, asi que vamos a agregar una navegación.
+
+comenzando en la vista Welcome.
+
+en la vista Welcome
+
+Vamos a hacer uso de emmet.}
+
+con una lisya desordenada con cuatro elementos
+<ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/blog">Blog</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/contacto">Contact</a></li>
+    </ul>
+    <h1>Inicio</h1>
+
+
+    Con esto ya tebemos una navegación funcional.
+
+ Vamos a suponer que la ruta contacto sera /contact esto fallara, por que esta apuntando a la ruta contacto
+
+ Una ruta no funciona y no tenemos ningun feedback de que asi es.
+
+ Rutas con nombres
+ En el archivo web en la ruta vamos a utilizar el metodo name y llamaremos contact de la siguiente manera:
+Route::view('/contacto', 'contact')->name('contact');
+
+Con la funcion Route que provee laravel oir defecto.
+
+De momento utilizamos php plano
+
+
+Como primer parametro recibe el nombre de la ruta que queremos imprimir, en este caso el nombre de la ruta es contact,
+
+En la vista welcome
+            <li><a href="<?= route('contact') ?>">Contact</a></li>
+
+Vemos que el link sigue funcionando, pero si modificamos la url, ya no necesitamos ir al link de navegación
+ya que estamos referenciando el nombre de la ruta en la lugar de la url.
+
+Imprmimos la url
+
+<p><?= route('contact') ?></p>
+
+Esta es la ruta con el nombre contacyt ahora si cambiamos la url lo que se
+
+http://sitio-laravel.test/contacto
+
+
+Si cambiamos el nombre del a ruta a lo que sea:
+
+Route::view('/whatever', 'contact')->name('contact');
+
+Si actualizamos devuelve la ruta correcta, ya que estamos accediendo al nombre de la ruta en lugar de la url
+
+Hacemos lo mismo con las demas rutas, reemplazamos los nombres de las rutas:
+
+    <ul>
+        <li><a href="<?= route('home') ?>">Home</a></li>
+        <li><a href="<?= route('blog') ?>">Blog</a></li>
+        <li><a href="<?= route('about') ?>">About</a></li>
+        <li><a href="<?= route('contact') ?>">Contact</a></li>
+    </ul>
+
+
+En este caso si actualizamos veremos este error de que la ruta no ha sido definida
+
+Quiere decir que no econtro la ruta con el nombre, debemos darle el nombre a la ruta a cada una de ellas
+Route::view('/', 'welcome')->name('home');
+Route::view('/contacto', 'contact')->name('contact');
+Route::view('/blog', 'blog')->name('blog');
+Route::view('/about', 'about')->name('about');
+
+ahora debe funcionar
+
+Como recomendacion siempre debemos darle el nombre a las rutas refernciarla para no teener problemas
+
+Aora la navegación solo esta en la vista welcome y queremos que este en todas las demas vistas.
+
+Eso se hara con blade

@@ -1,0 +1,150 @@
+2.2. Como utilizar las rutas en Laravel
+
+En esta sección aprenderemos que son las rutas y como utilizarlas en Laravel
+
+Cuando vamos a nuestra aplicaci´pon en el navegador
+
+    ej
+        http://sitio-laravel.test
+
+Y la pagina de bienvenida, que es la que se miuesyra cuando accesamos a cualquier aplicación de Laravel creda
+
+Lo primero que se cargan son las rutas
+
+Nos enfocaremos en el archivo web.php
+
+En primer lugar tenermos la definición de una ruta de tipo get
+
+Route::get('/', function () {
+    return view('welcome');
+});
+
+Vemos que se importa al inicio el facade:
+    use Illuminate\Support\Facades\Route;
+
+De momento solo se importa paa tener acceso a los diferentes metodos
+
+el metodo get, recibe dos parametros, la url que responde a la raiz de l aplicacion /, es decir el nombre de nuestro dominio
+
+ej
+    sitio-laravel.test
+
+El segundo parametro, es la funcion que se ejecuta que indica que se retorna la vista welcome.
+
+La Vista se ecnuetra en la carpeta Resources/views
+welcome, no es necesario agreghar la extension .blade.php
+
+Nio tampoco se incica la carpeta /rersources/viers
+
+Cuando utilizamos la fincion view laravel automaticamente sabe que las vistas estan dentro de la caprte
+/reosurces/vies y que ademas utilizan la extensión .blade.php
+
+Por eso unicamente se define el nombre de lavista
+
+si se tienen subcarletas se indicaran antes dle nombre de la vista
+
+S epuede hacer con un slash "/" o con un punto
+
+La vista Welcom.blade.php
+
+Es lo que se puestra al abrir la aplicación
+
+
+Es un archivo de blade que es el motor de palntillas de Laravel
+
+Si modificamos la vista los cambios se reflejaran en nuestra aplicación
+
+
+El clousure siguiente:
+
+
+Route::get('/', function () {
+
+    Se utilizan para hacer pruebas  ya que se pueden retornar strings
+
+ej
+
+Route::get('/', function () {
+    return 'Index';
+});
+
+Unn array
+
+Route::get('/', function () {
+    return ['sitio-laravel' => '.test'];
+});
+
+En el caso especifica donde no necesitamos realizar ninguna operación adicional entre la peticion y la respuesta podemos utilizar directamente el metodo view
+
+
+Qu internamente responde a peticiones de tipo get y headm que recibe como primer parametro la URL que va a repsonder y como segundo parametro la vista que quetremos mostrar
+
+En nuestro caso especificao es que queremos que cuando se accesa a laraiz devuelva la vista welcome
+
+Route::view('/', 'welcome');
+
+Entonces Si accsamos al araiz de la aplicaci´n nos devolvera la vista welcome
+    sitio-lñaravel.test => welcome
+
+Agregaremos unas rutas por ejemplo para nuestros contactos, otra que responda a un blog, que es lo mas sencillo de entender y otra a la secciópn about
+
+//sitio-laravel.test => welcome
+//sitio-laravel.test => contact
+//sitio-laravel.test => blog
+//sitio-laravel.test => about
+
+La idea es  que al final tengamos un sitio personal para nuestro portafolio
+
+Route::view('/', 'welcome');
+
+//Contacto
+Route::view('/contacto', 'contact');
+
+//Blog
+Route::view('/blog', 'blog');
+
+// About
+Route::view('/about', 'about');
+
+
+Si vamos a la url
+
+sitio-laravel.test/blog
+
+Nos indica que la vista blog no fue encontrada
+
+si Creamos una viusta sin la extensión .blade,
+Blade es el motor de plantillas de laravel  y es recomendable utilizar la extensión blade.php aunque no lo estemos utilizando aun.
+
+Ahora en nuestra carpeta de vistas vamos acrear las vistas respectiva
+
+/resources/views/
+about.blade.php
+blog.blad.php
+contact.blade.php
+welcome.blade.php
+
+colocamos nuestro contenido HT l tespectivo y ahora ya podemos acceder a cada una de las rutas creadas
+
+
+Hasta aca solo se han definido rutas de tipo get pero tambien podemos reponder a peticiones de tipo
+- post
+- patch
+- put
+- etele
+- options
+
+Incluso habra momentos que queremos utilizar varios metedos, y para ello utilizaremos el metodo
+- match
+    Ej.
+        Route::match(['put','patch'], '/', function (){
+            //
+        });
+
+Si queremos responder a todos los tipos de peticiones podemos utilizar el metodo 'any'
+
+Recapiytulando
+
+En el archivo web se definen las rutas que invocan las vistas que se encuentrane la carpeta
+/routes/views/
+

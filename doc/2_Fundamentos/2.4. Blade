@@ -1,0 +1,9 @@
+2.4. Blade el  otor de plantillas de Laravel
+
+el motor de pnatllas de laravel es Blade, Template engine es el que nos va a permitir escribir php dentro de html de una forma mas elegante y desciptiva
+
+Para utilizar blade es que la vista debe terminar con la extension .blade.php
+
+Es la forma en la que laravel es un archivo de blade y podra compilarlo
+
+Para poder colocar contenido
