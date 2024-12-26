@@ -88,3 +88,112 @@ Como recomendacion siempre debemos darle el nombre a las rutas refernciarla para
 Aora la navegación solo esta en la vista welcome y queremos que este en todas las demas vistas.
 
 Eso se hara con blade
+<ul>
+        <li><a href="{{ route('home') }}">Home</a></li>
+        <li><a href="{{ route('blog') }}">Blog</a></li>
+        <li><a href="{{ route('about') }}">About</a></li>
+        <li><a href="{{ route('contact') }}">Contact</a></li>
+    </ul>
+
+Funciona pero al memnto de compilar las vistas hay una ligera diferencia en tre las dos sintaxis
+
+
+Compilar las vistas
+---------
+
+como php no entiende que son las dobles llaves blade traducira que el codigo de blade traducira este codigo a php plano
+
+Dentro de la carpeta /resources/views
+
+
+Esto la transforma a php php plano y lo alamacena dentro de storage/views que es la que finalmente nos mostrara, es decir la vista ya compilada
+
+
+Si por ejemplo imprimimos alo como:
+
+     <li><a href="<?php echo e(route('home')) ?>">Home</a></li>
+
+De esto
+    "{{ route('home') }}
+a esto
+    <?php echo e(route('home')) ?>
+
+automaticamente se hace un escape de etiquetas HTML, evitando la inyección de codigo.
+
+Por lo general y por sefuridad de inyeccion de codigo
+
+Inyección de codigo
+-------
+
+Supongamos que en un formulario en un campo de entrada input
+
+<?= "<script>alert('security problem')</script>" ?>
+
+Un usuario maltintencinado escribe codigo html, esto viene de la bd y al imprimirlo se ejecuta como tal, lo significa un problema de seguridad al momento de generar contenido por el usuario
+
+
+Si lo pasamos por la fiunicon e() de laravel
+    e("<script>alert('security problem')</script>")
+
+vemos que no se ejecuta el html y solo mostrara el string
+Esa es la gran difereencia, ya que entonces cuando utilizamos dobles llaves de blade {{  }}
+
+Automaticamente estamos protegidos contra este problema de seguridad
+Hay casos especificos que si necesitamos que se inyecte codigo html no es muy comun pero si no queremos que se realice la protección automaticamente podemos utilizar la sintaxis siguiente:
+
+{!! "<script>alert('security problem')</script>" !!}
+
+De esta forma se inyectara el contenido, debemos tomar en cuneta los signos de adminracion como una advertencia de que no se esta agregando la protección con inteccion de codigo, ya que se escapa de cualquier contenido
+
+ahora cambiemos las dobles llaves para continuar usando blade en la vista welcome
+
+ <ul>
+        <li><a href="{{ route('home') }}">Home</a></li>
+        <li><a href="{{ route('blog') }}">Blog</a></li>
+        <li><a href="{{ route('about') }}">About</a></li>
+        <li><a href="{{ route('contact') }}">Contact</a></li>
+    </ul>
+
+Ahora no queremos copiar todo esto en las demas vitsas
+
+
+Para ello vamos a crear un archivo que contenga la naegación
+
+Pero como es una vista parcial por convencion llamamos una carpeta llamada partials dentro de views
+
+/resources/views/partials/
+
+Creamos el archivo nav.blade.php
+
+Cortamos la navegacion y lo pegamos en la vista parcial
+ <ul>
+        <li><a href="{{ route('home') }}">Home</a></li>
+        <li><a href="{{ route('blog') }}">Blog</a></li>
+        <li><a href="{{ route('about') }}">About</a></li>
+        <li><a href="{{ route('contact') }}">Contact</a></li>
+    </ul>
+
+Ahora en las demas vitas vamos a utilizarf un include pero a traves de las directivas de blade
+Estas comienzan con una @
+
+Hay muchas directivas disponibles.}
+
+Utilizamos
+
+@include('partials.nav')
+
+Nio es necesario pasarle la ruta completa ya que seasume que las vistas estan en la misma carpeta, lo que si
+
+Se debe incidar es que dentro de la carpeta partials es donde se encunetra la navegacion que se quiere incluir, no es necesario la extension .blade.php
+
+Notese que para entrar a la carpeta se utiliza un punto, con eso ya estara funcionando
+Agregamos el include a las demas vistas
+
+Ahoratoda la navegación es editable desde un solo lugar
+
+Reutilizando la navegación
+
+Pero si hacemos una modificación en el head  y se vea reflejado en todas las paginas, sin embargo lo mejor sera utilizar plantillas
+
+
+

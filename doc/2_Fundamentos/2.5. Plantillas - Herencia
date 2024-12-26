@@ -1,0 +1,169 @@
+2.5 Plantillas de Blade - Herencia
+
+Actualmente estamos repitiendo la estructura del documento html en todas las vistas para evitar ello vamos a utilizar las plantillas de blade
+
+Existen dos formas de utilizar plantillas
+1. Herencias
+2. componentes
+
+Herencia
+Por convención las plantillas  las creamos dentro de ua carpeta llamada layouts, la que se supone que guarde todas las plantillas necesarias de la palicación
+
+Craamos la plantilla app.blade.php
+
+Por convencion necesitamos dos plantillas, una que contempla el usuario autenticado y otra para invitados que no contempla el usuario autenticado.
+
+
+Dentro copiamo todo lo que queremos reutilizar en las demas vistas y colocar los cambios en cada una de las vistas
+
+Cortamos todo el contenido de welcome
+pegandolo en la plantilla
+
+
+entonces debajo queremos que se imprima el contenido variable de cada pagina,
+
+Para hacer uso de esta pantilla utilizamos la plantilla de blade
+
+
+@extends('layouts.app')
+Que recibe el nombre de la vista que queremos utilizar ocmo plantilla
+
+Aca tambien se asume que las plantillas estan en la carpeta /resources/views
+
+Dentor de la carpeta layout utilice el archivo app
+
+
+Vemos que el titulo se ubica al principio
+
++en welcome.blade.php
+--
+    @extendes('layouts.app')
+<h1>Inicio</h1>
+
+Es decir el menu se ubica fuera de la plantilla pero no es lo que queremos y estoo es por que estamos utilizando ¿el layout app pero no le hemos jcicado donde queremos que se ubique el contenido jcicado
+Para hacerlo podemos utiliza la directiva
+    @yield('nombre')
+
+
+Que recibe al parametro de la sección qu equeremos imporimir, puede ser el nombre  por convencion le llamamos 'content' al contenido principal de cada pagina
+
+con esto ya tenemos definio un espacio vacio para imprimir el contenido variable
+
+en la vista welcome
+    <body>
+    @include('partials.nav')
+
+    @yield('content')
+
+
+</body>
+
+Ahora debemos ir a la vistas que utiliza esta plantilla e indicar que contenido es el que queremos imprimir
+
+Oara ello utilizamos la directiva
+
+@section('content')
+@endsection
+
+Recibe como parametro recibe el nombre de ese espacio
+
+Y todo lo que se utilice dentro de
+
+@section('content')
+@endsection
+
+se va a a imprimir en la plantilla mediante la directiva en app.blade.php
+@yield('content')
+
+Revfrescamos y notaremos el cambio
+
+
+Ahora ya podemos utilizar esta plantilla en las demas vistas
+
+Recordando que primero debemos extendar a la plantilla layout app luego definimos la seccion content
+
+
+@extends('layouts.app')
+
+@section('content')
+    <h1>Contacto</h1>
+@endsection
+
+
+Y agregamos el contenido que cambia en cada pagina
+
+El contenido sigue funcionando
+
+
+ya tenemos nuestra pantilla reutilizable.
+
+
+
+Ahora si vemos el tieulo de cada pagina notaremos que es el mismo en todas y esto no es bueno en el posicionamiento en buscadores
+
+Una oantilla, puede contener multiples yields, asiq ue podemos cambiar el titulo de la siguiente manera, cambiando el nombre del yield
+
+Cambiando de
+      <title>Inicio</title>
+a esto:
+     <title>@yield('title')</title>
+
+Ahora en cada vista debemos indicar el tirtulo de la sección
+
+ejemplo de una vista
+
+
+@extends('layouts.app')
+
+@section('title')
+    About
+@endsection
+
+@section('content')
+    <h1>About</h1>
+@endsection
+
+
+Podemos agregarlo como sefgundo parametro y ya no nenesitariamos  la directiva de cierre
+
+Quedando como continuad:
+
+@extends('layouts.app')
+
+@section('title', 'About')
+
+@section('content')
+    <h1>About</h1>
+@endsection
+
+
+
+Aqui por lo general ponemos le nombre de la aplicación, seguida del titulo de cada pagina.
+
+Se agrega a las demas paginas.
+
+La descricion meta es muy importante par los buscadores quedando se la siguiente manera:
+
+En la plantilla app.blade.php
+
+De un inicio:
+        <meta name="description" content="@yield('meta-description', 'Default meta description')" />
+
+con un valor por defautl en caso de que no se cambie algun valor por defectto
+
+
+Veremos la descripcion por defectto
+Para definir la sección agregamos la seccion en cada vista
+
+@section('meta-descriptio', 'Home')
+
+
+Con el nombre del meta como segundo parametro.
+
+Si no esta definida la sección , utilizara la que esta por defecto.
+
+Con estio estamos eutilizando una plantilla en difefrentes paginas
+
+Esta es una forma de definir plantillas con herencias.
+
+

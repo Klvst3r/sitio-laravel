@@ -7,3 +7,30 @@ Para utilizar blade es que la vista debe terminar con la extension .blade.php
 Es la forma en la que laravel es un archivo de blade y podra compilarlo
 
 Para poder colocar contenido
+
+vamos a utilizar dobles llaves
+
+Reemplazamos al principio y al final, y continua funcionando, pero al compilarse hay una igera diferencia en tre las dos sintaxist.
+
+Compilar vistas
+------
+
+como php no entinede que son las dobles llaves internamente  blade va a traducir el codigo de blade a php  es decir, automaticamente cuando solicitamos una vista en resources/views.
+
+
+Esto se transforma a php plano y lo ubica en sotrage/views que es la que finalemnete se muestra.
+
+Cuando utilizamos las dobles llaves
+
+{{  route('home') }}Automaticamente se hace un escape de html para asi evitar la inyección de codigo.
+
+<?php echo e(route('home)); ?>
+
+Por lo general y por seguriodad es importante colocar este escape de html
+
+supongamos que en un input un usuario mal intencionado escribe codigo html
+
+
+<?= "<script>alert('security problem');</script>" ?>
+
+Al imprimirla escapara de todo el codigo html inyectado
