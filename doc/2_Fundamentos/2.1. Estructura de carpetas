@@ -1,0 +1,66 @@
+2.1 Estructura de carpetas de Laravel
+
+Vamos a explorar las carpetas de nuestro framework
+
+Antes de ello vamos a necesitar un editor de codigo
+
+La recomendación es PHPStorm en la version explorar
+
+Otra Herramienta es Sublime Text
+
+La ultima recomendación es Visual Studio Code
+
+La estructura es un punto de partida, tanto para grandes como para pequeñas aplicaciones.
+
+/
+> app Esta Carpeta contine el codigo fuente de nuestra aplicación casi todas las clases estaran aqui
+app/ y Es cargado automaticamente composer
+ > Console contiene los comandos que creemos nosotros y se pueden registrar en el kernel
+ > Se ecnuentra el administración de excepciones o de errorers de la aplicaciones aca podemos contyener las excepciones persoanlizadas
+ > Http
+    > Controllers
+    > Middleware
+    - Kernel.php pararegistro
+> Models Modelos de Eloquent para interactuar con la Bd, por defecto tiene un modelo users
+> Providers Contiene los sevice providers de la aplicaci´pon y tambien podemos almacenar los que se crean
+> bootstrap. contiene el archivo app.php que arranca el framework
+  > cache  Se almacenan archivos ya generados por laravel para no volverlos a procesar en cada peticion
+ y optimizar el rendimiento  de la aplicación
+> config Contiene la configuración de la aplicación para configurar las caracteristicas de laravel
+> database contiene las fabricas que se tutilizan (factories)
+  > factories
+  > migrations
+  > seeders Los semilleros se explicaran mas adelante, si se utiliza SQLlite, se debe guardar en este directorio
+> public Contiene el archivo index.php que es el punto de entrada de todas las peticiones que se realizan a la aplicación, se encarga del autocargado de las clases, este es el unico directorio accesible publicamente. Se alojan aqui los archivos CSS, Js e Imagenes todo lo que sea accesible de forma public
+ > views Contiene las vistas de la aplicación, y archivos no compilados de CSS y JS.
+
+> routes
+ - api.php No contiene sesiones ni cokies
+ - channels.php Se pueden definir los canales de transmisión o broadcast que nuestra aplicación soporte
+ - console.php Se pueden agregar comandos facilmente
+ - web.php Se definen las rutas de la aplicación
+
+> Storage
+    > app Puede ser utilizado para guardar los archivos generados desde nuestra aplicación
+    > framework Se utiliza para guardar archivos generados como vistas, sesiones, estructura
+    > logs Contiene información detallada de los errorsq ue ocurran en nuestra aplicación
+
+> test Contiene los test de la aplicación con una especificación
+> vendor contiene todas als dependencias de composer y este no se debe tocar mas que para leer lo que necesitemos.
+
+La carpeta app es una de las principales de nuestras aplicaciones y se encuentra bajo el namescapce
+
+Adicional a estas carpetas tenemos varios archivos en raiz
+
+- .env
+- .env.example
+- .gitattributes
+- .gitignore
+- artisan
+- composer.json
+- composer.lock
+- package.json
+- phpunit.xml
+- README.modelo
+vite.config.js
+

@@ -1,0 +1,291 @@
+Entonrno de desarrollo para Laravel en Windows
+
+Requerimientos
+
+- PHP 8.1
+- Laravel 10
+
+Habilitar extensiones de PHP
+- BCMath
+- Ctype
+- cURL
+- DOM
+- Fileinfo
+- JSON
+- Mbstring
+- OpenSSL
+- PCRE
+- PDO
+- Tokenizer
+- XML
+
+
+Laragon
+----------------------------------------------------------------
+
+Laragon es un entorno de desarrollo universal, portatil, rapido, aislado y potente para PHP, para Node.js, Python, Java, Go, Ruby
+
+En nuestro caso nos va a instalar PHP, MysSQL, Apache o NGNx, configurar Redis o Memcache.
+
+Copn esto tendremos lo necesario para trabajar con Laravel.
+
+
+En esta leccion instalaremos todo el sowftware necesario para programar con Laravel en Windows, con la ayuda de Laragon.
+
+Para trabajar con Laravel es necesario tener configurado PHP, MySQL, Composer se recomeinda tambien Git, NodeJS y NPM.
+
+Una opcion para ayudarnos con tyodos estos programas es utilizar WAMP o XAMP y por nuestra cuneta el resto, pero existe una alternativa para instalar todo esto con un par de clicks adicionalmente de Host Virtuales.
+
+Esta altarnetativa es Laragon, desde laragon.org
+
+https://laragon.org/
+
+Desde
+
+https://laragon.org/download/
+
+Descargando la versión de:
+
+
+    Laragon Full (64-bit): Apache 2.4, Nginx, MySQL 8, PHP 8, Redis, Memcached, Node.js 18, npm, git
+
+
+El asistente guiara, sugiere instalarse en:
+
+C:\laragon
+
+Se dejan activas las casillas de que Laragon inice cuando arranque Windows y Auto Virtual Host
+
+El README tiene la información relevante para acceder con el usuario Root con la contraseña en blanco.
+
+La primera vez que abrimos la terminal instalara Git, ir al panel de laragon iniciando todos los servicios en Laragon
+
+Nuesra ruta estara disponible en>
+
+C:/laragon/www
+
+NGInex y apache esta encendido, ahora podremos ir a:
+    localhost
+
+Raiz de los proyectos.
+
+
+Los datos de la base de datos son
+Host:
+127.0.0.1
+
+
+User:
+    root
+
+Pass
+
+
+Se verifica funcionamiento de la BD
+
+
+Ingresamos a la ruta
+
+C:/laragon/www
+
+
+Escribimos got y verificamos que esta instalado
+
+Si escribimos en la terminal de Laragon "cmder" y escribimos composer, verificamos que esta instalado.
+
+La verion de PHP es:
+
+λ php -v
+PHP 8.1.10
+
+La ultima version en el 2023 al mes de julio
+
+Node:
+λ node -v
+v18.8.0
+
+NPM
+λ npm -v
+8.18.0
+
+
+Aca solo existe un archivo index.php, aqui se crearan los proyectos de laravel
+
+
+Si escribimos laravel, no reconoce el comando aun asi que podemos escribir:
+
+Comando de ejecucion del proyecto de laravel
+Ej
+    composer create-proyect laravel/laravel <nombre_app>
+
+    composer create-proyect laravel/laravel AppLaravelBasics
+
+
+Pero el creador de Laravel ha hecho un instalador que hace este proceso mucho mas sencillo
+
+Para instalarlo necesitamos hacer esto una sola vez
+
+    composer global require laravel/installer
+
+
+Esperamos
+
+Y ahora ya tenemos acceso al comando laravel
+
+
+λ composer global require laravel/installer
+Changed current directory to C:/Users/Klvst3r/AppData/Roaming/Composer
+Info from https://repo.packagist.org: #StandWithUkraine
+Using version ^4.5 for laravel/installer
+./composer.json has been created
+
+
+Entonces de ahora en adelante para crear aplicación de laravel ejecutamos:
+Ej.
+    laravel new <nombre-app>
+
+ laravel new AppLaravelBasics
+
+ Laravel la primera vez puede tardar un poco por los paquetes que descarga pero quedan almacenados en el cache de composer, para al instalar nuevamente la creación de un nuevo proyecto, la creación sera más rapida.
+
+Laragon tiene una taerminal que sera una potente herramienta para poder trabajar con nuestro entorno de desarrollo
+
+Si no tenemos la terminal, podemos abrir la aplicación y en el menu de herramientas ejecutar la terminal.
+
+
+ ahora vamos a:
+
+ sitio-laravel.dev en el navegador en nuestro caso
+
+ sitio-laravel.dev
+
+
+Aunque laragon nos debe ayudar con el host virtual de nuestro poryecto podemos tambien acudir a la ruta publica del proyecto
+
+
+http://localhost/applaravelbasic/public/
+
+o simplemente podemos recargar en la ventana de laragon
+
+
+Para poder trabajar con nuestro poryecto podremos usar ahora la ruta:
+
+    http://applaravelbasic.test/
+
+Pero coomo estamos en fase de desarrollo cambiarem el subdominio
+http://applaravelbasic.io/
+
+URL FInal
+http://applaravelbasics.io/
+
+
+
+Tambien Laragon tiene una herramienta de Administración de Base de Datos para poder conectarnos a nuestra Bd localhost
+
+Por defecto el usuario es root y no tiene contraseña, utilizando el puerto por defecto
+
+
+Para poder trabajar correctamente ahora.
+
+En nuestra herramienta de emulación de terminal Unix vamos a ejecutar unos comandos iniciales.
+
+Composer
+--------
+
+Verificación de instalación
+ $ composer -v
+
+Si no se tiene instalado lo hacemos desde su pagina de Composer, mas adelante se verificara esta sección.
+
+
+Git
+git
+    $ git
+
+Verificar varsión de PHP
+ $ php -v
+
+Si nuestro programa de Laragon tiene una versión anterior a PHP 8.1 y queremos utilizar esta versión como minimo vamos al sitio
+    https://windows.php.net/downloads/php-8.1
+
+Descargamos el archivo de instalación.
+
+Descomprimimos y nos dara una carpeta con lo necesario.
+
+La cortamos o copiamos y lo llevamos a
+
+c:/laragon/bin/php y se pega nuestra carpeta, de esta manera tendremos dos versiones de PHP que podemos seleccionar
+
+
+Para poder seleccionar desde Laragon, en el meno de Largon cerca del relog en la parte inferior derecha y con un click derecho
+
+en la sección de PHP vemos que se tienen dos versiones, simplemente seleccionamos con la que trabajaremos, reiniciamos todos los servicios
+
+Ahora en la terminal si revisamos la versión y si aun se tiene la version naterior y para que tenga efecto la nueva versión debemos abrir o cerrar un anueva pestaña de la terminal
+
+Ahora si revisamos tendremos una nueva aplicación con la versión deseada.
+
+
+Creación de aplicación
+----------------------
+Podemos crear nuestra aplicación de manera grafica desde la herramienta de Laragon
+
+Creación rápida de sitio web > Laravel
+
+Preguntara el nombre y comenzara la instalación en la terminal. si salen erroreres podremos ignorarlos de momento
+
+Ahora podremos visualizar nuestra aplicación desde el navegador
+
+Ej.
+Nombre de la aplicacion
+    sitio-laravel
+
+En el navegador vamos a la url:
+    http://sitio-wev.test
+
+Desde la terminal e internamente lo que hizo laragon fue
+
+cd C:\laragon\www
+
+$ composer create-project laravel/laravel sitio-laravel --prefer-dist
+
+
+
+
+Si hemos instalado nuestro asistente de instalador haremos lo situeinte:
+
+Instalar el Instalador de Laravel
+Desde la terminal de Laragon
+ $ composer global require laravel/installer
+
+Ahora :
+
+
+En Windows
+
+Ahora para crear una nueva app
+    larael new <nombre-app>
+
+
+Ahora en la carpeta de proyectos
+
+    /resources/view/view.blade.
+
+Ej.
+    $ laravel new sitio-laravel
+
+Para ver nuestra aplicación en el navegador
+    http://sitio-laravel.test
+
+El instalador tiene una ayuda ofrece varias opciones.
+
+Tiene el instalador de desarrollo y tiene un repositorio con git
+
+con todas las opciones de git
+
+Si queremos que nos inicalice el proyecto un repositorio de git vacio
+    $ laravel new project --git
+
+Tambien desde la aplicación de Laragon en su menu contextual podemos eleminar poryectos creados desde esta herramienta, debemos tenerm cuidado de tener respaldos o confirmar la eliminación
+
+

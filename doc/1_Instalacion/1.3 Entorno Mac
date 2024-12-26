@@ -1,0 +1,201 @@
+1.3. Entonrno de desarrollo para Laravel en Mac
+
+
+Vamos a tener considerado que nuestro entorno es Mac OS monterrey 12.x
+
+Y vamos a trabvajar con PHP 8.1
+
+Vamos a considerar que ya tenemos l aversion a utilizar de PHP, que para nuestro caso es la version 8.1
+
+Si no contamos con esta versión podemos revisar el siguiente capitulo que nos guia sobre la instalación de PHP 8.1 junto con otras versiones de PHP en sistemas Mac OS
+
+Requerimientos
+
+Extensiones de PHP
+
+Requerimientos
+
+- PHP 8.1
+- Laravel 10
+
+Habilitar extensiones de PHP
+- BCMath
+- Ctype
+- cURL
+- DOM
+- Fileinfo
+- JSON
+- Mbstring
+- OpenSSL
+- PCRE
+- PDO
+- Tokenizer
+- XML
+
+Herraminetas
+Laravel Valet y Homebrew
+
+Laravel Valet es un entorno de desarrollo minimalista para MacOS, nos va a configurar NGNx  usando DnsMask para acceder a los proyectos a traves del dominio .test de manera localhost
+
+Antes de instalar Laravel Valet debemos de asegurar tener instalado Homebrew
+
+Homebrew
+--------
+
+Se define como el gestor de paquetes para Mac OS, basicamente nos permite instalar, actualizar y desinstalar paquetes en Mac OS
+
+Si no lo tenemos instalado vamos a
+
+brew.sh/index_es
+
+Copiamos el script
+
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+Pegandolo en la terminal
+
+Podemos utilizar la terminal por defecto, aunque podremos instalar una terminal opcional
+
+desde
+    iterm2.com/downloads
+
+Si ya contamos con la herraineta de brew, ejecutamos
+    $ brew update
+
+para actualizar a la ultima version
+
+Vamos a instalar php
+
+    $ brew install php@8.1
+
+Si tenemos instalado un aversion inferior a 8.2 podemos ejecutar
+    $ brew upgrade php
+
+Para obtener la ultima version
+
+Para nuestro caso vamos a instalar Mysql
+    $ brew install mysql
+Lo siguiente que necesitamos es composer
+
+vamos a la dirección
+    getcomposer.org
+
+Para instalarlo desde la terminal copiamos el siguiente script:
+
+
+
+php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
+php -r "if (hash_file('sha384', 'composer-setup.php') === 'dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6') { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;"
+php composer-setup.php
+php -r "unlink('composer-setup.php');"
+
+
+Ya tenemos instalado, seguido vamos a copiar un segundo script
+$ sudo mv composer.phar /usr/local/bin/composer
+
+para mover el ejecutable al PATH global y poder ejecutar composer directamente
+
+Ahora si vamos a instalar Laravel Valet
+    $ composer global require laravel/valet
+
+Instalara Laravel Valet en el sistema de manera global
+Vamos a ejecutar el comando
+
+    $ valet install
+
+Esto instalara NGNx, DncMasck, configurara PHP y demas
+
+con esto ya podemos crear nuestra primera aplicacion de laravel
+En nuestro caso y en mi carpta del usuario actual creo una carpeta de desarrollo y despues organizo apor lenguajes de programación
+
+Ej.
+
+~/
+mkdir dev
+cd dev
+mkdir laravel
+
+La instension es agrupar las aplicaciones vreadas en un futuro
+
+Para que Valet pueda ejecutar los dominios .test devemos ejecutar
+ $ valet park en l araiz donde se almacenaran los proyectos
+
+ Ahora desde el navegador podren ser accesibles desde el dominio  .test
+
+Creación del proyectos
+
+Podemos crear nuestro proyecto con el comando
+    $ composer create-project laravel/laravel sitio-laravel
+
+Una ves creada la aplicación podemos acceder desde el navegador  desde:
+    sitio-laravel.test
+
+
+La segunda forma de crear una aplicación mediante el instalador
+
+Para instalarlo
+    $ composer global require laravel/installer
+
+Para ejecutar y agregarlo al PATH
+    $ PATH="$HOME/.composer/vendor/bin/:$PATH"
+
+Ahora para crear una aplicacion
+    $ laravel new sitio-laravel
+
+Este comando tiene varias opcines que podemos revisar con el comando
+
+    $laravel new -h
+
+La importante es
+    $ laravel new sitio-laravel --git
+
+Para que despues de crear el scafol de la aplicación crea un repositorio de git
+
+
+DBngin
+-------
+
+Nos queda configurar la Bd
+
+Podemos utilizar DBEngin
+
+DBngin se define como un herramineta de gesgtion de Bases de datos todo en uno, la forma mas facil de iniciar con MySQL, Postgresql, Redit
+
+Vamos a instalar como cualquier herra ienta de Mac, y al abrar podremos crear una conexion con el servidor dac665fdc30fdd8ec78b38b9800061b4150413ff2e3b6f88543c636f7cd84f6db9189d43a81e5503cda447da73c7e5b6
+un ejemplo de configuración seria:
+
+Servicio: MySQL
+Versión: 8.0.27
+Name: MySQL 8
+Port: 3306
+Creamos:
+    Se mostraran otros servicios que se han creado con Brew
+Se pueden inorar
+
+Para arrancar el servidor de Bd, hacemos click en nuestra configuración creada
+
+Administración de la Bd
+-------------
+
+Para administrar las BD hacemos click en el engrane y como ya tenemos instalado un gesotr de Bd, abrimos con
+
+Open in TablePlus
+
+Aunque podremos exportar las variables hacia nuestra terminal y poder trabajar desde consola.
+
+En nuestro caso especifico utilizamos la herramienta DBeaver
+
+Desde:
+    https://dbeaver.io/download/
+
+Descargamos e instalamos:
+
+Aunque podremos hacerlos con el siguiente comando:
+    $ brew install --cask dbeaver-community
+
+Podremos utilizar tgambien TablePlus que es complemento de esta herramienta de Base de datos
+
+Una ve abierta la conexion podremos trabajar con nuestra base de datos
+Por ejemplo podremos crear nuestra bd que se llame
+    sitio-laravel
+Con esto podrmeos comenzar a trabajar

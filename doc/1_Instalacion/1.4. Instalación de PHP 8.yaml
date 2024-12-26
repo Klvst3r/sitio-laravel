@@ -1,0 +1,333 @@
+1.4. Instalación de PHP 8.1 en Mac
+
+Para nuestro caso especifico, y que teniamos una versión de PHP anterior vamos a utilizar nuetsra terminal de Mac y vamos a instalar PHP 8.1
+
+Comandos para instalación en Mac
+
+    brew tap homebrew/homebrew-core
+    brew tap homebrew/homebrew-php
+    brew install php@8.1
+
+Salida de instalacion de PHP 8.1
+
+
+==> php@8.1
+To enable PHP in Apache add the following to httpd.conf and restart Apache:
+    LoadModule php_module /usr/local/opt/php@8.1/lib/httpd/modules/libphp.so
+
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+
+Finally, check DirectoryIndex includes index.php
+    DirectoryIndex index.php index.html
+
+The php.ini and php-fpm.ini file can be found in:
+    /usr/local/etc/php/8.1/
+
+php@8.1 is keg-only, which means it was not symlinked into /usr/local,
+because this is an alternate version of another formula.
+
+If you need to have php@8.1 first in your PATH, run:
+  echo 'export PATH="/usr/local/opt/php@8.1/bin:$PATH"' >> ~/.zshrc
+  echo 'export PATH="/usr/local/opt/php@8.1/sbin:$PATH"' >> ~/.zshrc
+
+For compilers to find php@8.1 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/php@8.1/lib"
+  export CPPFLAGS="-I/usr/local/opt/php@8.1/include"
+
+To restart php@8.1 after an upgrade:
+  brew services restart php@8.1
+Or, if you don't want/need a background service you can just run:
+  /usr/local/opt/php@8.1/sbin/php-fpm --nodaemonize
+
+
+
+  echo 'export PATH="/usr/local/opt/php@8.1/bin:$PATH"' >> ~/.zshrc
+
+  echo 'export PATH="/usr/local/opt/php@8.1/sbin:$PATH"' >> ~/.zshrc
+
+
+
+  Para tener PHP 8.2.22 y PHP 8.1 en macOS Monterey y alternar entre ellas, puedes usar Homebrew y Valet o gestionar versiones con PHP Switcher. Aquí tienes tres métodos:
+Método 1: Homebrew (Recomendado)
+
+    Instala ambas versiones de PHP:
+
+brew install php@8.1
+brew install php@8.2
+
+Cambiar de versión de PHP:
+
+brew unlink php
+brew link --overwrite php@8.1
+php -v  # Debería mostrar PHP 8.1
+
+Para cambiar a PHP 8.2:
+
+    brew unlink php
+    brew link --overwrite php@8.2
+    php -v  # Debería mostrar PHP 8.2
+
+Método 2: Valet + PHP
+
+    Instala Laravel Valet:
+
+composer global require laravel/valet
+valet install
+
+Usa Valet para manejar múltiples versiones:
+
+valet use php@8.1
+valet restart
+
+Cambia a PHP 8.2:
+
+    valet use php@8.2
+    valet restart
+
+Método 3: PHP Version Manager (phpenv o PHP Switcher)
+
+    Instala PHP Switcher:
+
+brew tap shivammathur/php
+brew install php-switcher
+
+Usa PHP Switcher:
+
+php-switcher 8.1
+php -v  # PHP 8.1
+
+Cambia a PHP 8.2:
+
+    php-switcher 8.2
+    php -v  # PHP 8.2
+
+Estos métodos te permitirán gestionar múltiples versiones de PHP según lo que necesites para cada proyecto.
+You said:
+Uitilce la primera opcion con brew y me arrojo esto:
+php -v
+dyld[16221]: Library not loaded: '@loader_path/../../../../opt/icu4c/lib/libicuio.74.dylib'
+  Referenced from: '/usr/local/Cellar/php@8.2/8.2.22/bin/php'
+  Reason: tried: '/usr/local/Cellar/php@8.2/8.2.22/bin/../../../../opt/icu4c/lib/libicuio.74.dylib' (no such file), '/usr/local/lib/libicuio.74.dylib' (no such file), '/usr/lib/libicuio.74.dylib' (no such file)
+zsh: abort      php -v
+
+
+Error en la salida
+-------------------
+El error que estás viendo indica que hay un problema con las dependencias de ICU (International Components for Unicode), que son necesarias para el funcionamiento de PHP. Específicamente, el sistema no puede encontrar la biblioteca libicuio.74.dylib.
+Solución
+
+    Reinstala icu4c:
+    Homebrew instala PHP y sus dependencias, pero parece que la biblioteca icu4c no está disponible o se corrompió. Puedes intentar reinstalarla con el siguiente comando:
+
+brew reinstall icu4c
+
+Vincula las bibliotecas de icu4c:
+Después de reinstalar icu4c, asegúrate de vincularla correctamente:
+
+brew link icu4c --force
+
+Reinstala PHP 8.2: Luego de reinstalar icu4c, reinstala PHP 8.2 para asegurarte de que se compile con las bibliotecas correctas:
+
+brew reinstall php@8.2
+
+Verifica la instalación: Ahora, verifica la versión de PHP:
+
+    php -v
+
+Si el problema persiste
+
+Si aún sigue el problema, puedes intentar borrar las configuraciones de Homebrew y hacer una instalación limpia:
+
+    Desinstalar PHP 8.2:
+
+brew uninstall php@8.2
+
+Limpiar el caché de Homebrew:
+
+brew cleanup
+
+Reinstalar PHP 8.2:
+
+    brew install php@8.2
+
+Esto debería resolver el error relacionado con las bibliotecas de ICU. Intenta los pasos y dime si todo funciona bien después de eso.
+
+
+
+Si tienes varios proyectos con diferentes versiones de PHP:
+
+Si en algún momento necesitas cambiar entre PHP 8.1 y PHP 8.2 dependiendo del proyecto, puedes usar los siguientes comandos:
+
+    Para cambiar a PHP 8.2:
+
+brew unlink php@8.1
+brew link --overwrite php@8.2 --force
+
+Para volver a PHP 8.1:
+
+    brew unlink php@8.2
+    brew link --overwrite php@8.1 --force
+
+Si todo sale bien, ya deberías poder usar PHP 8.1 para tus proyectos sin problemas. ¿Te ha funcionado o has tenido algún inconveniente adicional?
+You said:
+hp -v
+dyld[62560]: Library not loaded: '@loader_path/../../../../opt/icu4c/lib/libicuio.74.dylib'
+  Referenced from: '/usr/local/Cellar/php@8.2/8.2.22/bin/php'
+  Reason: tried: '/usr/local/Cellar/php@8.2/8.2.22/bin/../../../../opt/icu4c/lib/libicuio.74.dylib' (no such file), '/usr/local/lib/libicuio.74.dylib' (no such file), '/usr/lib/libicuio.74.dylib' (no such file)
+zsh: abort      php -v
+
+Error en la salida
+-------------------
+
+
+Parece que el problema persiste debido a un conflicto de bibliotecas de ICU que afecta a PHP 8.2, aunque hayas cambiado a PHP 8.1. La raíz del problema parece ser que alguna referencia sigue apuntando a las bibliotecas de PHP 8.2. Vamos a resolverlo paso a paso.
+Solución:
+1. Verifica que php@8.1 esté correctamente vinculado:
+
+Primero, asegúrate de que la versión 8.1 esté correctamente vinculada y no haya conflictos con PHP 8.2.
+
+brew unlink php@8.2
+brew link --overwrite php@8.1 --force
+
+2. Reinstala PHP 8.1 para asegurarte de que se compile con las dependencias correctas:
+
+Es posible que PHP 8.1 esté buscando las bibliotecas de ICU de PHP 8.2. Reinstalar PHP 8.1 podría solucionar el problema.
+
+brew reinstall php@8.1
+
+3. Reinstala icu4c:
+
+Las bibliotecas de ICU parecen ser el problema. Reinstala la dependencia icu4c que PHP necesita:
+
+brew reinstall icu4c
+
+Luego, asegúrate de que esté correctamente vinculada:
+
+brew link icu4c --force
+
+4. Verifica las rutas de las bibliotecas:
+
+Es posible que haya algún problema con las rutas de las bibliotecas cargadas. Verifica si PHP está apuntando a las rutas correctas. Revisa las rutas de las bibliotecas con el siguiente comando:
+
+otool -L $(which php)
+
+Este comando te mostrará las rutas de las bibliotecas cargadas por PHP. Asegúrate de que las rutas sean correctas y apunten a la versión de ICU instalada por Homebrew.
+5. Reinicia el terminal y verifica la versión de PHP:
+
+Cierra y abre una nueva terminal después de realizar los cambios. Luego, verifica que la versión de PHP ahora apunte a PHP 8.1:
+
+php -v
+
+Si el problema persiste:
+
+Si el problema sigue ocurriendo, podrías intentar eliminar completamente PHP y reinstalarlo. Para hacerlo, sigue estos pasos:
+
+    Desinstala PHP 8.1 y PHP 8.2:
+
+brew uninstall php@8.1 php@8.2
+
+Limpiar Homebrew:
+
+brew cleanup
+
+Reinstala PHP 8.1:
+
+brew install php@8.1
+
+Verifica que todo esté correcto:
+
+    php -v
+
+Esto debería solucionar cualquier conflicto entre versiones y dependencias.
+Si todo está correcto:
+
+Cuando todo funcione bien, deberías poder cambiar entre PHP 8.1 y 8.2 fácilmente usando:
+
+brew unlink php@8.1
+brew link --overwrite php@8.2 --force  # Para cambiar a PHP 8.2
+
+Déjame saber si este proceso te ha funcionado o si necesitas más ayuda.
+
+
+Solucion definitiva:
+---------------------
+
+brew link icu4c --force
+Warning: Refusing to link macOS provided/shadowed software: icu4c@76
+If you need to have icu4c@76 first in your PATH, run:
+  echo 'export PATH="/usr/local/opt/icu4c@76/bin:$PATH"' >> ~/.zshrc
+  echo 'export PATH="/usr/local/opt/icu4c@76/sbin:$PATH"' >> ~/.zshrc
+
+For compilers to find icu4c@76 you may need to set:
+  export LDFLAGS="-L/usr/local/opt/icu4c@76/lib"
+  export CPPFLAGS="-I/usr/local/opt/icu4c@76/include"
+
+For pkg-config to find icu4c@76 you may need to set:
+  export PKG_CONFIG_PATH="/usr/local/opt/icu4c@76/lib/pkgconfig"
+ChatGPT said:
+ChatGPT
+
+El mensaje que estás viendo indica que Homebrew está tratando de evitar sobrescribir una versión de icu4c que viene preinstalada en macOS, específicamente la versión icu4c@76. Sin embargo, Homebrew necesita la versión de icu4c para instalar y usar PHP de manera correcta.
+
+Para solucionar esto, puedes intentar lo siguiente:
+Solución:
+1. Agregar la versión de icu4c a tu PATH
+
+Primero, intenta agregar la versión de icu4c que has instalado con Homebrew a tu variable de entorno PATH. Esto debería darle prioridad a la versión de icu4c de Homebrew sobre la versión que viene con macOS.
+
+Ejecuta estos comandos para agregarlo a tu ~/.zshrc:
+
+echo 'export PATH="/usr/local/opt/icu4c@76/bin:$PATH"' >> ~/.zshrc
+echo 'export PATH="/usr/local/opt/icu4c@76/sbin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+
+2. Configura las variables de entorno necesarias para la compilación
+
+Si aún tienes problemas, configura también las variables de entorno para que los compiladores y herramientas como pkg-config encuentren correctamente icu4c.
+
+Agrega estas líneas a tu ~/.zshrc:
+
+echo 'export LDFLAGS="-L/usr/local/opt/icu4c@76/lib"' >> ~/.zshrc
+echo 'export CPPFLAGS="-I/usr/local/opt/icu4c@76/include"' >> ~/.zshrc
+echo 'export PKG_CONFIG_PATH="/usr/local/opt/icu4c@76/lib/pkgconfig"' >> ~/.zshrc
+source ~/.zshrc
+
+3. Reinstala PHP 8.1 y las dependencias
+
+Ahora que has actualizado tu PATH, intenta nuevamente reinstalar PHP 8.1 y las dependencias necesarias. Primero, desvincula cualquier versión actual de PHP y icu4c:
+
+brew unlink php@8.2
+brew unlink icu4c
+
+Luego, instala PHP 8.1 y asegúrate de que se vinculen correctamente:
+
+brew install php@8.1
+brew link --overwrite php@8.1 --force
+brew link icu4c --force
+
+4. Verifica que PHP esté usando la versión correcta
+
+Finalmente, verifica que PHP esté apuntando a la versión 8.1 y que no haya más errores de dependencias:
+
+php -v
+
+Resumen:
+
+    Agregar icu4c a tu PATH para priorizar la versión de Homebrew.
+    Configurar las variables de entorno para que las herramientas de compilación encuentren icu4c.
+    Reinstalar PHP 8.1 y asegurarte de que se vincule correctamente.
+    Verificar que PHP esté funcionando correctamente con php -v.
+
+Intenta estos pasos y dime si el problema se resuelve. Si no, podemos probar otro enfoque.+++
+
+
+Resultado Obtenido
+-------------
+hp -v
+PHP 8.1.31 (cli) (built: Dec 19 2024 02:07:33) (NTS)
+Copyright (c) The PHP Group
+Zend Engine v4.1.31, Copyright (c) Zend Technologies
+    with Zend OPcache v8.1.31, Copyright (c), by Zend Technologies
+

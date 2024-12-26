@@ -1,0 +1,32 @@
+Introducción y fundamentos de Laravel
+
+En esta sección vamos a desarrollar un sitio web con Laravel desde cero hasta publicar en un hosting.
+
+Se aprendera:
+- La instalación en windows
+- Instalación en Mac
+- Rutas
+- Vistas
+- El motor de plantillas de Blade
+- Controladores
+- Migraciones
+- Base de Datos
+- Eloquent (ORM de Laravel)
+
+Desarrollo
+- CRUD
+- Mensajes de sesion
+- Autenticación
+
+Frontend
+- Tailwind
+- Bootstrap
+- CSS y JS
+
+Publicación
+- Deployment
+
+Requisitos
+- HTML fundamentos
+- PHP bases
+
