@@ -1,8 +1,3 @@
-@extends('layouts.app')
-
-@section('title', 'Home')
-@section('meta-description', 'Home')
-
-@section('content')
+@component('components.layout')
     <h1>Inicio</h1>
-@endsection
+@endcomponent

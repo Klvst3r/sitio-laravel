@@ -166,4 +166,42 @@ Con estio estamos eutilizando una plantilla en difefrentes paginas
 
 Esta es una forma de definir plantillas con herencias.
 
+Para ello utilizaremos una carpeta llamada
+componentes y dentro el layout.blade.php
+copiamos lo que teniamos en el layout
+
+La forma en que se agregan comentarios es la siguiente
+    {{-- @include('partials.nav') --}}
+
+La diferencia que encontramos en los componentes es que aca utilizamos
+slots
+
+
+Dentro de todo componente tenemos
+
+    {{ $slot }}
+
+Es un avariable reservada donde se va aimpormir el contenido variable principal, este es el equivalente al yield principal
+Quitandolo eso ya tenemos la primera parte del componente.se
+
+ahora para Utilizar el eslot en la vista welcome, vamos a quitar las directivas y para utlilizar el compoennete tenemos dos oipciones
+
+- @component('components.layout')
+
+Aqui tambien se aume que esta dentro de la carpeta /reources/views/
+
+y este es el archivo con la directiva de apertura dentro del contenido dentro del slot y al final cerramos la directiva:
+
+@component('components.layout')
+    <h1>Inicio</h1>
+@endcomponent
+
+Todo lo que esta dentro de estas dos directivas se va a imprimir En
+/resources/views/components/layout.blade.php
+
+en la seccion {{ $slot }}
+
+
+La segunda forma de escribir es:
+
 
