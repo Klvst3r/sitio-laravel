@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
-    public function __invoke(){
+    //public function __invoke(){
+    //public function methodname(){
+        public function index(){
+
         //return 'blog';
 
         $posts = [

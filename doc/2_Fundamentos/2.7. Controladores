@@ -359,6 +359,107 @@ class PostController extends Controller
 
 Funcionando, con la diferencia que ahora nuestro archivo de rutas eta mas limpio.
 
-Esto es una forma de invocar un controlador
+Esto es una forma de invocar un controlador, ya que es un controladro invocable
 
+Que es util cuando tenemos un controlador de una acción o de un solo metodo.
+
+Para nuestro caso tenemos planeado para multiples acciones.
+
+Para entonces en el archivo de rutas le pasamos un array conde el primer elemento puede ser el controlador y el segundo parametro es el nombre del metodo que queremos que realice la ación o que se ejecute.
+
+
+Route::get('/blog', [PostController::class, 'methodname'])->name('blog');
+
+Ahora podremos agregar el metodo en nuestro controlador
+
+ public function methodname(){
+        //return 'blog';
+
+        $posts = [
+            ['title' =>'Fisrt post'],
+            ['title' => 'Second post'],
+            ['title' => 'Third post'],
+            ['title' => 'Fourth post'],
+
+
+        ];
+
+        return view('blog', ['posts' => $posts]);
+
+Funcionando nuevamente
+
+Entonces como queremos mostrar un listado de algo de cualquier recurso por convencion utilizamos el metodo index
+
+cambiamos con ello el nombre de methodname => index
+
+En nuestro archivo de rutas
+
+Route::get('/blog', [PostController::class, 'index'])->name('blog');
+
+y el metodo del controlador queda:
+
+    public function index(){
+
+        //return 'blog';
+
+        $posts = [
+            ['title' =>'Fisrt post'],
+            ['title' => 'Second post'],
+            ['title' => 'Third post'],
+            ['title' => 'Fourth post'],
+
+
+        ];
+
+        return view('blog', ['posts' => $posts]);
+
+    }
+
+Para terminar recordamos que una forma sencilla de crearlos en laravel es el comando de artisan:
+
+       $ php artisan make:controller PagesController
+
+Vamos que recibe como paramytero el nombre del controlador PostController
+
+Podemos pasarle opciones
+
+   $ php artisan make:controller PagesController -i
+
+   -i Nos crea un controlador invocable es decir un metodo unico
+
+   $ php artisan make:controller PagesController -r
+   -r Resources que contrendra los siete metodos resultado
+        - index
+        - create
+        - store
+        - show
+        - edit
+        -update
+        - destroy
+
+   $ php artisan make:controller PagesController --api
+
+   --api En este caso crea solo 5 de los metodos REST
+
+No nos creara los metodo  create y edit que muestran un formulario
+
+
+Si no pasamos ninguna opcion nos crea el controlador pero ninguno d elos metodos
+Ya que dichas vistas serian implementadas en la parte del cliente de la api
+
+Cuando utilizamos el comando de artisan para crear estos controladroes vemos que nos extiende a un controladro base
+
+
+    class PostController extends Controller
+
+Que a su vez extiende a otro controlador y utiliza trails que proveen metodos adicionales
+
+    Class Controller extends BaseControllers
+    {
+        use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+    }
+
+Para autorizar peticiones, despachar Jobs t validar Requests
+
+Si no utilizamos nada de esto podemos quitar este extends y va a funcoinar de la misma form.
 

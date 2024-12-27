@@ -32,7 +32,7 @@ Route::view('/contacto', 'contact')->name('contact');
 //Blog - Recibimos un tercer parametro con la llave de post
 //Route::view('/blog', 'blog', ['posts' => $posts])->name('blog');
 
-Route::get('/blog', PostController::class)->name('blog');
+//Route::get('/blog', PostController::class)->name('blog');
 
 /* Route::get('/blog', function(){
     //Movemos el array
@@ -49,6 +49,11 @@ Route::get('/blog', PostController::class)->name('blog');
     return view('blog', ['posts' => $posts]);
 
 })->name('blog'); */
+
+//Enviando un array de metodos en nuestro controlador
+//Route::get('/blog', [PostController::class, 'methodname'])->name('blog');
+
+Route::get('/blog', [PostController::class, 'index'])->name('blog');
 
 // About
 Route::view('/about', 'about')->name('about');
