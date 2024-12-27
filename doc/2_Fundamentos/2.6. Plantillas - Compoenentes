@@ -1,3 +1,7 @@
 2.6. Plantillas de Blade - componentes
 
-Otra forma de
+Otra forma de definir layouts en laravel es utiizando componentes de blade.
+
+Para ello vamos a crear dentro de la arpeta de resources/views/
+
+Una carpeta para los componentes

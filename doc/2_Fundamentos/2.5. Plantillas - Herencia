@@ -204,4 +204,265 @@ en la seccion {{ $slot }}
 
 La segunda forma de escribir es:
 
+Es con las etiquetas de componentes de blade es como una etiqueta html
+
+comienza
+
+<x-<ubucación-componente>
+
+Ej
+<x-layout>
+
+</x-layout>
+<h1>Inicio</h1>
+
+Notemos que esta etiqueta ya estan dentro de la carpeta components, solo le incicamos el nombr edel comopnente en este caso.
+
+Pensemos en esta etiqueta como si la x- y a equis y el guian apuntaran a la carpeta componentes y luego apuntamos al noimbre del compoonente
+
+sin necesidad del la extension .blade.php
+Entonces apintaria a
+    components/layout.blade.php
+Sin necesidad de escribir la extension .blade.php
+
+siendo equivalente
+
+<x-layout>
+
+</x-layout>
+
+a esto:
+
+@component('components.layout')
+    <h1>Inicio</h1>
+@endcomponent
+
+Asi que quitamos lo anterior. dejando solo la segunda forma
+Cualquier cosa que agreguemos dentro de estas etiquetas se agregara donde tengamos el
+    $slot
+
+El contenido principal ya lo tenemos ahora vamos por ewl yield que tenemos podemos hacer lo siguiente:
+
+
+<title> {{ $title }}</title>
+
+Estas variables dentro de los omponentes de blade se les conoce como propiedades del componente y para hacer referencia a esta propiedad desde la vista tenemos varias opciones.
+
+
+En el aso de que quieramos imprimir estructuras html podemos escribir slots con nombre
+
+Se tiene una etiqueta especial de blade
+
+<x-slot name="<atributo-identificador>" que es el nombre de la pripiedad donde queremos que se imprima el contenido.
+
+Ej titulo
+<x-layout>
+    <x-slot name="title">
+        Home Title
+    </x-slot>
+</x-layout>
+<h1>Inicio</h1>
+
+Refresacmos el navegador
+
+Los sslots con nombres estan diseñados para agragar estructuras html, es decr todo lo que esta dentro de las etiquetas
+<x-layout>
+
+Llegara como un slot y los slots que tengan nombre, llegaran a los slots como propiedades con comnmbre.
+
+Como en este caso no necesitamos estrcuturas html, podemos utilizar otra forma de referencias propiedades del laayouts.
+
+Es atraves de atributos, pero anates si vamos al navegador y si refrescamos nos muestra un error
+
+La variable no esta definida, es decir es necesario deckrar esta variable para que funcione, pero si queremos que sea opcional.
+
+Podemos utiliar el operador de php
+
+
+<title> {{ $title ?? ''}}</title>
+
+
+E imprimir un valor pod efecto en caso de que esta variable no este definida desapareciendo el error.
+
+Referenciando propiedades del layout utlizando atributos
+------
+
+en este caso el atribto title con su valor siendo el ejemplo siguiente
+
+
+<x-layout title="Home">
+
+<x-layout title ="Inicio">
+
+Seria el nombre de la pripiedad que se imprimira si no tiene titulo definido
+
+Vamos a darle el mismo tratamiento a la pripiedad meta
+
+ <meta name="description" content=" {{ $metaDescription ?? 'Default meta description' }}" />
+
+ Estamos utilizando la notacion camelCase para definir la propiedad
+
+Dentro las variables o el valor por defecto que se va a imprimir
+
+Para agregarla le pasamos el valor en el x-layout en la vista welcome
+
+Algo a tener en cuenta es que para referenciar una propiedad utilizamos la notacion "kebab case"
+
+Quedando:
+    <x-layout title="Inicio" meta-description="Home meta description">
+
+Y para definir propieades utilizamos camel case la conversion se hace de forma automatica
+
+    content="{{ $metaDescription ?? 'Default meta description' }}"
+
+Pasamos el valor allayout.
+
+Finalizamos con el ultimo include comentado
+
+ {{-- @include('partials.nav') --}}
+
+ Si lo descomentamos igual funciona, pero como estamos utilizando componentes vamos a utilizar la navegación a un componente
+
+ De momento se copia a la carpeta coinmponents es decir dentro de un archivo dentro de la carpeta components
+
+ /resources/views/components/
+    navigation.blade.php
+
+Y en el layout simplemente utilizamos como cualquier componente
+
+<x-navigation>
+
+Y como no vamos a utilizar nada mas cerramos la etiquetas inmediatamente
+
+<x-navigation/>
+
+Por convencion aqui utilizamos una carpeta para los layouts
+
+Quedando una carpeta interna dentro de la carpeta components llamada layouts
+
+Ahora vamos a necesitar una para la aplicacion con los usuarios autenticados y otra para invitado .
+
+De momento solo vamos a crear una solo archivo app.blade.php para los layouts
+
+Y como la navegación es parte del layout la vamos a meter dentro
+
+
+La vista Welcome quedando
+<x-layouts.app title="Home" meta-description="Home meta Description">
+
+    <h1>Inicio</h1>
+
+
+</x-layouts.app>
+
+Esto es como si la X hiciera referencia a la carpeta components luego accedemos a la carpeta layouts y para entrar a al carpeta utilizamos un punto y obtenemos el componente app
+
+
+Hacemos lo mismo con la referencia del compeinente de nacegacion
+
+    <x-layouts.navigation />
+
+    {{ $slot }}
+
+
+
+Vemos que sigue funcionando
+
+Antes de terminar
+
+Es necesario que debemos mencionar algo de los componentes de blade
+
+supongamos que tenemos una propiedad llamada zum  donde internamente queremos sumar dos valores
+
+En la vista Welcome
+
+<x-layouts.app
+    title="Home"
+    meta-description="Home meta Description"
+    sum="2 + 2"
+    >
+
+y en el layout se imprime esa variable
+En app.blade.php
+Vemos que se imprime el string como tal, no se ejecuta php dentro
+
+  <x-layouts.navigation />
+
+    <pre>{{ $sum }}</pre>
+
+    {{ $slot }}
+
+
+Pero si queremos que se evalue php podemos utilizar dos puntos al principio del atributo y de esta manera si se va a evaular el contenido como phop
+
+welcome.blade.php
+
+
+<x-layouts.app title="Home" meta-description="Home meta Description" :sum="2 + 2">
+
+    <h1>Inicio</h1>
+
+
+</x-layouts.app>
+
+Dando como resultado esl resultado de la operacion, si agregamos dos puntos a los otros atributos del componente va a fallar ya que no lo esta tratando como un string
+
+Tendriamos que encerar el valor de la variable en comillas simples para que vuelva a funcionar quedando de la siguiente manera
+
+<x-layouts.app title="Home" :meta-description="'Home meta Description'" :sum="2 + 2">
+
+    <h1>Inicio</h1>
+
+
+</x-layouts.app>
+
+Solo nos queda actualizar las demas vistas, que las dejaremos como estaban para utilizar las dos formas de utilizarlas plantyillas de blade.
+
+Tanto con herencia como con componentes.
+
+Pero quedairn asi:
+
+- La vista contact:
+
+    <x-layouts.app title="Contact" meta-description="'Contact meta Description'">
+
+        <h1>Contact</h1>
+
+
+    </x-layouts.app>
+
+- La visya blog
+
+<x-layouts.app title="Blog" meta-description="'Blog meta Description'">
+
+    <h1>Blog</h1>
+
+
+</x-layouts.app>
+
+- About
+
+<x-layouts.app title="About" meta-description="'About meta Description'">
+
+    <h1>Contact</h1>
+
+
+</x-layouts.app>
+
+con esto hemos visto dos formas de definir layouts la que vimos con gerencia y la segunda es con componentes
+
+Si nos quedamos con la segunda se recomienda eliminar las carpetas fuera de componentes que seria:
+
+/resources/views/layouts
+
+y
+
+/resources/views/partials
+
+Ya que no se necesitaran mas
+
+De momento las dejaremos para continuar tal vez con una sola vista utilizable
+
+Ya estamos utilizando componentes de blade.
+
 
