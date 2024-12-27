@@ -136,7 +136,229 @@ y pasamos la variable que queremos inspeccionar.
 
 Si damos click a blog veremos el array cn los cuatro post
 
-entonces vamos a recorrer los post con un foreach
+entonces vamos a recorrer los post con un foreach, tenemos una directiva de blade para ello.
 
+Em blog.blade.php
+
+        @foreach($post as $post)
+
+        @endforeach
+
+Recorremos los post y dentro imprimimos los titulos de cada uno.
+
+     @foreach($post as $post)
+        {{ $post['title'] }}
+    @endforeach
+
+
+Para verlos mejor lo encerramos entre etieuqtas de titulos
+  @foreach ($posts as $post)
+        <h2> {{ $post['title'] }} </h2>
+    @endforeach
+
+El array de datos
+
+$posts = [
+    ['title' =>'Fisrt post'],
+    ['title' => 'Second post'],
+    ['title' => 'Third post'],
+    ['title' => 'Fourth post'],
+
+
+];
+
+Que seguramente vendran de una base de datos solo es relevante para la ruta blog.
+
+Una mejora que podriamos hacer es en lugar de utilizar el metodo view, es utilizar el metodeo get que reponda a la ruta blog y solamente adminitr dos paramteros,
+
+el segundo parametro puede ser un invocable o una funciona, paa mover un array dentro de la funcion y devolver
+
+manualmente la vista blog utilizando la funcion view, que recibe como primera parametro el nombre de la vista y como segundo parametro datos.
+
+quedando
+
+Route::get('/blog', function(){
+    //Movemos el array
+    $posts = [
+        ['title' =>'Fisrt post'],
+        ['title' => 'Second post'],
+        ['title' => 'Third post'],
+        ['title' => 'Fourth post'],
+
+
+    ];
+
+    //Devolvemos manualmente la vista blog
+    return view('blog', ['posts' => $posts]);
+
+})->name('blog');
+
+
+De esta forma tenemos toda la logica de esta ruta contenida en el bloque de codigo.
+
+Rebvisamos en el navegador y debe tenerse el mismo resultado
+
+
+Para mantener limpio el archivo de rutas es necesario utilizar controladores siempre que necesitamos
+
+Realizar alguna acción entre la peticion y la respuesta como en este caso es necesario utuilizar un controlador.
+
+Sin embargo como todas las buenas practicas dependen del conteto.
+
+Si se esta creanod una aplicaciciónpequeña o de corto tiempo de vida que no requerira mucho mantenimiento.
+
+Pdemos hacer lo anterio sin ningun problema, incluso tener una aplicación funcional.
+
+Utilianzo solamente el archivo de rutas y las vistas, lo importante es el funcionamiento.
+
+sin embargo si tenemos considerado que la aplicación crzca a futuro la buen practica es utilizar a un cotrolador.
+
+
+Controladores
+------
+
+
+Un controlador es simplemente una clase de php que se encarga de recibir la petición y devolver la repsuesta.
+
+De hecho ya estamos utiulizando controladores al metodo view:
+
+      return view('blog', ['posts' => $posts]);
+
+si vamos a la devinicion de view()  vemos que nos lleva a la clase
+
+/vendor/laravel/framework/src/Illumiinate/Routing
+
+    function view($view = null, $data = [], $mergeData = [])
+
+* @method static \Illuminate\Routing\Route
+
+view(string $uri, string $view, array $data = [], int|array $status = 200, array $headers = [])
+
+Vemos que delega la petición a este view controller que viene con laravel que es parte del pframework  y este controlador tiene un metodo invoke
+
+Se conoce como un controlador invocable
+
+__invoke()
+
+Lo que hace es una destructuración de los argumentos y finalemnete devolver la vista correspondiente con sus datos
+
+Vamos a hacer un controladro similar para estraer la logica del archivo de rutas.
+
+
+Controladores Ubicación
+-----
+
+Los controladores se encunetran el la ruta
+
+/app/Http/Controllers
+
+Aca vamos a crear una clase dentro llamada
+
+    PostController.php
+
+Esta es una convención siempre con mayusculas  la primera letra de cada palabra y al final siempre la palabra Controller
+
+En este caso es el controlador de los post asi que usamos la palabra en singular
+
+Postcontroller.php
+
+Dentro tenemos la calse con el namespace correcto quedando:
+
+Namespace: App\Http\Controllers
+
+Para vcrear nuestro controlador vamos a la referencia inicial para crear nuestro controlador desde la consola
+
+    $ php artisan make:controller PagesController
+
+Quedando nuestro controlador
+
+
+    <?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class PostController extends Controller
+{
+    //
+}
+
+Ahora esta clase la vamos a utilizar en lugar de tenerla en nuestro archivo de rutas
+y nuestra ruta queda de la siguiente manera:
+
+
+Route::get('/blog', PostController::class)->name('blog');
+
+Si nuestro editor nos nos importa la clase en la parte suprorio debemos aregarlo para inficar el uso de nuestro controlador
+
+<?php
+
+use App\Controllers\PostController;
+
+use Illuminate\Support\Facades\Route;
+
+Ya que si nuestro editor no lo agrega debemos escribirla manualmente
+
+Esta parte es importante para que funcione ppodemos utilizar la sitaxis descrita o directamente
+
+    Route::get('/blog', PostController::class)->name('blog');
+
+O la siguiente:
+
+    Route::get('/blog', 'App\Http\Controllers\PostController);
+
+Con la dirección completa del controlador, si utilizamos esta forma no debemos utilizar ningun importa
+
+Ambos funcionan de la misma forma por que detras de escena son lo smismo
+
+Si lo dejamos asi y actualizamos
+
+Nos indica un error
+
+`App\Http\Controllers\PostController` is not invokable.
+
+The controller class App\Http\Controllers\PostController is not invokable. Did you forget to add the __invoke method or is the controller's method missing in your routes file?
+
+
+
+Al parecer esta tratando de ejecutar este metodo asi que lo agregamos y para probarlo vamos a retornar cualquier string
+
+en nuestro controlador de blog
+class PostController extends Controller
+{
+    public function __invoke(){
+        return 'blog';
+    }
+}
+
+Funcionando hasta aca
+
+Entonces pegamos lo que tenemos en nuestro array
+
+
+class PostController extends Controller
+{
+    public function __invoke(){
+        //return 'blog';
+
+        $posts = [
+            ['title' =>'Fisrt post'],
+            ['title' => 'Second post'],
+            ['title' => 'Third post'],
+            ['title' => 'Fourth post'],
+
+
+        ];
+
+        return view('blog', ['posts' => $posts]);
+
+    }
+}
+
+
+Funcionando, con la diferencia que ahora nuestro archivo de rutas eta mas limpio.
+
+Esto es una forma de invocar un controlador
 
 
