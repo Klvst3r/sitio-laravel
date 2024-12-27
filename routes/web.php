@@ -17,13 +17,26 @@ use Illuminate\Support\Facades\Route;
     return view('welcome');
 });
  */
+
+//Ejemplo de array con post
+$posts = [
+    ['title', 'Fisrt post'],
+    ['title', 'Second post'],
+    ['title', 'Third post'],
+    ['title', 'Fourth post'],
+
+
+];
+
+
+
 Route::view('/', 'welcome')->name('home');
 
 //Contacto
 Route::view('/contacto', 'contact')->name('contact');
 
-//Blog
-Route::view('/blog', 'blog')->name('blog');
+//Blog - Recibimos un tercer parametro con la llave de post
+Route::view('/blog', 'blog', ['posts' => $posts])->name('blog');
 
 // About
 Route::view('/about', 'about')->name('about');

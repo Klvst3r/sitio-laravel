@@ -11,5 +11,6 @@
 
     <h1>Blog</h1>
 
+    @dump($posts)
 
 </x-layouts.app>

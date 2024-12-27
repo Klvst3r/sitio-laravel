@@ -1,0 +1,142 @@
+2.7 Controladores en Laravel
+
+
+En lugar de definir toda la logica de la aplicación en el archivo web.php
+
+Lo conveniente es utilizar controllers, ubicados en:
+
+	/app/Http/controllers
+
+Por defecto se tiene
+	Controller.php
+
+Incluye muchos trails,
+
+
+Creación de controladores
+------------------------
+
+Se cra una nueva clase en un archivo
+
+Ej.
+	Pagescontrollers.php
+
+Agregando todo el codigo, namespaces.
+
+
+Uno de los objetivos del desarrollo de aplicaciones sea lo mas raido posible.
+
+
+
+Comandos para crear archivos rapidamente
+----------------------------------------
+
+Muestra todos los comandos disponibles
+	php artisan
+
+Comandos para crear archivos
+	php artisan make:controller
+
+
+ej.
+	php artisan make:controller PagesController
+
+
+En este archivo se crearan los metodos que reemplazaran a los que se encunetran en las rutas.
+
+
+	<?php
+
+	namespace App\Http\Controllers;
+
+	use Illuminate\Http\Request;
+
+	class PagesController extends Controller
+	{
+	    //
+	}
+
+
+Ej.En el archivo web.php de rutas
+
+	Route::get('/', ['as' => 'home', 'uses' => 'PagesController@home']);
+
+En el controlador PagesController se crea el metodo correspondiente (home)
+
+	class PagesController extends Controller
+{
+    public function home()
+    {
+        return view('home');
+    }
+}
+
+Se retorna la vista home del metodo con el mismo nombre.
+
+
+Regresando a nuestro tema Vamos a hora a trabajar en la vista blog
+
+suponiendo que tenemos un array de post
+
+
+en la ruta web.hpp
+
+
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+
+
+$posts = [
+    ['title', 'Fisrt post'],
+    ['title', 'Second post'],
+    ['title', 'Third post'],
+    ['title', 'Fourth post'],
+
+
+];
+
+
+
+Route::view('/', 'welcome')->name('home');
+
+//Contacto
+Route::view('/contacto', 'contact')->name('contact');
+
+//Blog
+Route::view('/blog', 'blog')->name('blog');
+
+// About
+Route::view('/about', 'about')->name('about');
+
+
+Cada ost es un array de momento
+
+
+Ahora como hacemos para pasar la variable post a la vista blog
+
+cuando utilizamos la vista blog el primer parametros es la url a la que se va a responder, el sefgundo parametros es  la vista que se va a devolver
+
+y como ptercer parametro opcional es psarles datos
+
+
+Asi que vamos a pasarle una llave posts
+
+
+//Blog - Recibimos un tercer parametro con la llave de post
+Route::view('/blog', 'blog', ['posts' => $posts])->name('blog');
+
+
+Que contiene los post que tenemos en la parte de arriba, de esta forma en la vista blog ya tenemos lista la variable post
+
+Para inspeccionar datos podemos hacer uso de la directiva de blade @dump($posts)
+
+y pasamos la variable que queremos inspeccionar.
+
+Si damos click a blog veremos el array cn los cuatro post
+
+entonces vamos a recorrer los post con un foreach
+
+
+
