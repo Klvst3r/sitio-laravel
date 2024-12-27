@@ -20,7 +20,7 @@
 
     <x-layouts.navigation />
 
-    <pre>{{ $sum }}</pre>
+    {{-- <pre>{{ $sum }}</pre> --}}
 
     {{ $slot }}
 
