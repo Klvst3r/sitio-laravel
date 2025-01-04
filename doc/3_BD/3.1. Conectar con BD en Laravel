@@ -1,0 +1,236 @@
+3.1. Como conectar con una Base de Datos en Laravel
+
+La fuente de datos que se encuentra en l controlador no la queremos escribir:
+
+$posts = [
+            ['title' =>'Fisrt post'],
+            ['title' => 'Second post'],
+            ['title' => 'Third post'],
+            ['title' => 'Fourth post'],
+        ];
+
+Ya que hacerlo tendriamos que editar este controlador cada vez agregamos un nuevo post o editemos un post.
+
+Lo ideal es que provenga de una Base de datos.
+
+Para ello debemos configurar la conexión
+
+Los datos de configuración estan en el archivo
+
+/config/database.php
+
+Todos los archivos de configuración retornan un array
+
+return [...]
+
+Y en la llave siguiente vemos que se configura la conexion que se utilizara por defecto en nuestra aplicación
+ con la siguinete función:
+
+ 'default' => env('DB_CONNECTION', 'mysql'),
+
+Utiliza la llave DB_CONNECTION y el valor mysql por defecto.
+
+Lo que hay que saber es que la llave DB_CONNECTION hace referencia al archivo .env que tenemos en la raiz de la aplicación
+
+Si el valor no estuviera definido ahi se utilizaria el valor que tenemos como segundo parametro en el archivo .env
+
+Este valor hace referencia al segundo valor en el archiov de configuracion de la database.php
+
+Este hace referencia al array de conexiones que se tienen mas abajo.
+
+Laravel soporta por defecto SQLite, mysql, postGreSQL (pgsql), SQL server (sqlsrv) y tambien Redis tambien.
+
+Si se utiliza un abase de datos que no esta en el listado seguramente se podra instalar con algun paquete .
+
+El valor por defecto es mysql, que hace referencia al siguiente array de configuyraciuón:
+
+ 'mysql' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+Que tambvien utiliza la fiunción env, quiere decir que toda esta configuración la podemos modificar sin tocar este archivo.
+
+Dese el archivo .env
+Podemos cambiar el nombre de Bd, buscamos se busca la llave
+DB_NAME=laravel.
+
+Si quisieramos cambiar el Socket tambien, no tenemos la llave en el archiov .env pero podemos agregarla de la siguiente manera:
+
+DB_SOCKET=valor
+Y se podra utilizar sin problema
+
+En la gran mayoria de los casos.
+
+Basta con definir los datos de conexión que se tienen en el archivo .env
+
+Si Se suigui el archivo de condiguración ptanto para Mac como para Windows, el DB_USERNAME=root y la contraseña estara vacia.
+
+Esto esta bien en local, para la publicación en un servidor de producción podremos configurar estas llaves.
+
+La configuración que tenemos en nuestra Bd es la siguiente en el archivo .env:
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sitio_laravel
+DB_USERNAME=root
+DB_PASSWORD=
+
+Si revisamos el gestor de la Bd en DBngin podemos revisarla en la aplicación:
+
+Con esto ya tenemos definida la coenxión a la BD.
+
+Pero no tenemos ningun dato.
+
+Migraciones:
+
+En laravel se utilizan migraciones para crear los esquemas de la base de datos.
+
+Para crear las cosas simplea vamos a trabajar de manera manual:
+
+Asi teniendo nuestra Bd "sitio-laravel"
+
+Para nuestro caso, utilizamos el servicio de
+
+DBngin con los siguientes valores de exportación en la terminal:
+
+mysql -h 127.0.0.1 -u root
+
+Si queremos utilizar un cliente para la administración de la Bd podemos utilizar TablePlus con los siguientes parametros de conexión:
+
+Server: 127.0.0.1
+Port: 3306
+Username: root
+Password:
+Database: sitio-laravel
+
+Para nuestro caso practico decidimos utilizar DBeaver con los mismo paamtros de configuración o en nuestro defecto tambien podemos utilizar Sequel Ace
+
+Ya esntando en nuestra Bd
+
+Vamos acrear manualmente un atabla llamada "posts y en la estrcutura:
+
+CREATE TABLE posts (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL
+);
+
+
+Y agregamos cuatro titulos de post
+
+CREATE TABLE `posts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) COLLATE utf8mb4_spanish_ci NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_spanish_ci;
+
+Insertando cuatr post
+INSERT INTO `sitio-laravel`.posts (title) VALUES
+	 ('First Post'),
+	 ('Second Post'),
+	 ('Third Post'),
+	 ('Fourth Post');
+
+
+Vamos ahora a mostrar estos cuatro post en nuestra aplicación:
+
+Para ello vamos a nuestro PostController y en logar de deinifrlos como un array
+
+vamos a ocnectarnos a la BD
+
+
+Utilizando la clase BD::
+
+Vamos que se importa en la parte superior:
+
+use Illuminate\Support\Facades\DB;
+...
+
+
+//Conexion con la BD
+        $posts = DB::table('posts')->get();
+
+        return view('blog', ['posts' => $posts]);
+
+
+Como ya se definio la conexion con la Bd a traves del metodo DB::
+
+Solo debemos inidicar que tabla queremos consultar, en nuestro caso es post, llamamos al metodo table con el nombre de la tabla 'post y luego llamamos al metodo get para obtener los resultados.
+
+
+Detars de escena LÑaravel se encarga de abrir y cerrar la conexion y de hacerl asegura por nosotros.
+
+La clase DB o facade es bastante poderosa tiene muchas funcionalidades incluso permite escribir SQL con el metodo raw:
+
+Ej.
+
+    $post = DB::raw
+
+Ahora que ya tenemos los post de la tabla post, revisamos en el navegador que se tiene:
+
+
+Tenemos un error:
+
+Indicandonos que no podemos utilizar el objeto de tipo stdClass as array
+
+Como si fuera un arreglo
+
+Es decir:
+
+    Undefined variable $posts
+
+Ya que en la vista estamo asumiendo que la variable post contiene un array de post antes si lo era pero ahora ya no.
+
+Ahora cada post es una clase predefinida de PHP stdClass que nos sirve para
+
+@foreach ($posts as $post)
+        <h2> {{ $post['title'] }} </h2>
+    @endforeach
+
+Si se hace un @dump en la vista
+
+
+Vemos que es un objeto ahora y tiene dos porpiedadesel id y el title. que corresponden a los campos que tenemos en la Bd .
+
+Entonces en lugar de accederlo como un array accedemos al titulo como si fuera una propiedad de la clase de la siguiente manera
+
+y ahora funciona.
+
+
+Y si creamos otro post en la Bd, y actualizamos aparecera y tendremos los post desde la BD.
+
+Esto esta bien en caso de ya tener una BD
+
+  $posts = DB::table('posts')->get();
+
+Pero en Laravel tenemos un esquemas de Bd, asi que vamos a ya no trabajar con la tabla posts que se creo manualmente y en la siguiente leccion se aprendera a crear migraciones
+
+La Bd quedaria de la siguente manera:
+
+INSERT INTO `sitio-laravel`.posts (title) VALUES
+	 ('First Post'),
+	 ('Second Post'),
+	 ('Third Post'),
+	 ('Fourth Post'),
+	 ('Fifth Post');
+
+
+
+
+
