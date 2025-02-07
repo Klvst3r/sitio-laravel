@@ -1,0 +1,206 @@
+1.5 Clonar un proyecto de laravel desde github
+
+Si tenemos un proyecto en Github, al subir nuestro proyecto, nuestro proyecto tendra varias carpetas y archivos que por seguridad no se suben por defecto, por mencionar algunas son:
+
+- Carpeta vendor
+- Archivo de entorno .env
+
+Que son algunos de las carpetas y archivos contenidos en el archivo .gitignore, por lo que git no los tendra en cuneta y no almacenara las modficaciones.
+
+Un ejemplo del archivo .gitignore es el siguiente
+
+Ejemplo: .gitignore
+
+/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+docker-compose.everride.yml
+Homestead.jason
+Homestead.yaml
+npm-debug.log
+yarn.error.log
+
+
+Por lo tanto cuando tengamos la necesidad de clonar nuestro proyecto en local, debemos hacer unos ajustes para que nuestro proyecto pueda correr en nuestro equipo local.
+
+
+Cuando tenemos la necesdad de importar un proyecto tenemos que realizar cierto rpocedimiento d eimportación para nuestro proyecto.
+
+Para ello haremos un resumen de los principales comandos para tener nuestra aplicación de Laravel funcionando en local
+
+Clonar nuestro proyeccto
+----------------------
+
+
+1. Importando el proyecto desde nuestro repositorio. Vamos a tomar nuestro ejemplode proyecto como sitio-laravel.
+    La importación lo haremos via SSH:
+        $ git clone git@github.com:Klvst3r/sitio-laravel.git
+
+
+2. Ingresando a nuestra carpeta d eproyecto para realizar las instalaciones necesarias.
+
+    Tomando en consideració nuestra ruta raiz es:
+    /home/dev/laravel/
+
+    $ cd sitio-laravel
+
+
+Instalar dependencias
+---------------------
+
+Instalaremos composer, el manejador de dependencias para PHP, las dependencias definidas enestan en el archivo composer.json
+
+3. Instalando Composer.
+    En nuestra terminal ejecutamos:
+
+    $ composer install
+
+4. Instalación de dependencias de NPM, definidas en el archivo package.json
+
+    $ npm install
+
+    Con ello se crea nuestra carpeta node_modules.
+
+Creación de la Base de datos con soporte de nuestroi proyecto.
+-------------------------------------------------------------
+
+Entre las bases de datos Laravel soporta por defecto: MySQL, SQL Lite, PostgreSQL y SQL Server.
+
+Segun la base de datos que necesitemos, el proceso de crearla sera diferente, para ello tendemos que crear nuestro archivo de entorno
+
+5. Crear archivo .env
+    Partimos de nuestro archivo por default y de base establecido en el proyecto iniciado.
+    $ cp .env.example .env 
+
+Este archivo e ncesario para configurar conexiones con la base de datos, establecer las credenciales de acceso, establecer los motores de envio y recepción de correos, entre otras configuraciones necesarias.
+
+Vamos a configurar nuestro ejemplo con una base de datos que se llame sitio-laravel como nombre de la Bd en MariaDB, considerando como una opcion en lugar de MySQL.
+
+Para ello tendremos la sección de configuración de la BD en nuestro archivo .env
+
+En nuestro caso tenemos un entorno de trabajo con WSL2, por lo que procedemos a verificar si nuestro servidor de Bd esta arriva el servicio.
+
+6. Verificación del servidor de BD (Tomando como ejemplo MariaDB como motor de BD)
+
+    $ sudo service mariadb status
+
+7. Arrancar el servicio.
+    Si nuestro servidor no esta encendido, procedemos a arrancarlo.
+    $ sudo service mariadb start
+
+8. Ingresamos a nuestro cliente de base de datos para crear nuestra base de datos a utilizar.
+
+    $ mysql -u klvst3r -p
+    mariaDB > show databases;
+    mariaDB > create database sitio-laravel
+
+9. Configurando archivo de configuración.
+    Al tener comprobado el acceso, agreguemos estos parametros de conexión en nuestro archivo de entorno.
+
+    .env
+    # Sección BD conexión
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=sitio_laravel
+    DB_USERNAME=klvst3r
+    DB_PASSWORD=desarrollo    
+    
+Estos parametors los debemos considerar si trabajamos con un gesotr de Base de datos como DBeaver
+
+Solo que el dato del servidor correindo en WSL debemos utilizar la IP asignada por este servicio.
+
+10. Averiguar la IP de nuestro entorno de desarrollo con WSL2
+    $ ifconfig
+    
+    Si no tenemos instalado las herramientas de red, procedemos a hacerlo con:
+    $ sudo apt install net-tools
+
+11. Ip de conexión ejemplo:
+    172.22.109.99
+
+12. Iniciando servicio de apache.
+    Muy rpobablememnte aunque ya tenemos nuestro servidor web instalado con Apache2, cada que iniciamos nuestro servicio con WSL2, el servidor estara abajo, por lo que sera necesario levantar el servicio.
+
+    $ sudo service apache2 start
+
+13. Ingresando  via Web a la BD con phpmyAdmin
+
+    172.22.109.99/phpmyadmin
+
+14. Ingresamos credenciales de acceso
+    User y Pass de la BD.
+
+Creamos nuestra BD  tomando en cuenta que el cotejamoento de conjunto de caracteres es:
+    utf8mb4_spanish_ci
+
+
+Generar una clave
+-----------------
+
+La clave de la aplicación es una cadena aleatoria almacenada en la clave APP_KEY dentro del archivo .env, para crear una nueva clave y que se inerte dentro de nuestro archiov de entorno ejecutamos:
+
+15. Ejecutar clave del proyecto
+
+    $ php artisan key:generate
+
+
+
+Ejecutar migraciones
+--------------------
+
+Por ultimo, ejecutamos las migraciones para que se generen las tablas.
+
+Si ya tenemos nuestras migraciones construidas e integradas en nuestro proyecto podremos ejecutarlas para regenerar nuestra BD del proyecto.
+
+16. Ejecutar migraciones
+    $ php artisan migrate
+
+Si tuvieramos que incluir o crear nuesvas migraciones
+
+    $ php artisan migrate:refresh
+    $ php artisan migrate:fresh
+
+Con esto tendríamos que correr nuestra aplicación sin problemas.
+
+
+Estilos CSS
+------------
+
+17. Para el caso de la construcción de los archivos de estilos compilados tendremos que recurir a la instalación de npm previo proceso ejecutado
+
+    $ npm install
+
+18. Construcción de compilación de los estilos CSS del proyecto
+
+    $ npm run dev
+
+    $ npm run build
+
+
+Correr aplicación del proyecto
+------------------------------
+
+Por ultimo y ya que tenemos lo necesario de nuestro proyecto debemos levantar nuestro servidor de desarrollo
+
+Para ello ejecutamos, considrerando por cuestion practica utilizar un puerto distinti del default en nuestro caso el puerto 8000
+Lo indicamos de la siguiente manera.
+
+    $ php artisan serve --port=8000
+
+Ahora en nuestro navegador ya deberiamo visualizar la vista de vienbenida del proyecto construido.
+
+    localhost:8000
+
+    
+
+
+
+
+    
+    
