@@ -1,5 +1,7 @@
 2.7 Controladores en Laravel
 
+Ahora a trabajar en la vista blog. Supongamos que tenemos un array de post aquí arriba, y cada post es un array con un título de momento. Lo voy a duplicar varias veces, este será el segundo, el tercero y el cuarto. Ahora, ¿cómo hacemos para pasar esta variable post a esta vista blog? Cuando utilizamos el método view, el primer parámetro es la URL a la que se va a responder, el segundo parámetro es la vista que se va a devolver, y como tercer parámetro opcional podemos pasarle datos, así que vamos a pasarle una llave post que contenga los post que creamos aquí arriba, y de esta forma en la vista blog ya tenemos disponible la variable post. Para inspeccionar datos podemos hacer uso de la directiva de bladedump y pasarle la variable que queremos inspeccionar. Si le damos clic a block, ahí vemos el array con los cuatro post. Entonces, aquí vamos a recorrer el array de post con un foreach de PHP, y también tenemos una directiva de blade para ello, la directiva for Each. Vemos que acá se cierra, recorremos los post, y aquí dentro imprimimos el título de cada uno. Refrescamos y ahí vemos los títulos de los post. Vamos a encerrarlos en un h dos para verlos mejor, y ahí lo tenemos. Ahora, este rate de datos que tenemos aquí, que posteriormente vendrán de una base de datos, solo es relevante para la ruta blog. Una mejora que podríamos hacer es, en lugar de utilizar el método view, utilizar el método get que responda a la ruta block, y aquí solamente se aceptan dos parámetros, el segundo puede ser un invocable o una función. Entonces, aquí dentro podemos mover este array y devolver manualmente la vista block utilizando la función view. Esta función view recibe el nombre de la vista como primer parámetro, y como segundo parámetro opcional, datos. De esa forma, tenemos toda la lógica de esta ruta contenida en este bloque de código. Si revisamos, tenemos el mismo resultado. Ahora, para mantener limpio el archivo de rutas, es recomendable utilizar controladores, siempre que necesitemos realizar alguna acción entre la petición y la respuesta, como en este caso, es preferible utilizar un controlador. Sin embargo, como todas las buenas prácticas, dependen del contexto. Si estás creando una aplicación pequeña o de corto tiempo de vida que no crecerá y que requerirá poco mantenimiento o ningún mantenimiento a futuro, pues podemos hacer esto sin problemas, no te sientas mal por ello. Incluso podrías crear una aplicación en su totalidad utilizando solamente el archivo de rutas web y las vistas. Al final lo que importa es que funcione. Sin embargo, si tenemos planeado que la aplicación crezca a futuro, la buena práctica es utilizar controladores, así que vamos a hacerlo, vamos a extraer todo este código a un controlador. Un controlador es simplemente una clase de PHP que se encarga de recibir la petición y devolver la respuesta, y de hecho, ya estamos utilizando controladores al llamar a este método view. Si le doy control clic en PHP Storm, vemos que me lleva a la clase router del framework, y aquí vemos que delega la petición a este view controller que viene con Larvel. Si lo revisamos, también es parte del framework, y este controlador solo tiene un método, el método invoke, esto se conoce como un controlador invocable, y lo que hace aquí es una desestructuración de los argumentos para finalmente devolver la vista correspondiente con sus datos. Entonces, vamos a crear un controlador como este para extraer la lógica de aquí. Los controladores se encuentran en la carpeta app http controllers, así que vamos a crear una clase aquí dentro llamada post controller. Esta es una convención, siempre con mayúsculas la primera letra de cada palabra, y al final siempre la palabra controller punto PHP. En este caso, es el controlador de los post, así que utilizamos la palabra en singular post controller. Y ahí tenemos la clase con el namespace correcto. 
+
 
 En lugar de definir toda la logica de la aplicación en el archivo web.php
 
@@ -98,6 +100,10 @@ $posts = [
 ];
 
 
+Si no utilizas PHP Storm, la puedes crear manualmente. Ya veremos cómo hacerlo más rápido en un momento, pero por ahora esta es una clase vacía. Entonces, esta clase la vamos a utilizar en lugar de esta función. Agregamos dos puntos, dos puntos class al final, y aquí PHPStorm automáticamente me ha importado la clase aquí arriba. Si tu editor no lo hace, tienes que agregarla manualmente. Esta parte es importante para que funcione. Puedes utilizar esta sintaxis o imprimir directamente el string con la dirección completa del controlador. En este caso, no habría que utilizar ningún import, y ambas funcionan de la misma forma, porque detrás de escenas son lo mismo. Bien, si lo dejamos así y actualizamos, nos aparece un error indicando que la acción de la ruta es inválida, que el post controller no es invocable y nos pregunta si olvidamos agregar el método suction suction invoke. Al parecer, estoy tratando de ejecutar este método, así que vamos a agregarlo, y para probar vamos a retornar cualquier string por aquí. Refrescamos y vemos que funciona. Entonces, aquí pegamos lo que teníamos antes y vuelve a funcionar, con la diferencia de que ahora nuestro archivo de rutas está más limpio.
+
+
+
 
 Route::view('/', 'welcome')->name('home');
 
@@ -119,6 +125,16 @@ Ahora como hacemos para pasar la variable post a la vista blog
 cuando utilizamos la vista blog el primer parametros es la url a la que se va a responder, el sefgundo parametros es  la vista que se va a devolver
 
 y como ptercer parametro opcional es psarles datos
+
+
+
+
+
+Ahora, esta es una forma de invocar a un controlador utilizando el método enfoque. Como te comenté, esto es un controlador invocable, así es como se lo conoce, y esto es útil cuando tenemos un controlador de una sola acción o de un solo método, pero en este caso planeamos utilizar este controlador para múltiples acciones. Para ello, en lugar de pasar un controlador como segundo parámetro, le pasamos un array, donde el primer elemento es el controlador, y el segundo, el método del controlador que queremos que se ejecute. Si actualizamos, vemos el error que no encuentra este método, pero si lo agregamos acá, vuelve a funcionar. Entonces, como queremos mostrar un listado de algo, de cualquier recurso, por convención utilizamos el método index, así que vamos a cambiarlo a index también, y vuelve a funcionar. ¿Ok? Ya estamos utilizando controladores, y para terminar, hay una forma sencilla de crearlos en Laravel, y es utilizando el comando de Artisan. Para utilizarlo debemos abrir la terminal, ya sea la que se instaló con Laragon al principio de este curso o con Ainterm dos, o también la mayoría de editores de código modernos traen una terminal. En el caso de PHP Storm, podemos ir a view, tool windows, y abrir la terminal desde aquí. Aquí se abre la terminal con la ubicación dentro de la carpeta del proyecto. Entonces, estando dentro de la carpeta del proyecto, voy a eliminar este controlador. Ejecutamos PHP Artisand, nos muestra el listado de todos los comandos disponibles. Más adelante, veremos los comandos más utilizados, pero, de momento, el que nos interesa es PHP artist make controller, que recibe como parámetro el nombre del controlador, en este caso, post controller, y podemos pasarle opciones. Por ejemplo, si le pasamos a opción I y presionamos enter, nos debería crear un controlador invocable. Recuerda, invocable significa que el controlador es de una sola acción con el método invocable, ¿ok? Vamos a eliminarlo. 
+
+
+
+
 
 
 Asi que vamos a pasarle una llave posts
@@ -415,6 +431,14 @@ y el metodo del controlador queda:
 
     }
 
+
+ También podemos crear un controlador resource, que significa que contendrá los siete métodos REST. Index, create, store, show, edit, update and destroy. También tenemos la opción API, en este caso, solo nos va a generar cinco de los métodos REST, no nos va a crear los métodos create y edit, que muestran un formulario, ya que dichas vistas serían implementadas en la parte del cliente de la API, ¿ok? Si no le pasamos ninguna opción, nos crea el controlador vacío. Este es el que vamos a usar, agregamos el método index. Te mandé mensaje en el like más que no lo viste. Y va a seguir funcionando como antes. ¿Ok? Cuando utilizamos el comando de Artisant para crear estos controladores, vemos que nos extiende a un controlador base, que es este de aquí, que a su vez se extiende a otro controlador base y utiliza estos trades que nos proveen métodos adicionales para autorizar peticiones, despachar job y validar requests. Si no utilizamos nada de esto, podemos simplemente quitar este extense, y va a funcionar de la misma forma. En fin, vemos que sigue funcionando, pero ahora estamos utilizando controladores.
+
+
+
+
+
+ 
 Para terminar recordamos que una forma sencilla de crearlos en laravel es el comando de artisan:
 
        $ php artisan make:controller PagesController
@@ -463,3 +487,7 @@ Para autorizar peticiones, despachar Jobs t validar Requests
 
 Si no utilizamos nada de esto podemos quitar este extends y va a funcoinar de la misma form.
 
+
+
+
+Curso:
