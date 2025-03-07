@@ -1,0 +1,49 @@
+3.3. Que son y como funcionan las migraciones en Laravel
+
+Actualmente como tenemos la Bd en Blanco si vamos a la vista bog hay un error por que no tenemos una tabla llamada posts
+
+Nos pregunta si olvidamos ejecutar las migraciones.
+
+Las migraciones en Laravel son clases de PHP que nos permiten recrear y modificar esquemas de BD, Laravel por defecto ya nos trt pofece
+
+Si revisamos un archivo comienzan con numeros que en realidad es una fech.
+
+Retornando una clase anonima sin nombre. Y se exteniende a la clase Migrtion de Laravel.
+
+Internamiente tiene dos metodos
+
+	up()
+	En esta se define la creación o modificacion de la estructura de una tabla
+
+	down() 
+	Aca se define lo opuesto a lo que se realiz en el metodo up.srve par deshacer lo delmetodo up.
+
+
+Utilizamos e squema para crear una tabla user, 
+
+Revisando el esquema del metodo up de la migrcion de usuario.
+
+
+Laravel tine un metodo llamada timestamps para crear la fecha de atualización y modifiaión.
+
+Esta es la estrcutura de manera genera,
+
+
+El esquema es basicmente la definición para crear una tabla en la bd,
+
+Las migrciones por si solas n crearn las tablas en la BD, pensems que lasmigrciones son cmo los  planos de la costrucción, debemos ejecutar estos planos para que se construyan las tablas.
+
+Para ello
+	$ php artisan migrate
+
+Este omando va a recorrer todas las migraciones que se enutran en esta carpeta y va a ejecutr el metodo up en cada uno de los rchivos.
+
+Si actualizamos en la BD, veremos que estaran as migraciones  
+
+La tabla migration que se genero automaticamente ejecutando el metodo up de cada uno de los migraciones.
+
+Si ya se ejecutaron las migraciones, no se volveran a ejecutar. por que estan rgiustradas en la tabla respectiva de la mism plataforma de Laravel.
+
+DOnde se reistrn lo lotes, toda estas migraciones, se ejecutaron en el lote 1, si hay nuevas migrciones se vana a ejecutar en el lote 2 y asi sucesivamente.
+
+Al ya haberse ejecutado todas las migraciones definidas, vamos a ver como ejecutar el metodo down para

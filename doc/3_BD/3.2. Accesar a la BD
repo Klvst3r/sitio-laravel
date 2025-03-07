@@ -1,0 +1,199 @@
+Esta fuente de datos no la queremos escribir manualmente, ya que tendríamos que editar este controlador cada vez que queramos agregar un nuevo post o cada vez que queramos editar esta lista. Lo ideal sería que esta información provenga de una base de datos y para ello debemos configurar la conexión. Los datos de configuración ya sabemos que se encuentran en la carpeta config, y el archivo que nos interesa en este momento es database.PHP
+
+Postcontroller.php
+---
+public function index(){
+       $posts = [
+            ['title' =>'Fisrt post'],
+            ['title' => 'Second post'],
+            ['title' => 'Third post'],
+            ['title' => 'Fourth post'],
+        ]; 
+                return view('blog', ['posts' => $posts]);
+}
+
+Todos los archivos de configuración retorna un array, y aquí en esta llave vemos que se configura la conexión que se utilizará por defecto en nuestra aplicación, y vemos que utiliza la función enf con la llave db connection y el valor mysQL por defecto. 
+
+config/database.php
+----
+
+   'default' => env('DB_CONNECTION', 'mysql'),
+
+
+
+Más adelante haremos una visión detallada sobre la configuración y variables de entorno, que por ahora solo debes saber que esta llave db connection hace referencia al archivo punto enf que tenemos en la raíz de la aplicación. Si este valor no estuviera definido aquí, se utilizaría el valor que tenemos como segundo parámetro aquí. 
+
+
+.env
+---
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sitio_laravel
+DB_USERNAME=klvst3r
+DB_PASSWORD=desarrollo
+
+
+
+Ahora, este valor hace referencia al array de conexiones que tenemos acá debajo. Darthebel soporta por defecto sq light, mysql, postcrest, sql de server, y acá al final podemos configurar rades también. 
+
+---------
+ 'connections' => [
+
+        'sqlite' => [
+            'driver' => 'sqlite',
+            'url' => env('DATABASE_URL'),
+            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'prefix' => '',
+            'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
+        ],
+
+        'mysql' => [
+            'driver' => 'mysql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'unix_socket' => env('DB_SOCKET', ''),
+            'charset' => 'utf8mb4',
+            'collation' => 'utf8mb4_unicode_ci',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'strict' => true,
+            'engine' => null,
+            'options' => extension_loaded('pdo_mysql') ? array_filter([
+                PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+            ]) : [],
+        ],
+
+        'pgsql' => [
+            'driver' => 'pgsql',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '5432'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            'search_path' => 'public',
+            'sslmode' => 'prefer',
+        ],
+
+        'sqlsrv' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST', 'localhost'),
+            'port' => env('DB_PORT', '1433'),
+            'database' => env('DB_DATABASE', 'forge'),
+            'username' => env('DB_USERNAME', 'forge'),
+            'password' => env('DB_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+    ],
+
+
+
+Si utilizas una base de datos que no está en esta lista de seguro la podrás instalar en mayor parte. Entonces, el valor por defecto como te comenté es mysQL que hace referencia a este rate de configuración y vemos que acá también utiliza la función env, quiere decir que toda esta configuración la podemos modificar sin tocar este archivo, desde el archivo punto enf. Por ejemplo, si queremos cambiar el nombre de base de datos buscamos esta llave en el archivo punto env, la cambiamos aquí. Si quisiéramos cambiar el socket, por ejemplo, no tenemos esta llave aquí pero la podemos agregar y Larabel la va a utilizar sin problemas. 
+
+
+---
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sitio_laravel
+DB_USERNAME=klvst3r
+DB_PASSWORD=desarrollo
+DB_SOCKET=
+
+--
+
+
+Entonces, en la gran mayoría de los casos basta con definir los datos de conexión que tenemos aquí. Si seguiste las instrucciones de configuración de entorno de desarrollo para Mac y Windows al principio de este curso, el username va a ser root y la contraseña estará en blanco. Esto está bien para desarrollar en local. Al final del curso veremos la configuración necesaria para publicar nuestra aplicación en un servidor de producción, pero de momento si ya tienes un entorno de desarrollo, como por ejemplo, mamp o xamp, aquí deberías definir los datos de conexión a dichas bases de datos. 
+
+
+En nuestro caso el nombre para nuestro proyecto es:
+
+
+DB_DATABASE=sitio_laravel
+
+
+
+Ahora, el nombre de la base de datos es este en mi caso, bases de datos. Ahora, el nombre de la base de datos es este en mi caso, y si revisamos el gestor de base de datos, yo ya la tengo creada aquí. Si no la tienes, la puedes crear desde aquí y el nombre que le des es el que vas a ubicar en esta parte. Bien, con esto ya tenemos definida la conexión a base de datos pero no tenemos ningún dato. En la RAW se utilizan migraciones para crear los esquemas de base de datos pero eso lo veremos en la siguiente lección. De momento, para mantener las cosas simples vamos a crear manualmente una tabla llamada post y en la estructura aparte del ID vamos a agregarle una nueva columna para almacenar el título y será de tipo barchar. Guardamos y voy a agregar manualmente cuatro títulos de post, el ID se va a generar automáticamente, guardamos y ahí los tenemos. 
+
+post
+	id int 	auto_increment
+	title varchar(255)
+
+
+Agreamos cuatro titulos de post
+
+
+
+
+
+
+
+Vamos a mostrar ahora estos cuatro post en nuestra aplicación. Para ello vamos al post control, y en lugar de descuentos de esta forma vamos ahora a conectarnos a la base de datos, para ello podemos utilizar la clase dB, vemos que se importa aquí arriba, asegúrate de agregar esta línea si tu editor no lo hace automáticamente, y aquí como ya definimos la conexión a base de datos solo debemos indicarle qué tabla queremos consultar, así que llamamos al método table, le decimos que la tabla es post y luego llamamos al método get para obtener los resultados. 
+
+
+
+use Illuminate\Support\Facades\DB;
+
+class PostController extends Controller
+{
+        public function index(){
+        $posts = DB::table('posts')->get();
+        return view('blog', ['posts' => $posts]);
+
+    }
+}
+
+
+Y eso es todo, detrás de escenas Laravel se encarga de abrir y cerrar la conexión, y de hacerla segura por nosotros. Esta clase o fast app es bastante poderosa, tiene un montón de funcionalidades e incluso te permite escribir sql directamente con el método RAW, pero en fin, ya estamos obteniendo los posts de la tabla posts, vamos a revisar en el navegador qué tenemos. 
+
+
+
+
+
+
+Vemos un error indicando que no podemos utilizar el objeto de tipo SDD class como si fuera un array. Esto quiere decir que en la vista block aquí estamos asumiendo que la variable post contiene un array de post. Antes sí lo era pero ahora ya no. Ahora cada post es una clase predefinida de PHP, SDClass, que nos sirve para crear objetos genéricos. Si hacemos un DOM aquí vemos que es un objeto ahora y tiene estas dos propiedades, el ID y el title, que corresponden a los campos que tenemos en la base de datos. 
+
+
+vista blog.blade.php
+-----
+
+
+<x-layouts.app title="Blog" meta-description="'Blog meta Description'">
+
+    <h1>Blog</h1>
+
+    {{-- @dump($posts) --}}
+    @foreach ($posts as $post)
+        {{-- <h2> {{ $post['title'] }} </h2> --}}
+        {{-- <h2> @dump($post) </h2> --}}
+        <h2> {{ $post->title }} </h2>
+    @endforeach
+</x-layouts.app>
+
+
+Entonces, en lugar de accederlo como un array, accedemos al título como si fuera una propiedad de la clase, y vemos que ahora funciona. Aquí sería un h dos, y ahí lo tenemos. 
+
+Entonces, si creamos otro post en la base de datos y actualizamos, ahí vemos que aparece. Ya estamos obteniendo los post desde la base de datos. 
+
+Ahora, esto está bien en caso de ya tener una base de datos, pero como te comenté al principio, en Larabe tenemos un sistema para crear esquemas de base de datos, 
+
+Eliminamos la tabla posts de la Bd, para utilizar migrciones.
+
+
+
+así que voy a eliminar esta un sistema para crear esquemas de base de datos, así que voy a eliminar esta tabla post que creamos manualmente, y en la siguiente lección vamos a aprender a utilizar migraciones.
