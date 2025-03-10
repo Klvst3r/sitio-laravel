@@ -36,7 +36,7 @@ Las migrciones por si solas n crearn las tablas en la BD, pensems que lasmigrcio
 Para ello
 	$ php artisan migrate
 
-Este omando va a recorrer todas las migraciones que se enutran en esta carpeta y va a ejecutr el metodo up en cada uno de los rchivos.
+Este comando va a recorrer todas las migraciones que se enutran en esta carpeta y va a ejecutr el metodo up en cada uno de los rchivos.
 
 Si actualizamos en la BD, veremos que estaran as migraciones  
 
@@ -46,4 +46,299 @@ Si ya se ejecutaron las migraciones, no se volveran a ejecutar. por que estan rg
 
 DOnde se reistrn lo lotes, toda estas migraciones, se ejecutaron en el lote 1, si hay nuevas migrciones se vana a ejecutar en el lote 2 y asi sucesivamente.
 
-Al ya haberse ejecutado todas las migraciones definidas, vamos a ver como ejecutar el metodo down para
+Al ya haberse ejecutado todas las migraciones definidas, vamos a ver como ejecutar el metodo down para deshacer lso cambios
+
+Par ello tenemos un comando 
+	$ php artisan migrate:rollback
+
+con este comando se van a ejecutar todos los metodos down de todas las migraciones que se encunetren en la tabla migrations, todas las migraciones del ultimo lote.
+
+Este caso solo tenemos un lote, pero si tuvieramos dos lotes solo se van a ejecutar los metoos down de las migraicones del lote 2 del ultimo lote.. Y solo se vana ejecutar las migraciones.
+
+ya que sei se encuentra aca es que que se ha ejecutado el metodo up().
+
+Entonces actulizxmos y vemos que desaparecen todas las tablas.
+
+
+Podemos entender mejor si eliminamos la migración llamada
+	00000_creae_failed_jobs_table.php
+
+y ejecutamo 
+	$ php artisan migrate
+
+Actualizmos vemos la migraciones que se ejecutaron en el lote 1.
+
+Ahora vamos a volver a agregar esta migración que se elimino .
+
+Y ejecutamos nuevamente 
+	$ php artisn migrate 
+
+Esta neva migración pertenece al lote 2.
+
+De esa forma se lleva un control de las migraciones ejecutadas.
+
+Sia hora ejecutaramos:
+	$ php artisan migrte:rollback
+
+Solamente se va a ejecutar el metodo down de las migraciones que pertenezcan al ultimo lote.
+
+Es decir a la ultima tabla creada en este caso el 2.
+
+
+
+Modificación de la estructura de una tabla:
+
+Supongamos que en la tabal user necesitamos un campo de tipo texto
+
+	public function up(): void
+    {
+        Schema::create('users', function (Blueprint $table) {
+            $table->id();
+			$table->string('avatar');
+            $table->string('name');
+            $table->string('email')->unique();
+            $table->timestamp('email_verified_at')->nullable();
+            $table->string('password');
+            $table->rememberToken();
+            $table->timestamps();
+        });
+    }
+
+Agregamos un campo de avatar para agrgar una imagen de perfil, si la modificamos aqui y ejecutamos:
+	$ php artisan migrate
+
+No se vera ninguna modificación en la tabal de users y esto es por que ya la migración se ejecuto en el primer lote.
+y no se va  a ejecutar a menso que hagamos un rool back de la misma.
+
+O tambien si estmos en desarrollo si los datos de la tabla que ya estan en producción no importan, podemos ejecutar:
+	$ php atisan migrate: fresh
+
+Este coando va aeliminar todas las tablas y va  ejecutar las migraciones desde 0.
+
+
+Vemos ya el campo avatar, si lo comantamos y ejecutamos
+
+	$ php artisan migrate:fresh
+
+Vemos que desaparece la columna.
+
+
+Que pasa si nuestra tabla ya tiene datos y estamos en producción:
+
+En este caso si agregamos la columna de avatar no podriamos ejecutar el coamdno migrete:fresh ya que nos va a eiminar todos los usuarios que ya tenemos lo cual seria desastrozo.
+
+Asi que es importante que entendamosque
+
+	$ php artisan migrate:fresh
+
+elimina todos los datos de la base de datos, y puede ser peligroso y solo debe utlizarse mienyras estemo en desarrollo.
+
+
+
+Dejamos la tabla de usurios como estaba en un principio.
+
+y Vamos a crear una migraciṕon para a tabvla post.
+
+Migracion: Post
+
+
+Para ello tenemos el comando make migration que recibe como parametro el nombre de la migracion pero sin los nombres del principio que son la fecha de creación de la migración.
+
+Que se genera automaticamente asi que simplemente le damos el nombre y por convensión como vamos a crear la tabla post le llamamos create_post table: quedando:
+
+	$ php artisan make:migration create_posts_table.
+
+
+
+si fueramos a crear un atabla de categorias seria algo como:
+
+	$ php artisan make:migration create_categories_table
+
+
+Per en nuestro caso ejecutamos
+	$ php artisn make:migration create_posts_table
+
+
+Esto le agregara unos numeros al inicio de la mirgación que no es otra cosa que a fecha de creaci´+on, y lo pondra por orden cornologicos de acuerdo a su creación, pero tambien permitira la creación y ejecuación de las migraciónes en orden cronologico.
+
+Este archivo ya define l estructura de la migración, estamos creand la tabla posts por defecto agrega el id y los timestamps
+
+Es decir la fecha de creación y actualización de cada registro y estas dos columnas son indispensables.
+--
+ public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->timestamps();
+        });
+    }
+
+En el camso especifico de nosotro vamos a necesitar un campo de texto para almacenar el titulo de cada post.
+
+
+    public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->timestamps();
+        });
+    }
+
+
+Con eso tenemos por ahora.
+
+Ejecutamos el comando 
+
+	$ php artisan migrate
+
+
+Y hora debemos tener la tabla nueva creada posts
+
+Creamos n nuevo registro y colocamos en los timestamps la funcion now para generar automaticamente las fechas.
+
+First Post 	|	 now() |	now() 
+
+
+
+Y vuelve a funcionar en la vista.
+
+Supongamos que ya tenemos datos,  
+
+	First post
+	Second Post
+
+Pero decidimos que necesitamos modificar la tabla, para aumentar una columna para almacenar el contnido del post.
+
+En este caso no podremos modificar la tabla y ejecutar el comando
+
+	$ php artisan migrate:fresh 
+
+Por que perderiamos los datos 
+
+
+Moificr a tabl con datos.
+------------
+
+En caso de querer modificar una tabla cn una estructura y que contiene datos y no queremos perder esos datos, debemos crear una nueva migración para ello, eejecutamos el mismo comndo 
+
+	$ php artsian make:migration add_body_to_post_table
+
+Es decir agrega el cuerpo a la tabla post, y laravel va a detectar automaticamente la palabra to_ o from_ para generar la estructura de la migración. qu modifique dich tabla.
+
+Si la revismos efectmanete vemos que el schema va a trabajar con una tabla existente.
+
+
+    public function up(): void
+    {
+        Schema::table('post', function (Blueprint $table) {
+            //
+        });
+    }
+
+
+
+
+A diferencia de la migración que crea la tabla..
+
+En la primera estamos creando y aca estamos obteniendo la tabla.
+
+vamos a decirle que agregue una columna de tipo text llamada body.
+
+
+ public function up(): void
+    {
+        Schema::table('post', function (Blueprint $table) {
+            $table->longText('body');
+        });
+    }
+
+
+Podemos revisr todos los tipos de clumnas disponibles en:
+
+	laravel.com/docs/migrtions#available-columns.types
+
+Y el metodo down vamos  hacer lo contratio, utilizando el metodo dropcolumn queremos que se quite esa columna.
+
+public function down(): void
+    {
+        Schema::table('post', function (Blueprint $table) {
+            $table->dropColumn('body');
+        });
+    }
+
+Revisando la tabla de migraciones, estamos en el lote 2 y ejecutamos el comando migrate nuevamente, vemos que aparecera la nueva migración que acabamos de generar en el lote 3 y si revisamos la tabla posts  ya tenmos la columna body sin haber perdido la información.
+
+
+Peron o queremos que se ubique al final sino despues del titulo, hacemo sun rollback de la ultia migración 
+
+Podemos entonces llamar al metodo after para que no agrgue la columna justo donde queremos que se tenga
+
+public function up(): void
+    {
+        Schema::table('posts', function (Blueprint $table) {
+            $table->longText('body')->after('title');
+        });
+    }
+
+Ejecutamos y vemos que funciona.
+
+
+De esta forma modificamos la estrcutura de una tabla, sin perder datos.
+
+Pero en este caso ocmo estamos empezando y los datos no importan podemos modificar la mism migración.
+
+quedando:
+
+
+public function up(): void
+    {
+        Schema::create('posts', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->longText('body');
+            $table->timestamps();
+        });
+    }
+
+Y podemos eleiminar la migración inecesaria.
+
+Y ahora ejecutamos 
+
+	$ php artisan migrate:fresh
+
+	
+Que elimina todos los datos, modific la estrccutura de la tabla y agrega lo necesario.
+
+
+Estos son los conceptos mas importantes por entender.
+
+Hay otra forma de interactuar con la Bd y es con Eloquent el ORM de Laravel.
+
+
+
+
+
+
+
+
+
+
+Comandos:
+	Ejecuta las migraciones
+		$ php artisan migrate
+	
+	Dehace los cambios de las tablas del primer lote:
+		$ php artisan migrate:rollback
+
+	Elimina todas la tablas y ejecuta las migraciones dede cero
+		$ php artisan migrate:fresh
+
+
+	Crear una migración (Ej. Tabla posts)
+
+		$ php artisn make:migration create_posts_table
+
+
+
+
