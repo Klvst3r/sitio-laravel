@@ -1,0 +1,274 @@
+Introducción a eloquent el ORM de Laravel
+
+Aunque DB:: tiene muchas funcionalidades para interactuar con la Base de datos. En Laravel tenemos un ORM (Object-Relational Mpping) llamado Eloquent, Larvel Eloquent.
+
+donde cada tabla de la base de datos tiene un modelo corrspondiente que nos permitira interactuar con ella.
+
+Podremos Crear, Leer, Modificar y Eliminar registros de la Bd de una forma orientada objetos.
+
+
+Un modelo de eloquent es implemente una clase de PHP que se extiende a la clase Ullimunite Database Eloquent Model
+
+use Illumintate\Database\Eloquent\Model;
+
+class Post extends Model{
+
+
+}
+
+
+Para heredar todas las funcionalidades, los modelos los tenemos en la carpeta 
+
+\app\Models
+
+Y Laravel or defecto trae este modelo User para interactuar con la tabla Users.
+
+De moment vamos a ignorarlo, 
+
+vamos acrear un modlo par interactuar con la tabla Posts.
+
+Podemos rear la clase manuealmente y extenderla a la Clase Eloquent Model o mejor podemos generarla dese la terminal.
+
+Comandos:
+
+    $ php artisan make:model Post
+
+Aqui la convenciń e que los modelos esten en singular empezando la primera letra con Mayusculas. 
+
+Esta convención de le llama "PascalCase", esta es la convensi´+on para crear modelos,
+
+
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Post extends Model
+{
+    use HasFactory;
+}
+
+Vemos que se exteiende al modelo base de Eloquent, y ahora ya podemos utilizar este modelo y reemplazar lo que tenemos en el controlador.
+
+De la siguiente manera:
+
+De esto:
+
+public function index(){
+
+        $posts = DB::table('posts')->get();
+
+        return view('blog', ['posts' => $posts]);
+
+    }
+}
+
+
+A esto: 
+
+Se debe importar el modelo en la parte superior
+
+use App\Models\Post;
+
+public function index(){
+
+        $posts = Post::get();
+
+        return view('blog', ['posts' => $posts]);
+
+    }
+}
+
+
+Si vamos a la vista no hay detectado ningun error.
+
+Pero tampoco hay ningun pot ya que la tabla esta vacia.
+
+Si creamos un pot vamos que sigue funcionando.
+
+Antes debiamos especificar el nombre de la tabla con la que queremos interactuar.
+
+Pero ahora que utilizamos el modelo vemos que no es necesario indicrle el nombre de la tabla.
+
+Si cambiamos el nombre de la tabla en la bd, y actulizamos nos generara un error tal como:
+
+    
+        SQLSTATE: Base table or view not found: Table 'laravel.posts' doest exist.
+
+El error indica que la tabla post no existe, debido  que el Modelo se llama Post
+
+    Model => Post
+    Table => 'Posts'
+
+Eloquent asume que la tabla se llama Popsts en plural, por eso es importante que el nombre de la tabla sea en singular y utilizando PasccalCase.
+
+Esto funcionaria bien en la mayoria de los casos, pero si por algun mtivo queremos utilizar un nombre distinto d tabla, lo podemos sobre escribir la propiedad $table
+
+    <?php
+
+    namespace App\Models;
+
+    use Illuminate\Database\Eloquent\Factories\HasFactory;
+    use Illuminate\Database\Eloquent\Model;
+
+    class Post extends Model
+    {
+        use HasFactory;
+
+        protected $table = 'articles';
+
+    }
+
+
+Y ahora article es el nombr de la tabla a la que intentara conectarse.
+
+Como Posts es el plurarl dol nombre del modelo 'posts' podemos quitar la propiedad añadida sin probemas.
+
+
+Ahora tenemos un modelo y una migración asosiada para generar una tabla con la que va a interactuar.
+
+Siempre que creemos un modelo vamos a necesitar una migración.
+
+Asi que un atajo para crear mas rapidamente tanto los modelos como las migraciones.
+
+ejecutando:
+    $ php artisan make:model <nombre_modelo> -m 
+
+-m Parametro para que genera tambien el archivo de la migración.
+
+
+Ej.
+    $ php artisan make:model Post -m
+
+
+Ahi tenmemos los dos archivos, siendo esta una forma mas rapid para generr migración y modelo.
+
+
+Par cloncluir tendriamos que ir a la migración y concluir correctmete al esctructura.
+
+
+Funcionalidades basicas de los modelos de Eloquent.
+
+Tinker
+------
+
+Tinker es una herramienta que nos permite nterctuar con nuestra aplicacion de Laravel en la terminal del proyecto 
+
+
+
+Comandos Tinker:
+
+Abre la consola de Tinker
+    $ php artisan tinker
+
+En ella podremos ejecutar php directamente.
+
+Ej 
+    1 + 1
+
+    => 2
+    >>> clear
+
+
+
+Ahora que ya sabesmo como obtener todos los post de la BD, con el metodo get, ello recibe un array de objetos post, aunque solo exista uno en la bd .
+
+
+Pero tambien se pueden consultar por si ID.
+
+
+
+Con el comando siguiente
+
+    Para obtener un post por su ID, podemos utilizar el etodo find()m, pasndo el Id como parametro.
+
+
+>>> Post::find(1)
+
+
+Esto nos dari el primer registro de la tabla de posts
+
+Lo podemos guardar en una variable:
+
+    > $post = Post::find(1)
+ 
+
+ Y acceder a sus atributos
+
+    > $post->body
+
+ 
+Tambien podemos modificar, (Cambiar titulo)
+
+    > $post->titla = Moodified title";
+
+
+Si se revia la varriable:
+    > $post
+
+Se vera la modifiación.
+
+sin embargo si revisamos la bd el titulo sigue igual, ya que el titulo se h modificado en memoria, pero no se ha guardado en la bd.
+
+Par hacerlo podemos llamar al metodo save
+
+> $post->save()
+
+Vemos que devuelve verdadero, si actualizamos la bd si esta persitido la información.
+
+automaticamente el campo se actualliza updated_at con la fecha con  que ocurrio dicho cambio, esto lo hace Eloquent de manera automatica.
+
+De esta forma editamos registros con Eloquent para 
+
+Crear un nuevo pot utilizando Eloquent, inicializalr el modelo y asignarle valores a las propiedaes.
+
+
+Podemos crear una variable
+
+> $post = new Post;
+
+> $post->title ='Second Post';
+
+> $post->body = 'Second post body';
+
+> $post->save();
+
+Como es una nueva instancia se creara un nuevo registro en la Bd y nod devuelve el registro en la Bd.
+
+
+Aora para obtener todos los post con el metodo get 
+
+> Post::find(2);
+
+Para actualixzr y guardar
+> $post->save()
+
+
+Por ultimo tenemos el metodo delete pára eliminar un post
+
+> $post->delete()
+
+
+Si este ultimo comando se ejecuta, vemo que desaparecer
+
+
+Siendo los siguientes los metodos basicos de eloquent
+    Post::get();
+    Post::find($id);
+    $post->save()
+    $post->delete();
+
+Hay varios mas.
+
+Slir de Tinker o para cerrar 
+
+CTRL + C
+
+Asi que utlizando los metodos de eloquent en ls siguientes lecciona vamos ya a aimplementar el crud con toda la funcionalidad que nos permita 
+Crear, Leer, actualiza y eliminar posts
+
+
+
+

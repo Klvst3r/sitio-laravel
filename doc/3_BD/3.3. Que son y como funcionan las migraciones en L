@@ -308,14 +308,6 @@ Y ahora ejecutamos
 	$ php artisan migrate:fresh
 
 	
-Que elimina todos los datos, modific la estrccutura de la tabla y agrega lo necesario.
-
-
-Estos son los conceptos mas importantes por entender.
-
-Hay otra forma de interactuar con la Bd y es con Eloquent el ORM de Laravel.
-
-
 
 
 
