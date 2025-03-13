@@ -1,0 +1,177 @@
+3.5 Como consutar regstros por su ID
+
+En la vista Blog donde listamnos el listado de posts
+
+
+blog.blade.php
+---
+<x-layouts.app title="Blog" meta-description="'Blog meta Description'">
+
+    <h1>Blog</h1>
+
+    @foreach ($posts as $post)
+            <h2> {{ $post->title }} </h2>
+    @endforeach
+</x-layouts.app>
+
+
+Vmos  convertir estos titulos a un link para que nos lleven a ver su contenido completo.
+
+<h2><a href="/blog/1">{{ $post->title }}</a></h2>
+
+
+ Eto es lo que teemos y vemos en el navegdor.Deben ser links
+
+ Pero en l prte inferior izquierda vemos la ur a la que auntan:
+
+ localhost:8000/bolg/1
+
+ Esto nos llevara a un post con su id, actualmente nos llevan a la url anterior.
+
+ No es lo que queremos pero que cada link contenga el post correspondiente, y una solucion seri a reempazar el numero 1 por dobles llaves y dentro imprimir el post
+
+
+<h2><a href="/blog/{{$post->id}}">{{ $post->title }}</a></h2>
+
+De esa forma si actualizamos, vemos que el identificdor acambia en cda link.
+
+Pero si le damos clcick nos aparecera un error 404, pagina no econtraday eso es por que aun no tenemos una ruta que responda  esa url.
+
+Vmos a crearla 
+
+en el archivo we.php
+
+Sera una ruta de tipo get, que responda conel cntroldor que ya tenemos pero ahora conun metodo llmado show
+
+	Route::get('/blog', [PostController::class, 'show'])->name('blog');
+
+Esta es la convensión que utilizaremos en los controladores, siempre.
+
+index servira para mostrar, un listado de recursos del modelo post, y e metodo servira para mostrar el detalle de unrecurso, en este caso el post individual.
+
+por ahora el metodo show no lo tenemos, por lo que nos aparecer el erro 404, por que el metodo no existe en el controlador.
+
+Vamos a agregaro.
+
+De moento solo nos enviara un mensaje:
+	public function show(){
+        return 'Post detail';
+    }
+
+actualizamos y nos devolvera el string pero si tenemos otro post veemos que falla, esto nos obligari a tener una ruta para cada ID, de cada post que tengamos en la bd par estos casos, podemos utilizar parmetros de ruta
+
+	Route Parameters
+
+Los definimos con llaves simples dentro de las rutas.
+
+quedando
+	Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog');
+
+De esta manera va a ceptar culquier segmento de la url.
+
+Si actualizamos vsmos que vuelve a funcioanr.
+
+Ahora esta vriable la podemos recibir en el controlador, de la siguente anera:
+
+	public function show($post){
+
+
+UY si la retornamos directamente la podemos ver
+
+Entonces este seria el post del id que se envie por la url
+	  public function show($post){
+        return $post;
+    }
+
+Asi que podemos utilizar el modelo POST de Eloquent, no olvidando importarlo en la parte superior.
+
+use App\Models\Post;
+
+Y con el metodo find podemos buscar un post en la base de datos.
+
+public function show($post){
+                Post::find($post);
+    }
+Con el parametro que enviamos desde la ruta y si lo reotrnamos
+
+Ahora veremos algo como:
+
+	id	1
+	title	"Primer Post"
+	body	"Cuerpo Primer Post"
+	created_at	"2025-03-11T09:17:59.000000Z"
+	updated_at	"2025-03-11T09:17:59.000000Z"
+
+Veremos el post en formato en JSON, Laravel develve automaticamente los modelos de Eloquent cuando los retornamos directmente como una respuesta. Esto es util para crear APIS senciallas, prototipos, y asi on el ID 1
+
+En los casos donde invoqemos in Id que no exita en a BD, lo recoemndable es devolver un error 404.
+Para ello utilizamos el metodo findOrFail
+
+	return Post::findOrFail($post);	
+
+Que haa esaxtamente eso
+
+
+Ahora coo esta situacion es bastante comun Lravel nos simplifica este proceso, con aravel podemos indicarle, 	
+
+	Type Hints
+
+Utilizando que la variable que recibimos es de tipo Post y de esa forma no tenemos que hacer esto manualmente Laravel lo hara de manera automatia.
+
+	quedando nuesto metodo de controlador de la siguiente amner:
+
+		  public function show(Post $post){
+        return $post;
+    }	
+
+
+Si accedemos a un post que no existe nos devuelve el error 404    
+
+
+Ahora al igual que hicimos con el metodo index, debajo vamos a retornar una vista
+
+Com oestamos trabajando con Posts utilizaremos una carpeta llamada posts y dentro tendrmos nuestras vistas.
+
+public function show(Post $post){
+        //return $post;
+        return view('posts.show', ['post' => $post]);
+    }
+
+Le pásamos el post como parametro    
+	<h1>Post title</h1>
+
+
+Como le estamos pasando la variable post la podemos utilizar en la vista pra mostrar el titulo
+
+Imprimimos el contenido debajo y un link para regresar al index.
+
+Ahora vemos que la nvegación desaparece al estar en el post lo unico que tenemos que hacer es utilizar el layout que tenemos  en layout.apps para cerrr el contenido.
+
+<x-layouts.app 
+	:title="$post->title" 
+	:meta-description="$post->body"
+>
+
+    <h1>Blog</h1>
+
+	<h1>{{ $post->title }}</h1>
+
+	<p>{{ $post->body }}</p>
+
+	<a href="/blog">Regresar</a>
+
+
+</x-layouts.app>
+
+
+con esto la navehación pertenece y nuestro menu es funcional.
+
+
+Ahora para organizar mejor ls vista de un recurso es buena practic agruprlas en una carpeta  indice esta fuera de la carpeta post 
+
+se mueve dentro y la llamaremos index
+
+ahora moveremos el archivo bog.blade.php dentro de la carpeta blog y la renombraremos como index.blade.php
+
+
+

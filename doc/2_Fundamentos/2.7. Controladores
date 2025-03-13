@@ -3,6 +3,22 @@
 Ahora a trabajar en la vista blog. Supongamos que tenemos un array de post aquí arriba, y cada post es un array con un título de momento. Lo voy a duplicar varias veces, este será el segundo, el tercero y el cuarto. Ahora, ¿cómo hacemos para pasar esta variable post a esta vista blog? Cuando utilizamos el método view, el primer parámetro es la URL a la que se va a responder, el segundo parámetro es la vista que se va a devolver, y como tercer parámetro opcional podemos pasarle datos, así que vamos a pasarle una llave post que contenga los post que creamos aquí arriba, y de esta forma en la vista blog ya tenemos disponible la variable post. Para inspeccionar datos podemos hacer uso de la directiva de bladedump y pasarle la variable que queremos inspeccionar. Si le damos clic a block, ahí vemos el array con los cuatro post. Entonces, aquí vamos a recorrer el array de post con un foreach de PHP, y también tenemos una directiva de blade para ello, la directiva for Each. Vemos que acá se cierra, recorremos los post, y aquí dentro imprimimos el título de cada uno. Refrescamos y ahí vemos los títulos de los post. Vamos a encerrarlos en un h dos para verlos mejor, y ahí lo tenemos. Ahora, este rate de datos que tenemos aquí, que posteriormente vendrán de una base de datos, solo es relevante para la ruta blog. Una mejora que podríamos hacer es, en lugar de utilizar el método view, utilizar el método get que responda a la ruta block, y aquí solamente se aceptan dos parámetros, el segundo puede ser un invocable o una función. Entonces, aquí dentro podemos mover este array y devolver manualmente la vista block utilizando la función view. Esta función view recibe el nombre de la vista como primer parámetro, y como segundo parámetro opcional, datos. De esa forma, tenemos toda la lógica de esta ruta contenida en este bloque de código. Si revisamos, tenemos el mismo resultado. Ahora, para mantener limpio el archivo de rutas, es recomendable utilizar controladores, siempre que necesitemos realizar alguna acción entre la petición y la respuesta, como en este caso, es preferible utilizar un controlador. Sin embargo, como todas las buenas prácticas, dependen del contexto. Si estás creando una aplicación pequeña o de corto tiempo de vida que no crecerá y que requerirá poco mantenimiento o ningún mantenimiento a futuro, pues podemos hacer esto sin problemas, no te sientas mal por ello. Incluso podrías crear una aplicación en su totalidad utilizando solamente el archivo de rutas web y las vistas. Al final lo que importa es que funcione. Sin embargo, si tenemos planeado que la aplicación crezca a futuro, la buena práctica es utilizar controladores, así que vamos a hacerlo, vamos a extraer todo este código a un controlador. Un controlador es simplemente una clase de PHP que se encarga de recibir la petición y devolver la respuesta, y de hecho, ya estamos utilizando controladores al llamar a este método view. Si le doy control clic en PHP Storm, vemos que me lleva a la clase router del framework, y aquí vemos que delega la petición a este view controller que viene con Larvel. Si lo revisamos, también es parte del framework, y este controlador solo tiene un método, el método invoke, esto se conoce como un controlador invocable, y lo que hace aquí es una desestructuración de los argumentos para finalmente devolver la vista correspondiente con sus datos. Entonces, vamos a crear un controlador como este para extraer la lógica de aquí. Los controladores se encuentran en la carpeta app http controllers, así que vamos a crear una clase aquí dentro llamada post controller. Esta es una convención, siempre con mayúsculas la primera letra de cada palabra, y al final siempre la palabra controller punto PHP. En este caso, es el controlador de los post, así que utilizamos la palabra en singular post controller. Y ahí tenemos la clase con el namespace correcto. 
 
 
+
+Creación del Cpntrolador
+
+Para la creación del controlador 
+
+    php artisan make:controller PostController
+
+Dentro de el vamos a poder colocar los datos paa poder gestionar la inforamcicón de las vistas, mostrar las diferentes pagians y funcionalidades, es decir aqui va la logica.
+
+  //Funcionalidad de Create
+    public function create(){
+        return view('post.create');
+    }
+
+
+
 En lugar de definir toda la logica de la aplicación en el archivo web.php
 
 Lo conveniente es utilizar controllers, ubicados en:

@@ -8,6 +8,9 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+//como vamos a utilizar el modelo Post en el metodo post debemos importarlo
+
+
 class PostController extends Controller
 {
     //public function __invoke(){
@@ -31,4 +34,16 @@ class PostController extends Controller
         return view('blog', ['posts' => $posts]);
 
     }
+
+  /*  public function show($post){
+        //return $post;
+        //return Post::find($post);
+        return Post::findOrFail($post);
+    }*/
+
+      public function show(Post $post){
+        //return $post;
+        return view('posts.show', ['post' => $post]);
+    }
+
 }

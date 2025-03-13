@@ -55,6 +55,10 @@ Route::view('/contacto', 'contact')->name('contact');
 
 Route::get('/blog', [PostController::class, 'index'])->name('blog');
 
+
+//Route::get('/blog/1', [PostController::class, 'show'])->name('blog');
+Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog.post');
+
 // About
 Route::view('/about', 'about')->name('about');
 
