@@ -1,0 +1,159 @@
+4.1 Formulario para crar registros
+
+Ahora trbamos en el formualrio pra crear publicaciones, comenzamos creando un link para llegar  ese formulario en la vist post index. 
+	<a href="#">Crear nuevo post</a>
+En la ruta vamos a seguir la convension, 
+
+ya tenemos la vista index, la ruta post show para ver el detalle de un post y hora vamos a necesitar la ruta create que nos mosrtar el formulario.
+
+como no esta la ruta mostrara un error.
+
+Vamos a crearla.
+	Route::view('/blog/create', [PostController::class, 'create'])->name('posts.create');
+
+
+Creamos el metodo en el controlador, de momento podemos devoler un string
+	public function create(){
+      return 'Create Form';
+    }
+
+Actualizmos y el error desaparecer, pero nos indicara un error 404    
+
+
+Esto ocurre, si acabamos de definir la ruta, 
+
+Desde la terminal podemos ver as rutas que tenemos definidas, en la aplicacion
+
+	$ php artisan route:list
+
+Este es un error, comun y es por el orden en el que definimos, las rutas importa,
+
+Ya que el momento de accesar a 
+	/blog/create
+
+Esta eecuatando la ruta de create, pero la vista show esta primero en la lista, es decir intermanete va a intenatar encontrar un post con el id crete y por eso nos devuelve el error 404.
+
+la solucion es invertir el orden quedndo de la sigfuiente manera:
+
+ 	//Formulario de registro
+	Route::view('/blog/create', [PostController::class, 'create'])->name('posts.create');
+
+	//Route::get('/blog/1', [PostController::class, 'show'])->name('blog');
+	Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');		
+
+Ahora si debe de funcionar.
+
+el problema estaba en el archivo de rutas debe ser:
+	Route::get('/blog/create', [PostController::class, 'create'])->name('posts.create');
+
+utilizndo get en lugar del metod view()
+
+
+El orden de la  s rutas es importate, por o general al final debemos de poner las rutas que reciban parametros variables.
+
+Entonces, volviendo al controlador
+
+Al igual que retornamos la vista posts.index, en el metodo index y el metodo show en el metodo show.
+
+Vamos a retornar la vista create en el metodo create.
+
+esta vista no se ha creado 
+
+Podemos utilizar el plgin idea.
+
+Pero podemos crear un archivo dentro de la carpeta, resources/vies y que se llame create.blade.php
+
+Copiando el contenido de la vista show hacia create inicialmente.
+
+	<x-layouts.app 
+		:title="$post->title" 
+		:meta-description="$post->body"
+	>
+
+	    <h1>Blog</h1>
+
+		<h1>{{ $post->title }}</h1>
+
+		<p>{{ $post->body }}</p>
+
+		<a href="/blog">Regresar</a>
+
+
+	</x-layouts.app>
+
+Y modificamos lo siguiente 
+
+	<x-layouts.app 
+	title="Crear nuevo post" 
+	meta-description="Formulario para crear un nuevo blog post"
+>
+
+    <h1>Create new Post</h1>
+
+	    	<form action="">
+	    		<label>
+	    			Title<br/>
+	    			<input type="text" name="title">
+	    		</label><br/>
+	    		<label>
+	    			Body<br/>
+	    			<textarea></textarea>
+	    		</label><br/>
+	    		<button type="submit">Enviar</button> 
+	    		<br/> 
+	    	</form>
+	    	<br/>
+		
+		<a href="{{ route('posts.index') }}">Regresar</a>
+
+
+	</x-layouts.app>
+
+
+
+No debemos preocuparnos del dieño despues se mejorara con Tailwindcss
+
+Ahora si llenamos y enviamo el formulario en la url aparece un signo ? y esto es por que por defecto los formuaios se envian por el metodo get, que tiene el valor por defecto del formulario, pero como los campos de entrada o iputs no tienen nombre no aparecen en la url si le indicamos un numbre, y envimos veremos el campo en la url, hamos lo mismo con el txt area, pero enviar datos por la url no es muy seguro, asi que en lgar de enviar el formuakrio por get lo haremos por post.
+
+Es esta forma, tendremos un error poe que el metodo no es aceptado, por la ruta es decir la ruta es de tipo get y no acepta peticiones post, para ello vamos a crear otra ruta que responda a las peticiones post url sera blog, y ahora una reponde a get y la otra a post.
+
+Por ello la ruta sera:
+	Route::post('blog', [PostController::class, 'store'])->name('posts.store');
+
+El metodo no existe en el controlador asi que vamos a crearlo.
+
+Pra procesar el formualrio de momento con un string.
+	
+	public function store(){
+      return 'Process the form';
+    }	
+
+Lo que debemos de indicar ahora es que cuando hagamos click desde el formualrio al boton enviar envie a esta ruta, para elo en la etiqueta form agregamos el acton y la ruta del metodo que va a procesar.
+
+	<form action="{{ route('posts.store') }}" method="POST">
+
+Al darle click se enviaran a est ruta.
+
+Posibemente veamos un nuevo error un 419
+
+Enviandome a la ruta;
+	http://localhost:8000/blog (pero con error 419)	    
+
+Siempre que veamos este error es por que el token csrf no ha sido enviado, Laravel automaticmente nos protege
+
+	CSRF (Cross Site Request Forgery)	-> Falsificación de petición en sitios cruzados.
+
+Contra ataques CSRF, si no sabemos que es un ataque CSRF, podemos buscar mayor información a detalle.
+
+Por ahora saber que para solucionarlo, debemos agregar dentro del formulario, esta directiva especil de Blade @csrf
+
+
+como refgla general cuando utilizacemos un formulario del tipo post, debemos agrgegar esta diretiv simmpre, lo que hara esta diretiva es imprimir un token en un campo ocuto dentro del formualrio que sevira para verificar el origen del formulario.
+
+Dicha verificción ocurreautomaticamente
+
+
+ahora estamos accediendo a la ruta de manera segura, ahora vamos a procesar y a almcenar la información en la Bd.
+
+
+

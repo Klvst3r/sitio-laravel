@@ -11,6 +11,8 @@
 
     <h1>Blog</h1>
 
+    <a href="{{ route('posts.create') }}">Crear nuevo post</a>
+
     {{-- @dump($posts) --}}
     @foreach ($posts as $post)
         {{-- <h2> {{ $post['title'] }} </h2> --}}
