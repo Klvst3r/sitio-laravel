@@ -173,5 +173,60 @@ se mueve dentro y la llamaremos index
 
 ahora moveremos el archivo bog.blade.php dentro de la carpeta blog y la renombraremos como index.blade.php
 
+Ahora en el controlador en lgar de devolver bloig vamos a devolver index
+
+	 return view('posts.index', ['posts' => $posts]);
+
+Por ultimo es bueno accesar a rutas con nombres en lugar de acceder a la url directamente, esto lo hacemos desde la vsta 
+
+Asi que en lugar de utilizar la url
+
+	<a href="/blog">Regresar</a>
+
+Imprmimos la funcion route 
+	<a href="{{ route('post.index') }}">Regresar</a>
+
+Ya que si actualizamos desde el menu no s indicara que la ruta no existe.
+
+	Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
+
+Aunque habra otro error	de que no existe la ruta blog, esto es por que en la navegacion, asi que necesitamos corregir tambien la navegación
+
+	<li><a href="{{ route('posts.index') }}">Blog</a></li>
+
+Y vuelve  funcionar.
+
+En el controlador ya tenemos la ruta de index, pero debemos de barle a ala ruta a nuestros posts individuales.
+
+	Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog.post');
+
+Que segun la convencion sera posts.show.
+
+	Quedando:
+		Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
+
+Ahora en el listado de posts en lugar de hacer referencia
+
+Dentro de index y en lugar de ir directmenete a laa ruta
+
+	<h2><a href="/blog/{{$post->id}}">{{ $post->title }}</a></h2>
+
+Utilizamos la funcion route, pasndole el nombre posts show
+
+Si dejamos como
+	 <h2><a href="{{ route('posts.show') }}">
+                {{ $post->title }}</a></h2>
+
+Nos indicara que hay un error por que falta el segundo parametro que es el numero de post
+
+Entonces.
+	 <h2><a href="{{ route('posts.show', $post->id) }}">
+                {{ $post->title }}</a></h2>
+
+O si preferimos solo le enviamos el posts y laravel se encargra de pasarle el ID
+
+	<h2><a href="{{ route('posts.show', $post) }}">
+                {{ $post->title }}</a></h2>
 
 
+Ahora vamos a crear a traves de un formulario posts a traves de la aplicación

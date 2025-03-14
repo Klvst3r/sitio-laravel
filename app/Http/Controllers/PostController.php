@@ -31,7 +31,7 @@ class PostController extends Controller
         //Acceso a laa BD mediante el ORM eloquent 
         $posts = Post::get();
 
-        return view('blog', ['posts' => $posts]);
+        return view('posts.index', ['posts' => $posts]);
 
     }
 

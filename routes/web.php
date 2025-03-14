@@ -53,11 +53,11 @@ Route::view('/contacto', 'contact')->name('contact');
 //Enviando un array de metodos en nuestro controlador
 //Route::get('/blog', [PostController::class, 'methodname'])->name('blog');
 
-Route::get('/blog', [PostController::class, 'index'])->name('blog');
+Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
 
 
 //Route::get('/blog/1', [PostController::class, 'show'])->name('blog');
-Route::get('/blog/{post}', [PostController::class, 'show'])->name('blog.post');
+Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
 
 // About
 Route::view('/about', 'about')->name('about');

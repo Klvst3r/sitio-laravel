@@ -17,6 +17,7 @@
         {{-- <h2> @dump($post) </h2> --}}
         {{-- <h2> {{ $post->title }} </h2> --}}
         {{-- <h2><a href="/blog/1">{{ $post->title }}</a></h2> --}}
-        <h2><a href="/blog/{{$post->id}}">{{ $post->title }}</a></h2>
+        <h2><a href="{{ route('posts.show', $post) }}">
+                {{ $post->title }}</a></h2>
     @endforeach
 </x-layouts.app>
