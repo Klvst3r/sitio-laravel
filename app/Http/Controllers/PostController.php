@@ -8,6 +8,9 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+//Visualizcion de errores
+use Illuminate\View\View;
+
 //como vamos a utilizar el modelo Post en el metodo post debemos importarlo
 
 
@@ -51,8 +54,47 @@ class PostController extends Controller
       return view('posts.create');
     }
 
-    public function store(){
-      return 'Process the form';
+    /*public function store(){
+      //return 'Process the form';
+      //return request();
+    }*/
+
+    //Acceso al request de maner diecta con la clase Request
+    public function store(Request $request){
+      //return $request;
+      
+            //Acceso a todos datos especificos del request
+            //return $request->input('title');
+
+
+      //Validación del formulario
+
+      $request->validate([
+        'title' => ['required', 'min:4'],
+        'body' => ['required'],
+      ],[
+        'title.required' => 'El campo :attribute es requerido'
+      ]);
+
+      //Nueva instancia del modelo post
+      $post = new Post;
+      $post->title = $request->input('title');
+      //Hacemos lo mismo con el body
+      $post->body = $request->input('body');
+
+      $post->save();
+
+      //Retornando una redirección
+      //return redirect('/blog');
+
+      //Aunque lo correcto es utlizar rutas
+      //return redirect()->route('post.index');
+
+      //Mensaje antes de redireccionado
+      session()->flash('status', 'Post created!');
+
+      //Redireccionando con el helper
+      return to_route('posts.index');
     }
 
 }

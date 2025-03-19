@@ -1,0 +1,101 @@
+Para convertir los registros actuales de tu base de datos en seeders en Laravel, puedes seguir estos pasos:
+
+
+1. Exportar los datos de la base de datos como seeders
+
+Se puede generar un archivo seeder con los registros actuales de una tabla de la siguiente manera:
+
+Opción 1: Manualmente con tinker
+-------------------------------
+
+    Abrimos la terminal y ejecutamos el siguiente comando para acceder a tinker:
+
+php artisan tinker
+
+Obtener los datos de la tabla y conviértelos a código de inserción:
+
+    use App\Models\TuModelo;
+
+    $data = TuModelo::all()->toArray();
+    print_r($data);
+
+    Copiamos los datos y se pegan en un nuevo seeder.
+
+
+
+Opción 2: Exportando con un comando de Laravel 
+---------------------------------------------
+
+Se puede ejecutar este comando para generar un seeder con los datos actuales:
+
+    Crea el seeder manualmente:
+
+php artisan make:seeder NombreDeTuSeeder
+
+Abrimos el archivo generado en database/seeders/NombreDeTuSeeder.php y se edíta para insertar los registros extraídos:
+
+    use Illuminate\Database\Seeder;
+    use Illuminate\Support\Facades\DB;
+
+    class NombreDeTuSeeder extends Seeder
+    {
+        public function run()
+        {
+            DB::table('nombre_de_tu_tabla')->insert([
+                [
+                    'columna1' => 'valor1',
+                    'columna2' => 'valor2',
+                    'columna3' => 'valor3',
+                ],
+                [
+                    'columna1' => 'valorA',
+                    'columna2' => 'valorB',
+                    'columna3' => 'valorC',
+                ],
+                // Agrega más registros según sea necesario
+            ]);
+        }
+    }
+
+
+
+Opción 3: Usando el paquete laravel-seeder-generator --- (RECOMENDADA)
+---------------------------------
+
+Si tenemos muchos registros y quieremos automatizar la conversión a seeders, podemos usar el paquete Seedster o Seeder Generator. Se instala con:
+
+    $ composer require orangehill/iseed
+
+Luego, se genera un seeder desde la base de datos con:
+
+    $ php artisan iseed nombre_de_tu_tabla
+
+Esto creará un archivo en database/seeders con los registros actuales de la tabla.
+
+
+2. Ejecutar los seeders
+
+Para ejecutar los seeders en otro entorno:
+
+    $ php artisan db:seed --class=NombreDelSeeder
+
+O si quieremos ejecutar todos los seeders en DatabaseSeeder.php:
+
+ Ejemplo 
+ ------
+    public function run(): void
+        {
+            // \App\Models\User::factory(10)->create();
+
+            // \App\Models\User::factory()->create([
+            //     'name' => 'Test User',
+            //     'email' => 'test@example.com',
+            // ]);
+            $this->call(PostsTableSeeder::class);
+        }
+
+Y  ejecutamos posteriormente
+
+    $ php artisan db:seed
+
+Con estos pasos, podemos respaldar los datos actuales como seeders y usarlos en otra máquina o después de reconstruir la base de datos.

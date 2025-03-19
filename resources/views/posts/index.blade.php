@@ -9,6 +9,13 @@
 
 <x-layouts.app title="Blog" meta-description="'Blog meta Description'">
 
+
+    @if(session)
+    <div class="status">
+        {{ session('status') }}
+    </div>
+    @endif
+
     <h1>Blog</h1>
 
     <a href="{{ route('posts.create') }}">Crear nuevo post</a>

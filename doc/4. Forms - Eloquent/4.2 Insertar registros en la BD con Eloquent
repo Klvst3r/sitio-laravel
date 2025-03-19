@@ -1,0 +1,111 @@
+Vamos ahora aprocesar los datos del formulario
+
+En el PostController
+
+Pero algo con la seccion anterior y es que si en el proceso del forulario se refresca el navegador, lugo de qu han pasdo mas de 2 horas nos aparecera el error 419 | Page expired.
+
+Es el mismo error que vimos anteriormente cuando en el formulario create no estabamos enviando el token csrf en el formulario pero en este caso ocurre por que el token csfr ha expirado, su tiempo de vida es de 2 horas por defecto, par tenerlo en cuenta.
+
+en caso de que aprezc aun habiendo agregado el token, del formulario esta es la razon, debemos regresar al formulario refrescar a pagina para que se regenere el token para que funicone.
+
+Ahor podemos ir al procesamiento del formulario en el metodo store del controldor de postController
+
+Lo que debemos hacer es acceder a los datos que ingreso el usuario a traves de los campos de entrada
+- title
+- body
+
+en Laravel podemos accedder a estos datos utilizando la funcion Request
+
+ PostController
+
+
+Laravel lo va a convertir automaticamente en JSON
+
+public function store(){
+      
+      return request();
+    }
+
+Si reenviams el formulario veemos los campos 
+
+    _token	"FTzzhSZSILmRgJc6jGPci7kkPZqvRQx2e8VNyyqf"
+    title	"Titulo Tercer Post"
+    body	"Body tercer post"
+
+Recordemos que el token se envia en un campo oculto y lo podemos ignrar, tambien hay otra forma de acceder al request o la peticion y es inyectando la clase request
+
+ public function store(Rquest $request){
+      
+      return request();
+    
+    }
+    
+Al inicio del controlador se importa cla clase, cuando se generaron los metodos y se importa automaticamente, algo a tener en considerción cuando no creamos los metodos automaticamente.
+
+Esta clase es la siguiente:
+
+
+use Illuminate\Http\Request;
+
+Y cuando creamos los controladores de artisan con el comando de artisan automaticamente se importa en la parte superior, y podemos decir que es la forma recomendable de acceder al request. Pero detras de escenas vamos a tener el mismo resultado si lo retornamos directamente de la siguente manera:
+
+public function store(Rquest $request){
+      
+      return $request;
+    
+    }
+
+
+Para acceder indivvidualmente a los valores de los campos, podemos llamar al metodo input y pasarle el nombre que nos interese
+
+Ej.
+  public function store(Request $request){
+      //return $request;
+
+      //Acceso a datos especificos
+      return $request->input('title');
+    }
+
+
+Ahora solo veremos el campo title.
+
+
+Ahora que ya sabemos como obtener los datos del formulario, vamos a utilizar Eloquent para almacenarlos en la Bd, como vimos en la Introducción para rear nuevos registros con Eloquent, podemos crear una nueva instancia del modelo Post, asignaerle el requet title que seria el valor que ingreso en el formulario y hacer lo mismo con el body.
+
+
+public function store(Request $request){
+    //Nueva instancia del modelo post
+      $post = new Post;
+      $post->title = $request->input('title');
+      //Hacemos lo mismo con el body
+      $post->body = $request->input('body')
+
+      $post->save();
+}
+
+
+Finalmente para guardr en la bd ejecutamos el metodo save(), noda que no es necesario enviar ni el ID del poost ni las fechas de creación y actualizaciój, se van a crear automaticamente.
+
+Vamos a probarlo, no veremos nada en el navegador ya que no estamos enviando ninguna respuesta aun, pero checamos la bd y debe estar el nuevo post.
+
+Ahora ya estamos insertando correctamente el post, en la Bd, pero no queremos que la pantalla se quede en blanco despues de crear el post, lo que podemos hacer es retornanr una redirección, con el parmetro, le pasamos la ruta a la que queremos redireccionar.
+
+return redirect('/blog');
+
+Funcionaria, pero como estamos utilizando nombres de rutas, lo ideal es que se llame al metodo route, y pasarle el nombre de la ruta a la que queremos pasar.
+
+return redirect()->route('post.index');
+
+y nos redireccionara correctamente al index, al final tendremos el nuevo post.
+
+como esta acion es bastante comun en laravel, tenemos un helper llamado to_route que va a funcionar de la misma manera con menos caracteres.
+
+    return to_route('post.index');
+
+
+Si vemos detaras de escen hace exactamente lo mismo y es que esta definido en el helper to_route()
+
+
+Ya estamos almacenndo el post en la bd y redireccionando el usuario pero no estamos mostrando ningun mensaje que el post se creo correctamente, sera eltema de sesiones en la siguiente sesion.
+
+

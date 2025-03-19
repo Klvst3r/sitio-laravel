@@ -1,0 +1,320 @@
+Aparentemente tenemos un formulario que funciona, sin embargo si no llenamos el titulo por ejemplo, el titulo, veremos un error,  oindicando que hubo un aviolación de integridad en la base de datos, que la columna title no puede ser null.
+
+cuando estemo en producción, no se vera este error tan detallado por motivos de seguridad, y el usurio solo vera un erro 500 | server error
+
+Pero no se mostrara de por qu ha ocurrido dicho error.
+
+entonces para evitar que la información invalida llegue al sevidor y mostrar mejores mensajes de error, debemos validar el formulario.
+
+Del lado del cliente podemos facilmente agrgar, validación con Js directamenete en los cmpos de entrada com osigue a continuación.
+
+Con el atributo required
+
+    <input type="text" name="title" required>
+
+De esa forma  nose podra enviar el campo vacia.
+
+Pero si un usuario mal intencionado quita, este atributo required.
+
+
+Por ello siempre es necesario tambien hacer la validación del lado del servidor.
+
+Y luego obtener la validación del lado del servidor, aun con la capa adicional del lado del cliente.
+
+
+Par nuestro ejemplo vamos a quitar el atributo required en el formularioi y para validar el metodo store en el ontrolador, podemos hacer uso en laravel del $request que inyectamos como parametro de la funcion store:
+
+y manda a llamar el metodo validate.
+
+$request->vaalidate
+
+Que recibe un array con la reglas de validación, 
+
+     $request->validate([
+        'title' => ['required']
+      ]);
+
+
+El array de reglas pueden ser diversas en este caso estamos indicando que el nombre es obligatorio.
+
+Esto hara que nos redireccione al formulario indicando los errores, pero aun no se muestran dichos errores, pero para mostarlos.
+
+
+en laravel tenemos un avariable especial 
+
+$errors que esta disponible de forma automatica en todas las vistas,nosotors, no debemos paarla por el controlador.
+
+Simpemente esta disponible
+
+si hacemos un dom de esa variable podremos ver los errores.
+
+Entonces en la vista podremos disponerla de la sfguinete manera.
+
+
+En la vista create
+
+    <h1>Create new Post</h1>
+
+
+		$errors
+
+    	<form action="{{ route('posts.store') }}" method="POST">
+
+
+Si hacemos un dum d esta variable podremos ver los errores
+
+<h1>Create new Post</h1>
+
+
+		@dump($errors)
+
+    	<form action="{{ route('posts.store') }}" method="POST">
+
+
+
+Vemos que esuna instancia de 
+
+    VienErrorBag
+
+O Volsa de errores de la vista, que podemos tener multiples formularios en una vista, y con las bolsas de errores podremos diferenciarlas, pero en este caso, vamos a utilizar la bolsa que crea por defecto.
+
+Como no hay ningun error, no hay ningunabosa de errores, pero si enviamos el formulario vacio, tendremos la bolsa default que es la bosla por defecto y dentro tenemos los errores.
+
+
+Para el manejo de errores en la validación de nuestro forulario anteriormente en Laravel 9 solo teniasmos disponble la viaraible $errors:
+
+Por ejemplo en la vista create:
+n la vista create
+
+    <h1>Create new Post</h1>
+
+
+		$errors
+
+    	<form action="{{ route('posts.store') }}" method="POST">
+
+Pero al hacer la ejecuación en lñaravel 10 me la muestra y no esta dispoiible solamente como puedo tener sta variable de bolsa de errores de laravel por default qusi hago por ejemplo :
+@dump($errors)
+
+Me muestra los errores 
+
+Pero en laravel 10 me muestra solo la variable en lugar de mostrar los errores hay algun cambio entreversiones 
+ChatGPT said:
+
+Sí, en Laravel 10, la variable $errors sigue estando disponible en las vistas, pero hay algunas diferencias en cómo se manejan los errores en Blade.
+
+Si en Laravel 9 podías acceder directamente a $errors y en Laravel 10 simplemente se imprime sin mostrar los mensajes de error, verifica lo siguiente:
+1️⃣ Uso correcto de $errors en Blade
+
+Si deseas mostrar los mensajes de error en la vista, usa el método any() para verificar si hay errores y luego listarlos:
+
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+2️⃣ Mostrar errores específicos en cada campo
+
+Para mostrar el error de un campo en específico, puedes usar @error:
+
+<label>
+    Title<br/>
+    <input type="text" name="title" required>
+</label>
+@error('title')
+    <div style="color: red;">{{ $message }}</div>
+@enderror
+
+3️⃣ Verificar que $errors esté disponible
+
+Si $errors no se muestra correctamente, intenta pasar explícitamente la variable en el layout principal:
+
+<x-layouts.app :errors="$errors">
+
+También puedes asegurarte de que la vista extiende correctamente la variable errors al utilizar Illuminate\View\View:
+
+use Illuminate\View\View;
+
+public function create(): View
+{
+    return view('posts.create');
+}
+
+4️⃣ Verificar Middleware web
+
+Si los errores no están disponibles en la sesión, revisa que tu ruta esté dentro del middleware web. Laravel usa este middleware para manejar las sesiones, y sin él, $errors no funcionará:
+
+Route::middleware(['web'])->group(function () {
+    Route::resource('posts', PostController::class);
+});
+
+En conclusión:
+
+    Usa @error('campo') para errores específicos.
+    Usa @if($errors->any()) para listar errores globales.
+    Asegúrate de que la sesión esté habilitada con el middleware web.
+
+Estos cambios deberían hacer que $errors funcione correctamente en Laravel 10. 
+
+
+El cambio que hacemos es el siguiente:
+
+Para Laravel 10 
+
+En la vista create hacemos el uso correcto de l a gestion de errores:
+
+Si deseas mostrar los mensajes de error en la vista, usa el método any() para verificar si hay errores y luego listarlos:
+
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
+
+
+
+1. En el controlador para asegurarnos de que la vista extiende correctamente la variable errors al utilizar Illuminate\View\View:
+
+
+Agregamos en el controlador:
+
+
+La sguiente linea
+use Illuminate\View\View;
+
+
+
+
+//metodo donde se empleara
+
+public function create(): View
+{
+    return view('posts.create');
+}
+
+
+
+
+En la validacion en el conytralor
+
+Para la validacion del titulo
+$request->validate([
+        'title' => ['required']
+      ]);
+
+
+Tenemos el siguiente error. Los mensajes de error se podran tratar facilmente para su traducción. De momento es uno de los errores que queremos ver en pantalla.
+
+Para que el usuario lo pueda leer, pero en lugar de navegar por toda la estructura de objetos, para obtener los mensajes podemos mandar a llamar el metodo all que nos devolvera unicamente los mensajes de error
+
+si actualizamos tenemos un array vacio, pero si enviamos vacia el form veremos el mensaje de vldación desde el backend.
+
+Si agregamos el required tamben al body, tambien pdremos extender que el body es el obligatorio .
+
+Esto e util uando quremos ver la validación de os campos.
+
+
+Podremos ahacer un foreach para los erorres e imprimirlos en la estructura html que queramos y al fallar la validación seia algo como lo siguiente:
+
+
+@if ($errors->any())
+		<div class="alert alert-danger">
+			<ul>
+				@foreach ($errors->all() as $error)
+					<li>{{ $error }}</li>
+				@endforeach
+			</ul>
+		</div>
+	@endif
+
+
+en la vista , auqnue esto es util, seria onveniente ver los mensajes de error justo debajo de cada campo para que se entienda mejor para ello agregamos un salto de linea en el forumario create
+
+y utiizar la directiva error para revisr el ampo de error. si contiene o no errores.
+
+Asi que ahora el siguiente segmento de codigo es opcional
+
+	 @if ($errors->any())
+		<div class="alert alert-danger">
+			<ul>
+				@foreach ($errors->all() as $error)
+					<li>{{ $error }}</li>
+				@endforeach
+			</ul>
+		</div>
+	@endif 
+
+Ya que los mensjes de errores vamos autilizarlos de manera individul para validar cada campo que enviemos desde el formulario.
+
+Siendo la corrección al siguiente:
+
+Para el campo title
+
+
+    <label>
+    			Title<br/>
+    			<input type="text" name="title" >
+				
+				@error('title')
+					<br/>
+					<small style="color: red">{{ $message }}</small>
+				@enderror
+    		</label><br/>
+    		<label>
+
+
+De esta forma tenemos el error debajo del campo.
+
+
+entonces sta misma estructura se puede replicar en el otro campo en el caso de body,
+
+<label>
+    			Body<br/>
+    			<textarea name="body"></textarea>
+
+				@error('body')
+					<br/>
+					<small style="color: red">{{ $message }}</small>
+				@enderror
+
+
+    		</label><br/>
+
+
+Ahora que pasa si uno de los campos, si pasa la validación o el otro no, actualmente se va a resetear todo el formulario por un solo error.
+
+Y no queemos eso, para ello en el campo de entrada debemos darle un valor por defecto y aqui podemos imprimir la funcion old() de laravel y pasrle el nombre del campo que se tenia anteriormente.
+
+Quedando el campo del titulo de la siguiente manera
+    <input type="text" name="title" value="{{ old('title') }}">
+
+Asi se imprime el valor antes de una validación de error.
+
+Con ello la validación pasa pero no se pierde el valor del campo ya escrito con anterioridad
+
+Hacemos lo mismo con el tet area 
+
+    <textarea name="body">{{ old('body') }}</textarea>
+
+Y ahi tenemos.
+
+Para ver todas las reglas de validación disponibles se recomeinda visitar la documentación en;
+
+    laravel.com/docs/validation
+
+Y dar click e la seccion de reglas de validación     
+
+    https://laravel.com/docs/12.x/validation#available-validation-rules
+
+Por ejemplo la regla min, para requerir un minimos de caracteres, podemos agregarlo al titulo, que debe tenerminimo 4 letrsad    
+
+Posteriormente veremos como trducir los mensajes de validación

@@ -22,6 +22,14 @@
 
     {{-- <pre>{{ $sum }}</pre> --}}
 
+
+    @if(session('status'))
+        <div style="color: green;">
+            {{ session('status') }}
+        </div>
+    @endif
+
+
     {{ $slot }}
 
 

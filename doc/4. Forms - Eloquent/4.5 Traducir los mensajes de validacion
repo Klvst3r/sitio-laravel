@@ -1,0 +1,123 @@
+Laravel nos permite tenerun sistema de localización quenos permite tradicir los mensajes de la aplicación, como por ejemplo los mensajes de validación, por defecto
+
+Se utiliza el idioma ingles que estan almacenados en la carpeta
+
+/lang/en/en.json
+
+
+Se tienen todos los textos, y dentro ahay archivos de traducciṕon par los mensajes de autenticación, todo es mediante un array.
+ 
+Ahy mensjaes de paginación, contraseña y el de validación.
+
+Si buscamos la llave required, el mensaje es el que se muestra en e formulario.
+
+Que utiiza : atribute que detars de escena sera reemplazado por el nombr del capo donde ocurrio el error, entonce si modificamos el mensaje, lo podrmoes tradir.
+
+Pero esta no es la forma correcta de hacerlo.
+
+Pode defecto laravel utiliza el languaje ingles.
+
+Des el archivo /config/app
+
+
+haybra la llave local que esta en ingles
+
+'locale' => 'en',
+
+eta determina la configuración regional determinada que se utilizaa para las traducciones y que podremos cambiar este valor a cualquiera de las validaciones regionales que sern compatibles con la aplicación 
+
+lo que hace internamente es buscar el mismo nombre en ste caso 'en' dentro de la carpeta lang con todas las traducciones.
+
+Lo que debemos hacer es crear una carpeta llamada 'es' y cambiar el local a 'es'
+
+Dentro cremos el archivo valitacion.php
+
+
+reotrnamos el array y decimos que cuando hacemos el arrigleo required
+nos muestre e mensaje en especifico traducido a español.
+
+
+De esta forma podemos dar soporte a multiples lenguajes en una sola apalicación, entonces lo dejamos en español.
+
+No siempre es un solo campo po lo que debemos utilizar :atributo
+
+Para ello podemos agregar dentro de validation.php
+
+return [
+    'required' => 'El campo :attribute es obligatorio.',
+    'attributes' => [
+        'title' => 'titlulo',
+        'body' => 'contenido'
+    ],
+
+];
+
+
+Otra forma de modificar esots mensajes es como segundo parmetro del metodo validate, aca acontinuacion explicamos.
+
+En el controlador
+
+   $request->validate([
+        'title' => ['required', 'min:4'],
+        'body' => ['required'],
+      ],[
+        'title.required' => 'El campo :attribute es requerido'
+      ]);
+
+Vemos que se respeta el valor del custom attribute, esta otra opcion para tener en cuenta.
+
+Debemos considerar que si ocurre otro error de validación que no este en el required.
+
+Esto sucede por que nuestro archivo de validación, no tenemos un mensaje para este error, por lo que se usa el valor por defecto en este caso ingles. 
+
+Este valor por defecto tambien lo podemos modificar por defecto en el custo app.php
+
+Debajo de
+
+locale
+
+'fallback_locale' => 'en',
+
+si buscamos la regla de validacion en 
+
+validation.php
+
+min
+
+vemos que tambien sirve para traducir arrays, archivos, atributos numerisoc y string.
+
+No debemos hacer la traduccion un ¿o por uno.
+
+La counidad de Laravel en el repositorio
+
+    https://github.com/Laravel-Lang/lang
+
+
+Vemos que ya hay traducciones para 78 idiomas lo unico es ir a la carpeta locale y buscar el que nos interese,
+
+hay varios archivos que se deben copiar, para ver el proceso se hace copiando el contenido 
+
+creamos e archivo
+ validation dentro de la carpeta es
+ /lang/es/validation.php
+
+Y pegamos todo el contenido.
+
+Podemos reemplazar el atibute y reemplazamos por el campo atribute y cambiar todas las coincidencias.
+
+Es opional
+
+Si cambiamos el local a ingles los mensajes se trdutciran en ingles.
+
+
+haceos lo mismo con los demasarchivos
+
+- auth.php
+- pagination.php
+- password.php
+- validation.php
+
+
+
+Ya teemos los mensajes de validacion pero taducidos al español.
+

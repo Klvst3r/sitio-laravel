@@ -1,0 +1,145 @@
+Vamos ahora mostrar un mensaje de sesion justo despues de que se crea un post.
+
+Par ello vamos al Postcontroller y en el metodo store, luego de almacenar el post en la base de datos, y antes de retornar la regesión a la ruta Post index.
+
+        public function store(Request $request){
+
+
+
+            $post = new Post;
+            $post->title = $request->input('title');
+
+            $post->body = $request->input('body');
+
+            $post->save();
+
+            return to_route('posts.index');
+            }
+
+Vamos a hacer uso de a función session, que nos porveed Laravel y llamaremos al metod flash, que recive dos argumentos, 
+
+- El primero es el nombre con el que se va a guardar el mensaje,
+- Se gundo es el mensaje en si
+
+Teniendo:
+
+
+
+        public function store(Request $request){
+
+
+
+            $post = new Post;
+            $post->title = $request->input('title');
+
+            $post->body = $request->input('body');
+
+            $post->save();
+
+            session()->flash('status', 'Post created!');
+
+            return to_route('posts.index');
+            }
+
+Ya se tiene el mensaje pero aun no se esta mostrando en ninguna parte, como estamos redireccionando a la ruta index, que al final va a ejecutar le metodo index definido en l parte de arriba del controlador, vemos que en ese metodo retorna la vista post.index, asi que es ahi donde podremos mostrar e mensaje.
+
+
+Podemos mostrar el mensje en la vist index.
+
+Para ello en la vsta index
+
+Imprimir con dobles llabes de blade.
+
+    {{ session('status') }}
+
+Ej. 
+    <x-layouts.app title="Blog" meta-description="'Blog meta Description'">
+
+
+    {{ session('status') }}
+
+    <h1>Blog</h1>
+
+
+
+
+y con la referencia a la fncion session con un paramtero que sera el valor de a llave que queremos obtener, reordando que es 'status'.
+
+Lo definimos en el metodo como sigue:
+
+    //Mensaje antes de redireccionado
+      session()->flash('status', 'Post created!');
+
+Esto hace que se alamcene el post, se entrega el ensaje pflash de sesion y retorna a la vista index.
+
+En la vista que devuelve esta ruta mostratmos el mensaje estatus.
+
+Una vez mostrado el mensaje, nos retorna la vista.
+
+Ahi esta el mensaje, este mensaje dura solo una petición.
+
+Esta es la razon, por a que se llama mensaje de sesion flash por que dura una sola petición.
+
+Algo a tener en cuenta con estos mensajes es que final tiene clases CSS para que se vea bien, de ser el caso.
+
+Para ello es necesario verificar si existe el mensaje de session para ello devemos hacer uso de o siguiente:
+
+    @if(session)
+    <div class="status">
+        {{ session('status') }}
+    </div>
+    @endif
+
+
+Solo entonces e mostrara el markup del mensaje.
+
+Si actualizamos sobr el mismo procesameitno o en el index, o recargamos y ano veremos el div. Ya que la la duración de la petiión se habra concluido
+
+
+Ahora es problable, que requieramos mostrar estos mensajes en otras vistas tambien.
+
+
+
+De moemtno solo en index lo utilizamos, pero si fuera necesrio utulizarlo en otras vistas tambien.
+
+
+Podemos entonces cortar lo siguiente:
+
+        @if(session)
+        <div class="status">
+            {{ session('status') }}
+        </div>
+        @endif
+
+
+
+Y agregarlo en el layout app.blade.php
+
+
+            <x-layouts.navigation />
+
+    {{-- <pre>{{ $sum }}</pre> --}}
+
+
+    @if(session)
+    <div>
+        {{ session('status') }}
+    </div>
+    @endif
+
+
+    {{ $slot }}
+
+
+con esto tenemos
+
+
+De ahora en adelante podremos crear mensajes flash de sesion en los controladores con la seguridad de que aparecerran en debajo de la navegación en cualquier eevento.
+
+
+ 
+
+
+
+
+
