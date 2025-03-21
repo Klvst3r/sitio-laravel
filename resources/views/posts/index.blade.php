@@ -9,24 +9,30 @@
 
 <x-layouts.app title="Blog" meta-description="'Blog meta Description'">
 
+    <h1>Blog</h1>
 
-    @if(session)
+    {{-- @if(session)
     <div class="status">
         {{ session('status') }}
     </div>
-    @endif
+    @endif --}}
 
-    <h1>Blog</h1>
-
+    
     <a href="{{ route('posts.create') }}">Crear nuevo post</a>
+        {{-- @dump($posts) --}}
 
-    {{-- @dump($posts) --}}
     @foreach ($posts as $post)
-        {{-- <h2> {{ $post['title'] }} </h2> --}}
-        {{-- <h2> @dump($post) </h2> --}}
-        {{-- <h2> {{ $post->title }} </h2> --}}
-        {{-- <h2><a href="/blog/1">{{ $post->title }}</a></h2> --}}
-        <h2><a href="{{ route('posts.show', $post) }}">
-                {{ $post->title }}</a></h2>
+        <div style="display: flex; align-items: baseline">
+            <h2>
+                {{-- <h2> {{ $post['title'] }} </h2> --}}
+                {{-- <h2> @dump($post) </h2> --}}
+                {{-- <h2> {{ $post->title }} </h2> --}}
+                {{-- <h2><a href="/blog/1">{{ $post->title }}</a></h2> --}}
+                <a href="{{ route('posts.show', $post) }}">
+                    {{ $post->title }}
+                </a>
+            </h2>&nbsp;
+            <a href="{{ route('posts.edit', $post) }}">Edit</a>
+        </div>
     @endforeach
 </x-layouts.app>

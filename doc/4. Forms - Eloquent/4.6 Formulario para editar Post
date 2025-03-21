@@ -1,0 +1,208 @@
+Vamos ahora a trabajar con el formuario para editar los posts, si aparece error en la vistaa blog, conexxion rechazada, la mayoria es por que no estan encendidos los serviciosde bd, los encendemos con laragon
+
+1. Primero vamos a crear el boton de editar a los lados de cada titulo de los post, para ello vamos a la vista post index. 
+
+
+Encerrandolo dentro de un div con estilos
+
+    <div style="display: flex; align-items: baseline">
+            <h2>
+
+                <a href="{{ route('posts.show', $post) }}">
+                    {{ $post->title }}
+                </a>
+            </h2>
+            <a href="#">Edit</a>
+        </h2>&nbsp;
+
+
+
+Mas adelante trabajaremos en el diseño, por ahora nos enfocaremos en la funcionalidad,
+
+Al darle click en el link vamos a decirle que nos lleve a la ruta post.edit, pasandole el post como parametro, par que se genere la ruta con el id del post a editar.
+
+    <a href="{{ route('post.edit'), $post }}">Edit</a>
+
+Vamos a crear la ruta en el archivo web
+
+    Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+
+Hasta ahora nos marcara el siguiente error:
+
+Error:
+    Method App\Http\Controllers\PostController::edit does not exist.
+
+
+Este metodo no existe, asi que se crea en el PostController
+    public function edit(Post $post){
+      
+    }
+
+De momento lo recibimos en el metodo y posteriormente se va a retornar.
+
+    public function edit(Post $post){
+      return $post;
+    }
+
+Si actualizamos veremos el primer post    
+    id	1
+    title	"Primer Post"
+    body	"Cuerpo Primer Post"
+    created_at	"2025-03-11T09:17:59.000000Z"
+    updated_at	"2025-03-11T09:17:59.000000Z"
+
+Podemos ver la estructura del post    desde la url: http://localhost:8000/blog/1/edit
+
+
+Pero entoncs en lugar de retornar el post directamente vamos a hacer algo como la vista show, que sera reronar la vista con el post como parametro.
+
+Esa vista sera la vista edit, que tampoco tenemos todavia.
+
+    return view('post.edit', ['post' => $post]);
+
+Creamos la vista, copiando lo que tenemos en la vista post.show
+
+    <x-layouts.app 
+	:title="$post->title" 
+	:meta-description="$post->body"
+    >
+
+        <h1>Blog</h1>
+
+        <h1>{{ $post->title }}</h1>
+
+        <p>{{ $post->body }}</p>
+
+        <a href="/blog">Regresar</a>
+
+
+    </x-layouts.app>
+
+
+Teniendo la plantilla de edición
+
+    <x-layouts.app 
+	:title="$post->title" 
+	:meta-description="$post->body"
+    >
+
+        <h1>Editar Blog</h1>
+
+        
+        <a href="{{ route('posts.index') }}">Regresar</a>
+
+
+
+    </x-layouts.app>
+
+
+como ya tenemos un formulario para crear articulos vamos a adaptar ese formulario para la edición de los posts que tenemos en la bd
+
+Copiamos nuestro form de create
+
+    <form action="{{ route('posts.store') }}" method="POST">
+    		@csrf
+    		<label>
+    			Title<br/>
+    			<input type="text" name="title" value="{{ old('title') }}">
+				
+				@error('title')
+					<br/>
+					<small style="color: red">{{ $message }}</small>
+				@enderror
+    		</label><br/>
+    		<label>
+    			Body<br/>
+    			<textarea name="body">{{ old('body') }}</textarea>
+
+				@error('body')
+					<br/>
+					<small style="color: red">{{ $message }}</small>
+				@enderror
+
+
+    		</label><br/>
+    		<button type="submit">Enviar</button> 
+    		<br/> 
+    	</form>
+    	<br/>
+
+Ahora ya podemos ver el formulario de edición. Por lo general cuando editamos un registro este ya viene lleno, con los datos existentes.
+
+
+Para hacerlo vamos al valor del input y como segundo paramtetro de la funcion old, podemos pasarle un valor por defecto, es decir si no hay un valor previo nos va a mostrar lo que tengamos como segundo paramtro
+
+    <input type="text" name="title" value="{{ old('title', 'default') }}">
+
+Es decir si no hay un valor previo, nos va a mostrar lo que tengamos  coo segundo paramtero, por o que podemos imprimir el titulo del post
+
+    <input type="text" name="title" value="{{ old('title', $post->title) }}">
+
+
+Hacemos lo mismo con el text area
+    <textarea name="body">{{ old('body', $post->body) }}</textarea>
+
+
+El siguiente paso es configurar la ruta que va a procesar la actualización del articulo, en este caso la convensión, seria llamarle post.update, lo cambiamos en el formulario 
+
+De momento no existe la ruta. La Creamos
+
+Est ruta no sera de tipo get ni tampoco de tipo post, la convención nos sugiere que utilicemos el metodo put o patch, la diferencia entre esto dos es que basicamente
+- put se utiliza para reemplazar un registro 
+- patch para actualizar
+
+Asi que usaremos patch
+
+
+La url sera la misma que la ruta post.show con la diferencia del metodo.
+    Route::patch('/blog/{post}', [PostController::class, 'update'])->name('posts.update');
+
+Como lo siguiere la convención, ahroa tendremos un  error por que es necesario el parametro, pero el problema es que el parametro post que definimos, no se lo estamos pasando al moento de generar la ruta en la acción del formulario, es decir falta e, parametro {post}    
+
+lo pasamos como segundo parametro desdel el form
+    <form action="{{ route('posts.update', $post) }}" method="POST">
+
+Y aunque funciona nos muestra un error siguiente:
+
+    Symfony \ Component \ HttpKernel \ Exception \ MethodNotAllowedHttpException
+    PHP 8.1.32
+    10.48.25
+    The POST method is not supported for route blog/2. Supported methods: GET, HEAD, PATCH.
+
+ndica que el metodo post no es soportado por esta ruta, es dcir que se esta intentando ejecutar la ruta show, solo este metodo soporta el metodo get, entonces como hacer para que se ejecute la ruta update.
+
+No podemos utilizar el metodo patch directamente el el formulario, ya que actualmente los navegadores solo soportan los metodos get y post.
+
+
+Oero Laravel tiene un sistema que nos permite emular este tipo de peticiones.
+
+Para utilizar este metodo patch debemos, dejar el metodo en post y dentro del formulario utilizamos la directiva de blade @method() que recibe como parametro, el nombre del metoo que queremos utilizar, en este caso, PATCH
+
+    @csrf @method('PATCH')
+
+De esta forma si actualizamos, e inspeccionamos el formulario veremos un campo oculto en el que se agrega el _method con el valor de PATCH, esto es lo que Larravel v a sar par redireccionar hacia la ruta correcta en el archivo web.php.
+
+
+Seria la que utililza el metodo patch.
+
+Pasamos el agieuinete error.
+
+    BadMethodCallException
+    PHP 8.1.32
+    10.48.25
+    Method App\Http\Controllers\PostController::update does not exist.
+
+Esto nos indica que el metodo update no existe, par ello vamos a crearle en el controlador.
+
+De momento solo retornaremos una leyenda que se editara el articulo.
+
+    public function update(){
+      return 'Edit post';
+    }
+
+Entonces a tener en cuanta que para editar  un registro es  necesario que el formulario tenga el metodo post y dentro de las etiquetas form
+
+Agregar las directivas de blade con el metodo que qeremos soportar.
+
+Ya tenemos listo el formuario para aditar los post, en la siguente tema vamos a implementar la edición del mismo para persistir los cambios en la BD.
+

@@ -1,0 +1,449 @@
+Si alguna vez hemos escuchado o leido, sobre el principio 
+
+    D. R.Y.
+
+Don't Repeat Yourself (No te repitas)
+
+Aqui estariamos violando este principio varias veces, ya que se tienen dos metodos del controlador dos veces update, y store que son casi identicos.
+
+Lo mismo con el formulario de creación y edición.
+
+Tambien existe el extremo opuesto de este principio que por evitar repetir algunas lineas, de codigo, terminamos complicandolo mas y aiendolo mas dificil de entender, ya que tiene demsiadas abstracciones pueden causar mas daño que bien.
+
+Entonces antes que reestructuremos el codigo simplemente por que hay repeticioines, primero debemos entender por que debemos evitar dicha repseticiones, en este co la razon principal es que seguramente van a contener mucha mas información que solamente un titulo y un contenido tal vez otra fecha para el contenido de la publicación, otro para darle la categoria, ptro par saber si es un borrador, o no, otro para aaregar revisiones, etc.
+
+De ser asi tendremos que agregar, ese nuevo campo de creción y al de edición, agregar la validción en el metodo store y en el metodo update y llenar el valor antes de guardarlo en eloquent con ambos metodos tambien.
+
+
+Es decir tendriamos que hacer 6 cambios cada vez que queramos agaregar o quitar un campo a la estructrua de datos de un post, por esta razon  vamos a ver como evitar estas duplicaciones para que nuestra aplicación sea mas facil de extender a futuro.
+
+Comenzamos con el formulario de creación.
+
+Esta parte del layout, donde definimos el titulo, vamos a dejarlo tal cual.
+
+    <x-layouts.app 
+	title="Crear nuevo post" 
+	meta-description="Formulario para crear un nuevo blog post"
+>
+
+    <h1>Create new Post</h1>
+
+En cuanto a la acción del formulario es distinta lo que nos interesa es los campos de titulo y cuerpo.
+
+Para ello debemos normalizarlos, es deir que la estructura html, sea igual en ambos casos, y en el caso del formulario del valor de value, no le estamos pasando ningun valor como parametros del metodo old.
+
+    <input type="text" name="title" value="{{ old('title') }}">
+
+Pero en el formulario de editar si le estamos pasando el parametro de campo del titulo 
+
+    <input type="text" name="title" value="{{ old('title', $post->title) }}">
+
+Entonces para normalizarlo vamos a utilizar el mismo valor en el formulario de crear tambien para que sean identicos,     
+
+    <textarea name="body">{{ old('body', $post->body) }}</textarea>
+
+Ahora son exactamente iguales, sin embargo esta variable post no la tenemos en create, asi que en el momento de acceder al frmulario nos dara un error del tipo siguiente:
+
+    Undefined variable $post
+
+Lo que podemos hacer para eviatarlo es ir al controlador y en el metodo edit donde le pasamos el parametro post, pero en el metodo create 
+    public function edit(Post $post){
+
+
+No le estamos pasando ninguna variable, po eso es el error.
+
+Entonces vamos a pasarle la variable
+
+    return view('posts.edit', ['post' => $post]);
+
+En estecifico
+
+        ...['post' => $post]
+
+Eso lo hacemos de la siguiente manera
+
+Quedando
+     public function create(){
+      //return 'Create Form';
+      return view('posts.create', ['post' => $post]);
+    }
+
+Tomando en consideración que a variable no existe, no ha sido definida, entonces como estamos mostrando el formualrio apr que se pueda ear un nuevo post y no tenemos un post prevaente definido, como lo tenemos en el metodo edit.
+
+Lo que podemos hacer es pasarle una nueva instancia del modelo Post una instancia vacia.
+
+Una instancia vacia
+    
+    return view('posts.create', ['post' => new Post]);
+
+De esta manera veremos que funciona.
+
+Vamos a hacer un dump
+
+ <h1>Create new Post</h1>
+
+	@dump($post->toArray())
+
+Vemos que es un modelo post, si lo convertimos en array sera un array vacio
+
+Si cipiamos esto mismo en la vista de edit veremos los datos del post en forma de array
+
+edit.blade.php
+
+    @dump($post->toArray())
+
+
+entonces en el formulario para crear al momento, que accesamos al title por ejemplo esto devolvera null por que no se le esta pasando ningun vaor pero funciona como queremos
+
+Entonces ya solo nos falta extraerlo a otro archivo 
+
+Se cortan los dos labels del formulario
+
+    <label>
+    			Title<br/>
+    			<input type="text" name="title" value="{{ old('title', $post->title) }}">
+				
+				@error('title')
+					<br/>
+					<small style="color: red">{{ $message }}</small>
+				@enderror
+    		</label><br/>
+    		<label>
+    			Body<br/>
+    			<textarea name="body">{{ old('body', $post->body) }}</textarea>
+
+				@error('body')
+					<br/>
+					<small style="color: red">{{ $message }}</small>
+				@enderror
+
+
+    		</label><br/>
+
+Y dentro de la misma carpeta resources views post vamos acrear u nuevo archivo llamado form-fields.blade.php
+
+entonces en el formulario simplekente lo incluimos
+
+    @include('posts.form-fields')
+
+Y hacemos lo mismo en la vist de editar.
+
+Lo que sigue funcionando en ambas vistas
+
+
+De ahora en adelante si queremos agregr un nuevo campo, simplemente lo agregamos en el form-fields, y se vera reflejado en ambos formularios.
+
+Ahora ya tenemos el formulario reutilizable.
+
+Vamos ahora con el controlador.
+
+La validación, es excatamente la misma, vamos a dejarla para el final.
+
+o que se vera ahora es como mejorar la parte del controlador del metodo store.
+
+ya que en lugar de hacer too esto:
+
+         $post = new Post;
+        $post->title = $request->input('title');
+        //Hacemos lo mismo con el body
+        $post->body = $request->input('body');
+
+        $post->save();
+
+
+con eloquent tenemos un metodo llamado create que podemos llamar de forma estatica y  aray con los campos que se vana a ingresr en la bd, 
+
+      Post::create([
+        'title' => $request->input('title'),
+        'body' => $request->input('body'),
+      ]);
+
+
+Esto es exactamente lo mismo que se tenia en la parte de arriba, asi que se comenta y se prueba
+
+Tenemos un error:
+    Add [title] to fillable property to allow mass assignment on [App\Models\Post].
+
+nos dice que agreguemos title a lafillable para permitir asignación masiva en el modelo post.
+
+En la siguiente secion se explicara en detalle lo que significa asignación masiva, y cual es el problema con ello, de moment vamos a solucionarlo
+
+protected $fillable = ['title'];
+    
+Vamos al Modelo Post, agregamos la propiedad fillable y dentro se agrga el title, y lo mismo para body no tiene un valor por defecto
+
+
+    SQLSTATE[HY000]: General error: 1364 Field 'body' doesn't have a default value
+
+    insert into `posts` (`title`, `updated_at`, `created_at`) values (Octabo Post, 2025-03-21 16:19:43, 2025-03-21 16:19:43)
+
+
+La solucion es agregar tambien a la propiedad fillable.
+
+Y ahora funciona
+
+Lo mismo podemos hacer en el metodo updated, como ya tenemos una variable que es $post,
+
+poidemos llamar al metodo update, y al igual qe el metodo create recibir un array como parametro con los campos que queremos actualizar.
+
+    $post->update([
+        'title' => $request->input('title'),
+        'body' => $request->input('body'),
+      ]);
+
+Y comprobamos que funciona.
+
+Pero esto no evita que tengamos que tener los campos manualmente uno por uno, para ello podemos hacer uso del metodo validate, y este metodo va a retronar un array unicmente, de los valores que han sido validado. En el metodo store
+
+    $request->validate([
+        'title' => ['required', 'min:4'],
+        'body' => ['required'],
+      ],[
+        'title.required' => 'El campo :attribute es requerido'
+      ]);
+
+
+Por ello 
+
+    $validated = $request->validate([
+        'title' => ['required', 'min:4'],
+        'body' => ['required'],
+      ],[
+        'title.required' => 'El campo :attribute es requerido'
+      ]);
+
+
+Y si intentamos registrar u nuevo post
+Nos devolvera la salida con el titulo
+    array:2 [▼ // app/Http/Controllers/PostController.php:79
+  "title" => "Noveno post"
+  "body" => "Body Noveno Poost"
+]
+
+
+con los nuevo valors que inserto el usuario. Que es exactamente o que se tiene en el metodo store
+
+
+        'title' => $request->input('title'),
+        'body' => $request->input('body'),
+
+
+Entonces en lugar de definirlos mnualmete, simplemente pasamos el valor validado.
+
+    Post::create($validated);
+
+Y ahora funciona.
+
+
+Hacemos lo mismo para el metodo updated
+
+
+Recibmos los datos validados, y se los pasamos al metodo updated.
+    $validated = $request->validate([
+        'title' => ['required', 'min:4'],
+        'body' => ['required'],
+      ],[
+        'title.required' => 'El campo :attribute es requerido'
+      ]);
+
+
+      ...
+
+      $post->update($validated);
+
+
+Para terminar, como la validación es exatamente la misma tambien, vamos a crear lo que se conoce como un formRequest pára encapsular esta logica
+
+En laravel tenemos un comando llamado php artisan make:request <nombre_request>
+
+Para hacer un form request y vamos a llamarolo SavePostRequest
+    $ php artisan make:request SavePostRequest
+
+
+Ya que vamos a utilizarlo tanto para crear coo par actualizar la información de los post
+
+Estamos creadno un apetición para guardar un post
+
+
+Este comando va a crearnos una nueva carpeta dentro  de 
+/App/Http/requests
+
+Y dentro tenemos el SavePostRequest que se acava de crear.
+
+
+Todo form request tiene dos metodos
+
+    public function authorize(): bool
+
+    public function rules(): array
+
+
+El primer metodo devuelve un boolean, verdadero o falso para verificar si esta petiión esta autorizado para el usuario que a esta relizando, por defecto devuelve flso es decir que nunca se va a autorizar y nunca se vana a ejecutar las reglas de vaidación que estan en el metodo de abajo.
+
+Por ello podremos grgr una nueva logica si el usuario es administardor etc, De momento solo vamos a retornar true para que todos los usuaios esten autorizados.
+
+
+de la siguiente manera.
+
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+Entonces en el metodo rules, simplemente definimos las reglas de validación de la misma manera que lo hicimos, en el controlador.
+
+Por ello las copiamos y las colocamos en el segundo metodo.
+
+
+            'title' => ['required', 'min:4'],
+            'body' => ['required'],
+
+Quedando:
+
+ahora y tenemos nuestro SavePost request
+
+    public function rules(): array
+    {
+        return [
+            'title' => ['required', 'min:4'],
+            'body' => ['required'],
+        ];
+    }
+}
+
+
+Ahora vamos a utilizarlo.
+
+Para utilizarlo, en lugar de utilizar el Request base que se pasa como parametro en el llamdo de los metodos.
+
+el 
+
+    use Illuminate\Http\Request;
+
+utilizamos el Request que acabamos de crear
+
+    public function store(SavePostRequest $request){
+
+
+Y no hay que olvidarlo importr en la parte superior, este es el que vamos a utilizar ahora
+
+    use App\Http\Requests\SavePostRequest;
+
+
+Asi que ya no hay necesidad de realizar la validación nuevamente. Podemos quetra la siguientes lineas por completo.
+
+         $validated = $request->validate([
+         'title' => ['required', 'min:4'],
+         'body' => ['required'],
+       ],[
+         'title.required' => 'El campo :attribute es requerido'
+       ]);
+
+Al moento de inyectar el request, Laravel automaticamnte, lo va a utlizar para validar el formuario, y unicamente si la validacion paa se va a apasar el contenido, de este metodo en caso contrario se va a regresar con los errores.
+
+Pero ahora tenemos un problema por que ya no tenemos, la variable $validated
+
+lo vamos a soluciona a traves del Request simplemente llamamos a metodo validated
+
+Cambiando de esto:     Post::create($validated);
+
+a esto
+
+    Post::create($request->validated());
+
+Y vamos a tener el mismo resultado.
+
+
+Hacemos o mismo en el metodo updated
+      $post->update($request->validated());
+
+Llamamos al metodo validated a traves del Request con eso tenemos, ya que la vaidación sigue funcionando y al momento de editar tambien
+
+Ya tenemos un objeto dedicado para validar el formulario de los post, ahora es muy comun que las reglas de validación varien cuando estamos actualiando y cuando estmos creando un nuevo registro.
+
+Para ello podremos hacer una verificción preguntando a traves del objeto this  que en este caso es unrequest si el metodo es patch por ejemplo y en ese caso retornar otro set de validación, por ejemplo que al momento de editar el titulo tenga minimo 8 caracteres.
+
+ public function rules(): array
+    {
+        if($this->isMethod('PATCH')){
+            return[
+                'title' => ['min:8']
+            ];
+        }
+
+
+        return [
+            'title' => ['required', 'min:4'],
+            'body' => ['required'],
+        ];
+    }
+
+Esto es solo un ejemplo, al momento de editar enviamos y veremos el error donde el titulo debe contener al menos 8 caracteres.
+
+Y si vamos a crer un nuevo post, vemos que el titulo debe contener al menso cuatro caracters.
+
+
+el error estavalidado correctamente.
+
+
+De esa forma podremos diferenciar las reglas de validación, para editar y crear registros
+
+
+Por ultimo en lugar de usar el sessión en el metodo store
+
+      session()->flash('status', 'Post updated!');
+
+Luego de mandar a llamar la funcion to_route
+
+Podemos llamar almetodo with para definir mensajes de sesionflash.
+
+el primer parametro es la llave donde se va almacenar el mensaje, y el segundo parametro es el mensaje.
+
+
+//Se utiliza el metodo with para definir mensajes flash
+      return to_route('posts.show', $post);
+
+Con esto podemos eliminar la siguiente lineas
+    session()->flash('status', 'Post created!');
+
+
+
+Sigue funcionando
+
+
+Se puede hacer lo mismo en el metodo update 
+
+    return to_route('post.show', $post)->with('status', 'Post updated!');
+
+De ahora en adelante cad vez que queramos agregar unnuevo campo, lo agregamos, al form-field, agegamos la regla de validación, y finalemnte agregamos la propiedad fillable del Modelo Post.
+
+enl ugar de actualizar seis lugares como se hacia anteriormente, ahora simplemente actualizamo 3
+
+Sin embargo esta propiedad fillable, tampoco es tan necesaria como parece.
+
+Si explicara por qwu en la siguiente lección.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

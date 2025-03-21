@@ -60,8 +60,17 @@ Route::get('/blog/create', [PostController::class, 'create'])->name('posts.creat
 
 Route::post('blog', [PostController::class, 'store'])->name('posts.store');
 
+
 //Route::get('/blog/1', [PostController::class, 'show'])->name('blog');
+//Show
 Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
+
+//Edit
+Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+
+//Update
+Route::patch('/blog/{post}', [PostController::class, 'update'])->name('posts.update');
+
 
 
 

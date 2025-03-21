@@ -6,6 +6,10 @@ namespace App\Http\Controllers;
 use App\Models\Post;
 
 use Illuminate\Http\Request;
+
+//SavePostRequest
+use App\Http\Requests\SavePostRequest;
+
 use Illuminate\Support\Facades\DB;
 
 //Visualizcion de errores
@@ -51,7 +55,7 @@ class PostController extends Controller
 
     public function create(){
       //return 'Create Form';
-      return view('posts.create');
+      return view('posts.create', ['post' => new Post]);
     }
 
     /*public function store(){
@@ -60,7 +64,7 @@ class PostController extends Controller
     }*/
 
     //Acceso al request de maner diecta con la clase Request
-    public function store(Request $request){
+    public function store(SavePostRequest $request){
       //return $request;
       
             //Acceso a todos datos especificos del request
@@ -69,20 +73,35 @@ class PostController extends Controller
 
       //Validación del formulario
 
-      $request->validate([
-        'title' => ['required', 'min:4'],
-        'body' => ['required'],
-      ],[
-        'title.required' => 'El campo :attribute es requerido'
-      ]);
+      //Al tener el SavePostRequest ṕdemos elimianr estas validaciones ya que tienen la logica de validción en el mismo SavePostRequest
+      // $validated = $request->validate([
+      //   'title' => ['required', 'min:4'],
+      //   'body' => ['required'],
+      // ],[
+      //   'title.required' => 'El campo :attribute es requerido'
+      // ]);
+
+      //dd($validated);
 
       //Nueva instancia del modelo post
+      /*
       $post = new Post;
       $post->title = $request->input('title');
-      //Hacemos lo mismo con el body
       $post->body = $request->input('body');
 
       $post->save();
+      */
+
+      // Hacemos con eloquent una creación
+      //Ya no los utilizamos manualmente
+      // Post::create([
+      //   'title' => $request->input('title'),
+      //   'body' => $request->input('body'),
+      // ]);
+
+      //Pasamos el array validado en lugar del codigo anterior
+      Post::create($request->validated());
+
 
       //Retornando una redirección
       //return redirect('/blog');
@@ -91,10 +110,61 @@ class PostController extends Controller
       //return redirect()->route('post.index');
 
       //Mensaje antes de redireccionado
-      session()->flash('status', 'Post created!');
+      //session()->flash('status', 'Post created!');
 
       //Redireccionando con el helper
-      return to_route('posts.index');
+      //return to_route('posts.index');
+
+      //Se utiliza el metodo with para definir mensajes flash
+      return to_route('posts.index')->with('status', 'Post created!');
     }
+
+    public function edit(Post $post){
+      //return $post;
+      
+      //Retornamos la vista edit
+      return view('posts.edit', ['post' => $post]);
+
+    }
+
+    public function update(SavePostRequest $request, Post $post){
+      //return 'Edit post';
+      
+      // $validated = $request->validate([
+      //   'title' => ['required', 'min:4'],
+      //   'body' => ['required'],
+      // ],[
+      //   'title.required' => 'El campo :attribute es requerido'
+      // ]);
+
+      //Buscar el post en la BD, aunque ya no es necesario por que le indicamos la larvel por el modelo que busque el registro correspondiente
+      //$post = Post::find($post);
+      
+      //Se editan los cmpos y se guardan
+      //Ya no se utilizan la variables por que se sustituye con eloquent
+      //$post->title = $request->input('title');
+      //$post->body = $request->input('body');
+      //$post->save();
+      
+
+      //Se emplea eloquent para actualizar con Eloquent
+      //$post->update($validated);
+      $post->update($request->validated());
+
+
+      //session()->flash('status', 'Post updated!');
+      //session()->flash('status', 'Post updated!');
+
+      //Redireccionando con el helper
+      //return to_route('posts.show', $post);
+
+      //Se optimiza el mensaje flash
+      return to_route('posts.show', $post)->with('status', 'Post updated!');
+
+      
+
+
+    }
+
 
 }

@@ -1,0 +1,47 @@
+4.7 Actualizar registros en la BD con eloquent
+
+Teniendo el formulrio funcionando vamos ahora aprocesar los datos para almacenar los ambios en la Bd, para hcerlo podemos copiar casi todo lo que tenemos en el metodo store del PostController
+
+        public function update(Request $request, Post $post){
+      //return 'Edit post';
+      
+      $request->validate([
+        'title' => ['required', 'min:4'],
+        'body' => ['required'],
+      ],[
+        'title.required' => 'El campo :attribute es requerido'
+      ]);
+
+      //Buscar el post en la BD
+      $post = Post::find($post);
+      $post->title = $request->input('title');
+      $post->body = $request->input('body');
+
+      $post->save();
+
+      session()->flash('status', 'Post created!');
+
+      //Redireccionando con el helper
+      return to_route('posts.index');
+
+    }
+
+Como podemos mandar a traer el tipo de variable que recibe el metodo como parametro, le podemos decir que es un modelo de laravel post y Laravel automaticamente lo va a buscar en la Bd por nosotros, quiere decir que ya no necesitamos la linea de busqueda 
+
+      //Buscar el post en la BD
+      $post = Post::find($post);
+
+Por lo que podemos eliminarla.
+
+Editamos los campos guardamos y retorna mediante una redirección, considerando el parametro al que queremos reenviar.
+
+
+
+    return to_route('posts.show', $post);
+
+Ahora vemos que funciona, vamos a editar.
+
+Enviamos y ya se estan almacenando los cambios en la BD.
+
+
+
