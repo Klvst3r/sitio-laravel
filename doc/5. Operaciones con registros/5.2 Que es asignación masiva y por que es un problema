@@ -1,0 +1,225 @@
+Vamos a ver que es la asignación masiva y por que es un problema que debemos de tener en cuenta.
+
+Partamos del modelo Post
+
+Tenemos el metodo Pos t y la propiedad fillable que significa llenable o rellenable.
+
+donde se definen los campos que se pueden asignar de forma masiva.
+
+Es decir si le pasamos un array con muchos campos en el metodo create o en edit.
+
+Dede el controlador le pasamos un arrays conmuchos campos de la siguiente manera:
+
+Post::create([
+    'title' => 'Post title',
+    'body' => 'Post Body',
+    'other' => 'fields'
+]);
+
+
+al metodo create o al metodo update:
+
+publica function update(SavePostReuqest $request, Post $post) {
+    $post->update($request->validated());
+
+    return to_route('post.show', $post)->with('status', ...);
+}
+
+
+Desde un modelo de Eloquent, unicamente se vana a  asignar los definidos en el array del controlador, pra eviatr que se guarden cambios inesperados en la BD, adicional a propiedad filable tenemos la propiedad "$guarder".
+
+ Donde se define lo opuesto, es decir se defienen los campos donde no podran ser asignados de forma masiva.  
+
+
+ si le pasmos un array vacio.
+
+En el Modelo Post
+
+    class Post extends Modelo{
+        use HasFactory;
+
+        protected $guarded = [];
+
+    }
+
+Estamos deshabilitando completamente la asignación masiva, le estamos diciendo que deje par todos los ampos.
+
+Esto s lo que ino suele hacer en todos los poryectos de Laravel, pero para poder hacer lo debemos seguir una sosla regla, 
+
+Nunca pasarle el metodo all() desde el controlador
+
+Ej.
+
+public function store(SvePostRequest $request...)
+{
+    Post::create($request->all());
+
+    retunr to_route('post.index')->with('status',...)
+}
+
+
+Al metodo create ni al metodo updated del modelo de eloquent ya que si recordamos.
+
+
+El metodo all nos devuelve todos los campos del fomulario incluso el token csrf y en el caso del formulario para editar, tambien nos devuelve el vaor del campo metod.
+
+Entonces e problema aquie s que si un usuario modifica, el formulario , si le da click en inspeccionar, editar como htm y se agrgea un nuevo campo de texto, por ejemplo
+
+    <input type="text" name="aproved" /><br>
+
+Supongamos que el Modelo st tiene un campo con este campo que por defecto es 0 o false y que cada Post necesita ser aprovado por un adminisardor para que sea publico.
+
+
+Entonces si lo enviamos como verdadero o como 1 al momento de enviar estos datos con el metodo all(), 
+
+Se va a a intentar guardar el camp.
+
+Y como estamo utilizano el metodo all() va a intentar guardar todos estos datos en la Bd, entonces nos arrojara un error del tipo
+
+    SQLSTATE[42S22]: column not found: 1054 Unknow columns 'aproved' in 'field list'
+
+Y esto es por que esta columan no existe.
+
+Por esto es que Laavel nos agrega esta protección, por defecto.
+
+
+En el cso de utilizar el metodo fillble como se etenia inicialemnte, solo va a tomar los campos
+    'title',
+    'body',
+
+Para Gardar en la Bd, y va a ignorar rodos los demas.
+
+Esto esta bien cuando recien iniciamos con Laravel, para estar protegidos pero nosotros sabemos que es lo que estamo haciendo y por tanto vamos a deshabilitr esta protección.
+
+
+Sabiendo que nunc debemos pasar el metodo all() desde el controlador a los metodos create y update
+
+De a siguiente manera:
+
+    Modelo Post
+
+    class Post extends Model{
+        use HasFactory;
+        protected $guarded = [];
+
+
+    }
+ 
+
+ La mejor solucion con una opinion es pasarle los datos validados.
+
+Desde el controlador
+    Post::create($request->validted());
+
+De esta forma seguimos protegidos contra aignación masiva, pero la protección ocurre con $request->validated()
+
+En el contolador.
+
+    $post->update($request->validated());
+
+al momento de filtrar los datos validados.
+
+
+Entonces como ya sabesmos que nunca debemos pasar diectmente el metodo all();
+
+
+Al momento e actualizar o crear con Eloquent, podemos deshabilitar la protección desde el Modelo
+    portected $guarded = [];
+
+Todos los modelos de Eloquent que se creena  futuro, en esta alicación, para ello podemos quitar de a siguiente manera:
+
+class Post extends Model
+{
+    use hasFactory;
+}
+
+y en el archivo
+app/Providers/AppServiceProvider.php
+
+En el metodo boot()
+
+public function boot(){
+    Model::unguard();
+}
+
+
+En el metodo unguard podemos deshabilitar la protección podemos deshablitar la asignación masiva de esta aplicación. 
+
+No olvidndo importar la clase en la parte uperior del metodo
+
+use iiluminated\Database\Eloquent\Model;
+
+
+De otra forma no va a funcionar, y listo ya tenemos la protección deshabilitada contra asignación masiva y sera seguro hacerlo siempre y cuando no utilicemos el metodo all()
+
+al moento de crear o actualizar un registro con Eloquent
+
+Recomentdamos utilizar el metodo validated().
+
+
+De ahora en adelante, cuando queremos agregar un nuevo acampo al formulario de post, simplemente lo agregamos en el formfields que es parte del front y la vista:
+
+form-fiels.blade.php
+
+
+<label>
+    Body<br>
+    <textarea name='body'>{{ old('body', $post->body) }}</textarea>
+
+    @error('body)
+
+    <br>
+    <small style="color: red">{{ $message }}</small>
+    @enderror
+</label><br>
+
+
+Y agregamos la regla en el form Request:  
+
+app/Http/request/SavePostRequest.php
+---
+
+    public function rules()
+    {
+        return[
+            'title' => ['required', 'min:4'],
+            'body' => ['required'],
+        ];
+    }
+
+
+en co de no tener una regl de validción para este campo especifico, podemos agrgarlo en las reglas de validación de todas formas y asignarle un array vacio.
+
+
+---
+
+    public function rules()
+    {
+        return[
+            'title' => ['required', 'min:4'],
+            'body' => ['required'],
+            'otherfield => [],
+        ];
+    }
+
+
+
+Es decir que no tenga una regla de validación para que no tenga una regla de validación pero lo agregamos en el
+Postcontroller.php
+
+Par que aparezca, al mento de llamar al metodo validated
+
+    Post::create($request->validated());
+
+
+con esto tenemos deshablitamos la proteción contra asignación masiva y siempre utiliamos el metodo 
+
+    validated en el Postcontroller.
+
+    Ej.
+
+        Post::create($request->validated());
+
+
+De esta forma no tendemos ningun problema con la asignación masiva.
+
