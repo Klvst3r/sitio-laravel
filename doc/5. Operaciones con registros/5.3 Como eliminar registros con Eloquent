@@ -1,0 +1,344 @@
+Ya si tienen 6 de los 7 metodos rest,
+
+
+1 Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
+
+2 Route::get('/blog/create', [PostController::class, 'create'])->name('posts.create');
+
+3 Route::post('blog', [PostController::class, 'store'])->name('posts.store');
+
+4 Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
+
+5Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+
+6 Route::patch('/blog/{post}', [PostController::class, 'update'])->name('posts.update');
+
+
+Solo falta implementar la ruta para eliminar post.
+
+Primero vamos a colocar un boton al lado de edit para poder eleiminar el post corrspondiente.
+
+
+
+
+Vamos a la vitsa index y vmos a duplicr el link 
+
+    <a href="{{ route('posts.destroy', $post) }}">Delete</a>
+
+
+Ahora faltara la ruta, en l archivo de ruta web
+
+
+    Route::delete('/blog/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+
+Ahora debemos crear el etodo correspondiente para eliminar registros
+
+De momento vamos a retornarlo para inspeccionarlo momentanemente.
+
+    public function destroy($post){
+        return $post;
+
+    }
+
+Esto nos llevara  la vista show ya que la vista es la misma.
+
+Lo que sucede es que en la ruta le esamos respondiendo al metodo delete, pero al momento de utilizar un link automaticmente se ejecuta un get request, por eso se indica la ruta 
+
+
+Entonces para ejecutar una ruta de tipo delete,  tenemos que crear un formulario del tipo post y agregarle el metodo lete dentro del formulario
+
+    <a href="{{ route('posts.destroy', $post) }}"> Delete</a>
+
+Vamos a eleimanr el link anterior y vamos acrear un formulario, la accin va a ser la misma, con el post que quemos eliminar como parametro, el metodo es post y para indicarle a Laravel que stmos indicando una petición de tipo delete,
+
+Agregamos la directiva 
+    @method()
+
+con el valor delte, no olvidemos e token csrf
+
+
+Por ultmo necesitamo un boton para enviar este formulario, podemoscrear un inputo  o un boton de tipo sumbit qu diga delete.
+
+Que al hacer click se va a enviar una petición delete a esta ruta.
+
+
+    <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit">Delete</button>
+            </form>
+
+Veremos el boton, pero al hacer click ahora si estamos ejecutando la ruta correcta.
+
+Veremos que nos devuelve el Id del post.
+
+Entonces al igual que hicimos con el metodo shw y edit. 
+
+Podemos asignarle en el metodo el tipo de valor que queremos recibir, le inidcamos que s el motelo post 
+
+ public function destroy(Post $post){
+
+
+
+
+No debemos importarlo
+    use App\Models\Post;
+
+Ahora vcuando retornemos la variable vamos a obtener, el post completo.
+
+
+    	
+id	1
+title	"Primer Post"
+body	"Cuerpo Primer Post"
+created_at	"2025-03-11T09:17:59.000000Z"
+updated_at	"2025-03-11T09:17:59.000000Z"
+
+
+
+Simplemente para eliminarlo, llamamos al metodo detele. Luego de eleiminar vamos a redireccionar el usuario al post index, con el mensaje en la llave status que diga, Post deleted.
+
+    $post->delete();
+
+        return to_route('posts.index')->with('status', 'Post deleted');
+
+Estamos haciendo algo similar como en el metodo edit, si todo funciona eleinara el post y nos devolvera la vista hacia index.
+
+Funciona.
+
+Con esto ya tenemos los 7 metodos rest, 
+
+- Index:  Mostrar el listdo de post
+- show: Detalle de un post 
+- create para devolver el formulario para insertar post
+- store: metodo para almacenar el post en la bd
+- edit: para mostrar el formulario para editar un post
+- update: para almacenar los ambios de un post en la bd
+- destroy: para eliminar un post de la bd
+
+
+Con esto tenemos un crud de casos.
+
+
+Ahora vamos a ver que en lugar de tener que escribir todo esto en el archivo de rutas web
+
+
+
+    Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
+
+    Route::get('/blog/create', [PostController::class, 'create'])->name('posts.create');
+
+    Route::post('blog', [PostController::class, 'store'])->name('posts.store');
+
+    Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
+
+    Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+
+    Route::patch('/blog/{post}', [PostController::class, 'update'])->name('posts.update');
+
+    Route::delete('/blog/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+
+Si ejecutamos el comando
+
+    $php artisan route:list
+
+
+Para ver el listado de rutas de nuestra aplicación.
+
+
+     php artisan route:list
+
+    GET|HEAD   / .............................................................................................. home
+    POST       _ignition/execute-solution ignition.executeSolution › Spatie\LaravelIgnition › ExecuteSolutionContro…
+    GET|HEAD   _ignition/health-check ........ ignition.healthCheck › Spatie\LaravelIgnition › HealthCheckController
+    POST       _ignition/update-config ..... ignition.updateConfig › Spatie\LaravelIgnition › UpdateConfigController
+    GET|HEAD   about ......................................................................................... about
+    GET|HEAD   api/user ............................................................................................ 
+    GET|HEAD   blog ............................................................. posts.index › PostController@index
+    POST       blog ............................................................. posts.store › PostController@store
+    GET|HEAD   blog/create .................................................... posts.create › PostController@create
+    GET|HEAD   blog/{post} ........................................................ posts.show › PostController@show
+    PATCH      blog/{post} .................................................... posts.update › PostController@update
+    DELETE     blog/{post} .................................................. posts.destroy › PostController@destroy
+    GET|HEAD   blog/{post}/edit ................................................... posts.edit › PostController@edit
+    GET|HEAD   contacto .................................................................................... contact
+    GET|HEAD   sanctum/csrf-cookie ............... sanctum.csrf-cookie › Laravel\Sanctum › CsrfCookieController@show
+
+
+    
+
+Y le pasamos el parametro --path para que solo nos muesre los que contengan a palabra blg en la ruta:
+
+    $ php artisan route:lis --path=blog
+
+
+Veremos solo las siete rutas.
+
+    php artisan route:list --path=blog
+
+    GET|HEAD   blog ............................................................. posts.index › PostController@index
+    POST       blog ............................................................. posts.store › PostController@store
+    GET|HEAD   blog/create .................................................... posts.create › PostController@create
+    GET|HEAD   blog/{post} ........................................................ posts.show › PostController@show
+    PATCH      blog/{post} .................................................... posts.update › PostController@update
+    DELETE     blog/{post} .................................................. posts.destroy › PostController@destroy
+    GET|HEAD   blog/{post}/edit ................................................... posts.edit › PostController@edit
+
+
+
+En la parte inicial esta el bervo al que responde cada ruta:
+
+     GET|HEAD   - index
+     POST       - store
+     GET|HEAD   - create
+     GET|HEAD   - show
+     PATCH      - update
+     DELETE     - destroy
+     GET|HEAD   - edit
+
+
+Luego tenemos la url     
+
+    blog
+    blog
+    blog/create
+    blog/{post}
+    blog/{post}
+    blog/{post}
+    blog/{post}/edit
+
+
+Luego el nombre de la ruta al que hacemos referencia internamente 
+    posts.index 
+    posts.store
+    posts.create 
+    posts.show
+    posts.update
+    posts.destroy
+    posts.edit
+
+
+Luego el nombre del controlador seguido del metodo que se va a ejecutar.
+
+
+Como esto es un patron comun Laravel se tiene un metodo especial que nos permite generar todas estas rutas,
+
+Vamos a documentar todo esto 
+
+/*
+     Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
+
+    Route::get('/blog/create', [PostController::class, 'create'])->name('posts.create');
+
+    Route::post('blog', [PostController::class, 'store'])->name('posts.store');
+
+    Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
+
+    Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+
+    Route::patch('/blog/{post}', [PostController::class, 'update'])->name('posts.update');
+
+    Route::delete('/blog/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+*/
+
+
+
+Y en lugar de definir una por una, podemos llamar al metodo especial resources dando le un nombre en este caso, vamos a llamarle blog.
+
+
+y vmos a pasarl el controlador.
+
+Route::resource('blog', Postcontroller::class);
+
+
+Ahora si revismos otra vez el comando
+
+    $ php artisan route:lis --path=blog
+
+Vemos que tenemos algo similar a lo que teniamos antes, la diferencia es que ahora el nombre de la variable es blog y los nombres de ruta, comienzan con la palabra blog.
+
+
+    php artisan route:list --path=blog
+
+    GET|HEAD        blog ......................................................... blog.index › PostController@index
+    POST            blog ......................................................... blog.store › PostController@store
+    GET|HEAD        blog/create ................................................ blog.create › PostController@create
+    GET|HEAD        blog/{blog} .................................................... blog.show › PostController@show
+    PUT|PATCH       blog/{blog} ................................................ blog.update › PostController@update
+    DELETE          blog/{blog} .............................................. blog.destroy › PostController@destroy
+    GET|HEAD        blog/{blog}/edit ............................................... blog.edit › PostController@edit
+
+
+
+
+
+Lo ideal en este caso seria llamarle al recurso 'post' de esa forma si verificamos la rutas que contengan, el path post veremos la definición de las rutas de forma correcta.
+
+Route::resource('posts', Postcontroller::class);
+
+
+
+    php artisan route:list --path=posts
+
+    GET|HEAD        posts ....................................................... posts.index › PostController@index
+    POST            posts ....................................................... posts.store › PostController@store
+    GET|HEAD        posts/create .............................................. posts.create › PostController@create
+    GET|HEAD        posts/{post} .................................................. posts.show › PostController@show
+    PUT|PATCH       posts/{post} .............................................. posts.update › PostController@update
+    DELETE          posts/{post} ............................................ posts.destroy › PostController@destroy
+    GET|HEAD        posts/{post}/edit ............................................. posts.edit › PostController@edit
+
+
+
+
+Pero tambien podremos agregar modificciones.
+
+
+Para hacer que funcione, como antes, podemos cambiar el nombre del recurso a blog, otra vez y tendemos la url similar a la que teniammos antes, pero en cuanto al nombe de la ruta necesitamos apasarle un array de configuración como tercer parmetro de metodo resources, podemos utilizar lla llave names y decirle que inicien con la palabra post.
+
+
+
+
+De esta form si revisamos
+
+    php artisan route:list --path=blog
+
+    GET|HEAD        blog ........................................................ posts.index › PostController@index
+    POST            blog ........................................................ posts.store › PostController@store
+    GET|HEAD        blog/create ............................................... posts.create › PostController@create
+    GET|HEAD        blog/{blog} ................................................... posts.show › PostController@show
+    PUT|PATCH       blog/{blog} ............................................... posts.update › PostController@update
+    DELETE          blog/{blog} ............................................. posts.destroy › PostController@destroy
+    GET|HEAD        blog/{blog}/edit .............................................. posts.edit › PostController@edit
+
+
+
+Vemos que ahora los nombres de ruta comienzan con post, y por ulimo el nombre del parametro blog, podemos cambiarlo tmbien.
+
+con la llave parameters, que recibe un array de parametross, ya que una url puede tener mutiples parametros, est este caoqwueremos que en el parametros 'blog' se llame post
+
+Y con eso tenemos.
+
+Si revisamos nuevamenete.
+
+Ahora tenemos la definicición exacatamento como se tenian antes.
+
+
+    php artisan route:list --path=blog
+
+  GET|HEAD        blog ........................................................ posts.index › PostController@index
+  POST            blog ........................................................ posts.store › PostController@store
+  GET|HEAD        blog/create ............................................... posts.create › PostController@create
+  GET|HEAD        blog/{post} ................................................... posts.show › PostController@show
+  PUT|PATCH       blog/{post} ............................................... posts.update › PostController@update
+  DELETE          blog/{post} ............................................. posts.destroy › PostController@destroy
+  GET|HEAD        blog/{post}/edit .............................................. posts.edit › PostController@edit
+
+
+  
+Ya tenemos implementadas las 7 rutas rest en nuestra aplicación.
+
+

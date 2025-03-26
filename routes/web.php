@@ -53,24 +53,36 @@ Route::view('/contacto', 'contact')->name('contact');
 //Enviando un array de metodos en nuestro controlador
 //Route::get('/blog', [PostController::class, 'methodname'])->name('blog');
 
-Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
+//Comentamos los 7 metodos rest para utlizar resources
 
-//Formulario de registro
-Route::get('/blog/create', [PostController::class, 'create'])->name('posts.create');
+// Route::get('/blog', [PostController::class, 'index'])->name('posts.index');
 
-Route::post('blog', [PostController::class, 'store'])->name('posts.store');
+// //Formulario de registro
+// Route::get('/blog/create', [PostController::class, 'create'])->name('posts.create');
+
+// Route::post('blog', [PostController::class, 'store'])->name('posts.store');
 
 
-//Route::get('/blog/1', [PostController::class, 'show'])->name('blog');
-//Show
-Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
+// //Route::get('/blog/1', [PostController::class, 'show'])->name('blog');
+// //Show
+// Route::get('/blog/{post}', [PostController::class, 'show'])->name('posts.show');
 
-//Edit
-Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
+// //Edit
+// Route::get('/blog/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
 
-//Update
-Route::patch('/blog/{post}', [PostController::class, 'update'])->name('posts.update');
+// //Update
+// Route::patch('/blog/{post}', [PostController::class, 'update'])->name('posts.update');
 
+// //delete
+// Route::delete('/blog/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+
+
+
+//
+Route::resource('blog', Postcontroller::class, [
+    'names' => 'posts',
+    'parameters' => ['blog' => 'post']
+]);
 
 
 

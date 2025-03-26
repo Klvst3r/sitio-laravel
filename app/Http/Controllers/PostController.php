@@ -161,8 +161,13 @@ class PostController extends Controller
       //Se optimiza el mensaje flash
       return to_route('posts.show', $post)->with('status', 'Post updated!');
 
-      
+    }
 
+    public function destroy(Post $post){
+        //return $post;
+        $post->delete();
+
+        return to_route('posts.index')->with('status', 'Post deleted');
 
     }
 
