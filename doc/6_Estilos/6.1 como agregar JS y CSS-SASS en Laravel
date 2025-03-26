@@ -1,0 +1,408 @@
+Laravel es un Fullstack Framework, lo que significa que no solamente tiene herramientas para el Backend sino tambien par el frontend, el desarrollo Frontend moderno requiere de herramientas para compilar y optimizar rchivos de CSS y JS.
+
+
+Herramientas que nos ayuden a acelerar el proceso de desarrollo. En Laravel se utiliza vite
+
+Antes veremos como agreghar archivos CSS y JS sin necesidad de ninguna herramienta adicional.
+
+Primero debemos tener claro que por seguridad la unica carpeta que es accesible desde el navegador, es la carpeta "public"
+
+Esta carpeta es la raiz de la aplicación.
+
+Es decir cundo accedemos a dominio
+Laavel.test
+
+o el nombre de nuestra aplicación, en nuestro caso.
+
+
+El servidor apunta directamente a la carpeta public.
+
+Por ende ejecuta el archivo index.php
+
+Que se encarga de levantar, el framework que se encarga de redireccioanr la ruta y el controlador correspondientes.
+
+Entonces como eta carpeta es pubica, aqui podriamos agregar los assets, por ejemplo crer una carpeta CSS con un aarchivo app.css.
+
+Vamos a gragarle un estilo para agragrlo un color al background
+
+body {
+    background-color: darkred;
+}
+
+
+Creamos una carpeta JS para el archivo app.JS
+Haciendo un console.log para verificar 
+
+Podremos revisar e archivo index, y revisaos la consola, y no se han cargado los sets ya que no se han vinculado, al layout
+
+Asi que para esto tenemos que ir al componente views/components/layout/app.blade.php
+
+
+en el head se pueden crear los estilos, y 
+
+
+<link rel="stylesheet" href="/css/app.css">
+
+
+Como la raiz del proyecto es / entonces podriamos ingresar con la siguiente ruta
+
+ahora si actualizamos, veremos aplicados los estilos.
+
+
+Y si agregamos el script, Js
+
+    <script src="/js/app.js"></script>
+
+Y actualizamos tendmos el console log que se agrego en el archivo js.
+
+
+De esta forma podremos agregar cualquier libreria CSS o Js que quieramos utiizar o incluso si queremos agregrlos directamente, desde un CDN.
+
+Pero que pasa si queremos utilizar SASS para trabajar con CSS o queremos utilizar cualquir libreria de CSS o Js que requiera algu tipo de compilaciń. que deseemos utilizar, o incluso agregarlosdirectamente.
+
+Ahi es donde entra vite.
+
+Vite se define asi mismo como 
+
+https://vite.dev/
+
+
+Una herramienta Frontend de ultima generaciń resulve todos los problemas que indica en susitio web
+
+- Instant servr start
+- Lightning fast HRM
+- rich Features
+- Optimized build
+- Universal plugins
+-Fully Typed API's 
+
+
+Pero lo mas importante es que es extremadamente rapido, asi que vmos a problarlo.
+
+cuando instalamos una nueva aplicación de Laravel
+
+En la carpeta resources, nos encontramos con dos carpets
+
+/resources/
+|_css
+|_js
+
+
+con sus respectivos archivoss, cuando hagmos modificaciones no se van a ver refejadas automaticamente en la pagina debido a que stos son archivos fuente y aunque quisiermos no podriamos vincularlos directamente en e layout ya qu esta fuera de la carpeta public.
+
+Recordando que desde el navegador solo podemos acceder, a laacarpeta public, entonces debemos de configurar vite cpara que compile estos rchivos y e resultado de la compilación la ubique en la carpeta public.
+
+
+Configuracipin de vite
+---------------------
+
+
+Entonces pra configurar vite, tenemos un archivo llamado vite.config.js en la raiz del proyecto
+
+Si no tenemos este archivo es probable que estemos utilzando Laravel mix, y ne este caso es recomendable ver como migrar de Laravel Mix a Laravel Vite.
+
+Para ir viendo la guia paso a paso de como actulizarse
+
+
+Esta configuracion que viene en el archivo e uficiente para que saber que e estamos indicando donde, estan los archivos CSS y JS para Laavel, en este caso en la carpeta resources.
+
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+    ],
+});
+
+
+
+
+En laravel 9 el archivo esta de la siguiente manera
+
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+           'resources/css/app.css', 
+           'resources/js/app.js',
+        }),
+    ],
+});
+
+En la version actual con Laravel 11 este archivo cambia on un parametro adicional.
+
+
+
+El siguente paso seria instalar las depedencias npm
+
+Para ello es necesario que tengamos instalado nodeJs
+
+Para verificar si est istalado ejecutamos:
+
+    $ node -v
+
+Simplemente nos dirigimos a node, seleccionamos a version lts recomendada elegidmos el sistema operativo e istalamos como cualquier programa.
+
+Luego de reiniciar la terminal ya deberia de funcioanr.
+
+Al instalar node tambien viene npm que es el manejador de paquetes desde Js y con el podemos instalar las dependencias qe vienen en el rchivo package.json con el comando
+
+    $ npm install
+
+
+Esto nos creara un acrpeta llamada
+
+/node_modules
+
+Con las dependencis de Js entre ellas Vite y el plugin de Laravel para vite.
+
+
+Es importante que excluyamos esta carpeta delcontrold e versiones al al igual qu con la carpeta vendor.
+
+En el archivo .gitignore
+
+
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.env.production
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+
+
+
+
+Ya vienen por defecto exclidas, 
+
+    $ npm install
+
+
+Una vez que tengamos instaadas las dependencias ya podemos ejecutar el archivo
+
+    $ npm run dev
+
+Para levantar el servidor de vite
+
+
+Veremos a url del servidor
+
+    npm run dev
+
+    > dev
+    > vite
+
+
+    VITE v5.4.14  ready in 332 ms
+
+    ➜  Local:   http://localhost:5173/
+    ➜  Network: use --host to expose
+    ➜  press h + enter to show help
+
+    LARAVEL v10.48.25  plugin v1.2.0
+
+    ➜  APP_URL: http://localhost
+
+Para desarrollo y debajo esta la url de nuestra aplicación de Laravel, este valor se obtiene del archivo .env
+
+
+Del avaraible:
+
+    APP_URL=http://localhost
+
+
+Puede cambiare y se vera reflejado inmediatamente, 
+
+entoces ya se tiene el servidor de vte, ya solo hace falta vincularlo los assets al layout app.
+
+
+Para ello abrimos el archivo
+resources/layouts/app.blade.php
+
+Dentro podremos utiizr la directiva @vite()
+
+
+Que recibe como parametro un array con la dirección de los archivos fuente.
+
+Le decimos que el archivo css esta en la carpeta resources/css/app.css
+
+    @vite(['resources/css/app,css'])
+
+
+En el momento que se guardan los cambios, inmediatamente se ven reflejados
+
+
+Si inspeccionamos la pagina vemos que 
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title> Home</title>
+    <meta name="description" content="Home meta Description">
+    
+    <script type="module" src="http://localhost:5173/@vite/client"></script>
+    
+    <link rel="stylesheet" href="http://localhost:5173/resources/css/app.css">
+    <script type="module" src="http://localhost:5173/resources/js/app.js"></script>
+</head>
+
+Cuando estamos en desarrollo, e decir cuando ejecutamos npm run dev, se utiliza el sevidor de vite pra serviros assets, y estas lines anteriore se egeneran con las directivs de vite.
+
+Nosotros no debemos preocuparnos con esto, 
+
+
+cuando tenemos que desarrollar, ya no necesitamos de este servidor de desarrollo, 
+
+CTRL + C 
+
+para cerrar el servidor de vite
+
+
+cuando vayamos  publicr los cmbios debemos ejecutar el comando
+
+npm run build 
+
+
+Veremos la dircción, de los arhivos ya compilados, que estn en la carpeta public.
+
+Tenemos una carpeta llamada build.
+
+Y vemos el archivo css minificado.
+
+Es importante que donde debemos trabajar es en los archivos
+
+/resources/js/app.js
+Y
+/resources/css/app.css
+
+
+Tras correr 
+
+    $ npm run dev
+o 
+
+    $ nom run buid
+
+Los cambios surtiran efecto
+
+
+Ahora si se etan utiizando las url absolutas de la misma aplicacion de laravel
+
+Supongamos que queremos ecribir SASS o cualquier ora libreria para escrbir CSS en ese caso le cambiamos el nombre de la extensión a:
+
+
+Archivo css
+
+/resources/css/app.css
+
+Cambiando a:
+/resources/css/app.scss
+
+
+Si modificamos el color del h1 y de los links, la idea es que el vite lo compile y lo pueda utilizar.
+
+
+Vamos a trabajar con el archivo css
+
+
+$white: #ffffff;
+
+body {
+    background-color: darkred;
+}
+h1{
+   color: $white; 
+}
+a{
+    color: $white;
+}
+
+
+Utilizamos la variable para decarar el color y luego utilizarlo donde sea necesario.
+
+debemos tambien cmbiar a configuración de vite par cambiar la extension correcta 
+
+Archivo 
+    vite.config.js
+
+            input: ['resources/css/app.scss', 'resources/js/app.js'], 
+
+
+
+y lo mismo en el layout en la directiva de blade vite
+
+    @vite(['resources/css/app.scss', 'resources/js/app.js'])
+
+Ahora si encendemos el servidor nuevamente
+
+    npm run dev
+
+Actualizamos, indicara que hace falta la dependencia de sass:
+
+    [plugin:vite:css] Preprocessor dependency "sass-embedded" not found. Did you install it? Try `npm install -D sass-embedded`.
+
+    /home/klvst3r/dev/laravel/sitio-laravel/resources/css/app.scss
+
+Vamos a instalarla rapidamente
+
+    npm install sass
+
+Guardamos en el arbol de las dependencias
+
+    npm istall sass --save-dev
+
+Encendemos el servidor nuevamente:
+
+Y ahora se veran reflejdos los cambios en nuestra aplicacion
+
+
+Si ejecutamos el comando
+
+    $ npm run build 
+
+Para producción, veremos el resultado de la compilación en:
+
+    /public/build/assets/
+y el archivo
+    /public/build/manifest.json
+
+
+Ademas se puede ver que se encuenyra optimizado.
+
+
+Recordemos siempre ejecutar el comando 
+
+    $ npm run build
+
+
+Antes de ir a producción.
+
+
+Par que se genera a carpeta build, dentro de la carpea public y que sea accesible desde el navegador.
+
+
+
+ 
+
+
+
