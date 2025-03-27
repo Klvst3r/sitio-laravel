@@ -1,0 +1,133 @@
+La versión que se considera de Bootstrap es la version 5.
+
+
+Para utilizar Bootstrap en Laravel es muy sencillo, vamos a googlear, Bootstrap navbar
+
+Elejimos a version:
+
+https://getbootstrap.com/docs/5.0/components/navbar/
+
+Que es la ultima versin al momento de la presente documentación.
+
+Tenemos un snippet que podemos copiar.
+
+Temporalmente lo vamos a pegar en la vista welcome
+
+
+Puede que al recargar nos indique el error que no encuentre el archivo manifest de vite
+
+En la sección anterior vimos dos formas de solucionarlo.
+
+En este caso como estamos en desarrollo vamos a ejecutar
+    $ npm run dev
+
+Asi es como se ve un nav bar de Boostrap sin ningun esilo, abriremos otras pestaña  
+
+Vamos a ejecutar la siguiente instrucción par instalar bootsrap y lo guardams en las dependencis de desarrollo:
+
+    $ npm i bootstrap --save-dev
+
+Ahora si vamos al archivo 
+
+app.scss
+
+Recordando que lo cambiamos de css a scss
+
+Para utilizar sass y tambien cambiamos las referencias del archivo de configuración de vite y en el layout app.
+
+Y tambien instalamos bootstrap
+    npm install sass --save-dev
+
+Una vez que ya tenemos instalado bootstrap, podemos importarlo dentro de bootstrap scss
+
+de la sigiente manera.
+
+
+Dentro del archivos
+
+resources/css/appscss
+
+ponemos la siguiente linea:
+
+    @iport 'bootstrap/scss/bootstrap';
+
+Espermso a que compile o bien arrancamos el servicio de vite nuevaente
+
+
+    npm run dev
+
+
+Recargamos y probeamos, el menu aua no funciona.
+
+Aun nos hace falta inclir los archivos de JS.
+
+Para ello, vamos para ello dentro del archivo
+
+/resources/js/app.js 
+
+tenemos
+    
+    import './bootstrap';
+
+    import '../css/app.scss';
+
+
+Recordando que el script de bootstrap, no tiene nada que ver con la libreria, asi que debajo de estas lineas vamos a importar las siguietes lineas como:
+
+
+    import * as bootstrap from 'bootstrap';
+
+Espermso a que compile y probeamos nuevmente la funcionalidad.
+
+
+en el archivo
+
+/resources/css/app.scss
+
+Si queremos podemos modificar las variables, de Bootstrap, para personalizar los estilos, por ejemplo del color de fondo del body y el color primario que se un color diferente.
+
+    $body-bg: #222222;
+    
+    $primary; #999999;
+
+    @import 'bootstrap/scss/bootstrap';
+
+
+Hay que tomar en cuenta el orden, ya que si importamos bootstrap primero, y luego definimos las variables no van a tener estos efectos.
+
+Si no estamos utilizando sass, podemos importar directamente desde el js y tambien va a funcionar.
+
+
+/resources/js/app.js 
+
+        import './bootstrap';
+
+        import '../css/app.scss';
+
+        import 'bootstrap/scss/bootstrap.scss';
+
+        import * as bootstrap from 'bootstrap';
+
+
+Y tambien va a funcionar.
+
+
+Entonces para instalar hacemos
+
+    $ npm install bootstrap --save-dev
+
+
+
+Agregamos el css en el archivo app.scss
+
+        import 'bootstrap/scss/bootstrap.scss';
+
+
+
+Y agregamos los scripts en el archivo app.js
+
+            import * as bootstrap from 'bootstrap';
+
+Pero no vamos a utilizar Bootstrap en este proyecto, vamos a utillizar Tailwind.
+
+

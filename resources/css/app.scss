@@ -1,11 +1,19 @@
-$white: #ffffff;
+    $body-bg: #222222;
+
+    $primary: #999999;
+
+    @import 'bootstrap/scss/bootstrap';
+
+//$white: #ffffff;
 
 body {
-    background-color: darkred;
+    //background-color: darkred;
 }
 h1{
-   color: $white; 
+   //color: $white; 
 }
 a{
-    color: $white;
+    //color: $white;
 }
+
+
