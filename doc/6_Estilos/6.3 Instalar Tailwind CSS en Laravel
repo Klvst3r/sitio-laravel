@@ -1,0 +1,571 @@
+Antes de Instalar Tailwind vamos a desinstlar Bootstrap
+
+1. En el archivo
+
+/resources/js/app.js
+
+Vamos a quitar el siguiente import
+
+    import * as bootstrap from 'bootstrap';
+
+2. El archivo
+
+/resources/css/app.css
+
+Lo dejamos en blanco de momento
+
+3. Desde la terminal lo desinstalamos con:
+
+    npm uninstall bootstrap
+
+
+4. encendemos de nuevo el servidor vite
+
+    npm run dev
+
+5 En la vista de Welcome vamos a quitar el navbar que se utiizo de ejemplo    
+
+
+Quedando:
+
+    <x-layouts.app title="Home" :meta-description="'Home meta Description'" :sum="2 + 2">
+
+        <h1>Inicio desde Welcome</h1>
+
+
+        
+
+    </x-layouts.app>
+
+
+Instalar Tailwind
+------------------
+
+
+Para instalr Tailwind en una aplicación de Laravel, vamos a ir a 
+
+    https://tailwindcss.com/
+
+Hacemos click en el boton getstarted
+
+De ahi nos vamos a > Framework Guides
+
+    https://tailwindcss.com/docs/installation/framework-guides
+
+Seleccionando Laravel
+
+        https://tailwindcss.com/docs/installation/framework-guides/laravel/vite
+
+
+Ahora de acuerdo a la documetacion nos indica que 
+
+Create your project
+
+Start by creating a new Laravel project if you don’t have one set up already. The most common approach is to use the Laravel installer.
+Terminal
+
+laravel new my-project
+cd my-project
+
+02
+Install Tailwind CSS
+
+Install @tailwindcss/vite and its peer dependencies via npm.
+Terminal
+
+npm install tailwindcss @tailwindcss/vite
+
+03
+Configure Vite Plugin
+
+Add the @tailwindcss/vite plugin to your Vite configuration.
+vite.config.ts
+
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+    // …
+  ],
+})
+
+04
+Import Tailwind CSS
+
+Add an @import to ./resources/css/app.css that imports Tailwind CSS. Additionally, tell Tailwind CSS to scan your resources/views directory for utilities.
+app.css
+
+@import "tailwindcss";
+@source "../views";
+
+05
+Start your build process
+
+Run your build process with npm run dev.
+Terminal
+
+npm run dev
+
+06
+Start using Tailwind in your project
+
+Make sure your compiled CSS is included in the <head> then start using Tailwind’s utility classes to style your content.
+app.blade.php
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @vite('resources/css/app.css')
+  </head>
+  <body>
+    <h1 class="text-3xl font-bold underline">
+      Hello world!
+    </h1>
+  </body>
+</html>
+
+1. Crear un proyecto de Laravel en nuestro caso nosotros ya lo tenemos
+
+    Metodo anterior
+        El segundo es instalar las dependencias de tailwindcss metodo anterior
+
+
+        PostCSS y Autoprefixer
+            $ npm install -D tailwindcss postcss Autoprefixer
+
+            Una ves instalado creamos los archivos de configuración
+        Se cargan las librerias y se inicilizan tailwindcss
+            $ npmx tilwindcss init -p
+
+2. El metod actual indica qu ahora solo se instala tailwindcss y sus propis dependencia via npm
+
+    $ npm install tailwindcss @tailwindcss/vite
+
+3. Cerramos el servidor de vite con CTRL + C 
+
+4. Configuramos el pubg ind de tailvindcss a la configuracion de vite
+    Para ello en el archivo
+        vite.config.js
+
+        Agregamos la lineas
+
+            import tailwindcss from '@tailwindcss/vite'
+
+        y el plugin
+
+            tailwindcss(),
+
+
+
+    Quedando el archivo:
+
+
+    import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import tailwindcss from '@tailwindcss/vite'
+
+export default defineConfig({
+    server: {
+        host: 'localhost',
+        port: 5173, // Debe ser 5173, no 8000 (8000 es el puerto de Laravel, no de Vite)
+    },
+    plugins: [
+        tailwindcss(),
+        laravel({
+            input: ['resources/css/app.scss', 'resources/js/app.js'], // Asegurar rutas correctas
+            refresh: true,
+        }),
+    ],
+});    
+
+
+
+5. Importamos Tailwind CSS
+Para ello agremamos un @import a ./resources/css/app.css que precismente importara TailwindCSS, Adicionalmente, le indicamos a Tailwind CSS que escanee el directorio 'resources/views'
+
+en el archivo app.css
+
+/resources/css/app.css
+
+Agregamos
+
+    @import "tailwindcss";
+    @source "../views";
+
+
+6. Iniciamos el proceso de construccion
+
+Corremos nuestro proceso con
+    $ npm run dev
+
+7. Iniciamos a utlizar TailwindCss en nuestro proyecto
+
+    Debemos asedurarnos que nuestro compildor CSS este incluido en el <head> para arrancar usando TaiwindCSS con las clases hacia los estilos del conenido.
+
+    Ej en app.blade.php (una vista)
+
+    <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @vite('resources/css/app.css')
+  </head>
+  <body>
+    <h1 class="text-3xl font-bold underline">
+      Hello world!
+    </h1>
+  </body>
+</html>
+
+
+Proceso de Instalacion de Vite con Larvel 10
+-----------------------------------------------
+
+Para trabajar con Tailwind CSS en Laravel 10, el proceso ha cambiado ligeramente en comparación con Laravel 9, ya que Laravel ahora viene con Vite como el sistema de construcción por defecto. Aquí te dejo los pasos actualizados para integrar Tailwind CSS en Laravel 10:
+1. Instalar Laravel (si aún no lo tienes)
+
+Si todavía no tienes un proyecto de Laravel 10, puedes crear uno con:
+
+    $ composer create-project laravel/laravel nombre-proyecto
+    $ cd nombre-proyecto
+
+2. Instalar Tailwind CSS y sus dependencias
+
+Ejecuta el siguiente comando dentro de tu proyecto Laravel:
+
+    $ npm install -D tailwindcss postcss autoprefixer
+
+el archivo ejecutado fue:
+    $ npm install tailwindcss @tailwindcss/vite
+
+Esto instalará Tailwind CSS, PostCSS y Autoprefixer como dependencias de desarrollo.
+3. Generar el archivo de configuración de Tailwind
+
+Ejecuta el siguiente comando para generar el archivo de configuración:
+
+npx tailwindcss init -p
+
+Esto creará los archivos:
+
+    tailwind.config.js → Archivo de configuración de Tailwind.
+
+    postcss.config.js → Archivo de configuración de PostCSS.
+
+4. Configurar Vite para usar Tailwind
+
+Abre el archivo vite.config.js (o créalo si no existe) y agrégale la configuración de Tailwind:
+
+    import { defineConfig } from 'vite';
+    import laravel from 'laravel-vite-plugin';
+    import tailwindcss from '@tailwindcss/vite';
+
+    export default defineConfig({
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.js'],
+                refresh: true,
+            }),
+            tailwindcss(),
+        ],
+    });
+
+5. Agregar y configurar Tailwind a tu CSS
+
+Abre el archivo resources/css/app.css y reemplázalo con las directivas de Tailwind:
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+Si el archivo no existe, créalo con este contenido.
+
+
+
+
+6. Configurar Vite para Laravel 10
+
+si solo vamos a trabar con CSS hacemos lo siguiente:
+------------------
+
+Laravel 10 usa Vite para compilar los assets. Asegúrate de que tu archivo vite.config.js tenga lo siguiente:
+
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.css', 'resources/js/app.js'],
+            refresh: true,
+        }),
+    ],
+});
+
+
+En nuestro caso vamos a modificar Vite para compilar scss
+
+Modificar Vite para compilar SCSS
+-----------------------
+
+    Abre el archivo vite.config.js y asegúrate de que incluya resources/css/app.scss en la configuración:
+
+    import { defineConfig } from 'vite';
+    import laravel from 'laravel-vite-plugin';
+
+    export default defineConfig({
+        plugins: [
+            laravel({
+                input: ['resources/css/app.scss', 'resources/js/app.js'],
+                refresh: true,
+            }),
+        ],
+    });
+
+
+
+Levantamos el servidor de vite
+
+
+    $ npm run dev
+
+
+Con esto ya deberia de funcionar.
+
+
+
+4. Asegurar que Laravel cargue el archivo SCSS
+
+Abre tu plantilla principal, por ejemplo, resources/views/layouts/app.blade.php, y asegúrate de incluir el archivo SCSS con Vite:
+
+@vite('resources/css/app.scss')
+
+
+Y como ejemplo 
+
+vamos a copiar el ejemplo del h1 del ejemplo siguiente
+
+
+
+Esto se encargará de compilar y servir tu SCSS correctamente.
+
+Esto es Cargar Tailwind en la plantilla Blade
+
+Asegúrate de incluir Vite en tu archivo Blade, por ejemplo en resources/views/layouts/app.blade.php:
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laravel con Tailwind</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
+<body class="bg-gray-100">
+    <h1 class="text-3xl font-bold text-center text-blue-500">
+        ¡Laravel 10 con Tailwind CSS!
+    </h1>
+</body>
+</html>
+
+8. Compilar los assets con Vite
+
+Ejecuta el siguiente comando para compilar los assets en modo desarrollo:
+
+npm run dev
+
+Si deseas compilar los archivos para producción, usa:
+
+npm run build
+
+9. Ejecutar Laravel
+
+Finalmente, inicia el servidor de Laravel:
+
+php artisan serve
+
+Ahora, al abrir tu aplicación en el navegador, Tailwind CSS debería estar funcionando correctamente. 🚀
+Diferencias con Laravel 9
+
+    Laravel 10 usa Vite en lugar de Mix por defecto.
+
+    No es necesario configurar webpack.mix.js como en Laravel 9.
+
+    Se debe agregar @vite(['resources/css/app.css', 'resources/js/app.js']) en las vistas Blade.
+
+    Vite ofrece recarga en caliente (Hot Module Replacement), por lo que los cambios en CSS se reflejan inmediatamente sin recargar la página.
+
+Con estos pasos, Tailwind CSS estará completamente integrado en tu proyecto Laravel 10.
+
+
+
+Veremos que todos los estilos han sido normaizados
+
+
+Para probar pasamos por ejemplo cargamos nuestra vist welcome.blade.php
+
+Es decir antes de utilizar Tailwind se veian 
+
+
+en mi caso no se ven normalizaos los estilos y es que en el archivo 
+
+ resources/css/app.scss
+
+ Me marca :
+    Unknown at rule @tailwind
+
+El error "Unknown at rule @tailwind" ocurre porque Tailwind CSS no está procesando tu archivo SCSS correctamente. Esto puede deberse a que Vite no está compilando SCSS como debe ser.
+1. Asegurar que Sass está instalado
+
+Ejecuta este comando en tu proyecto para instalar Sass:
+
+npm install -D sass
+
+2. Verificar que vite.config.js incluye el archivo SCSS
+
+Abre tu archivo vite.config.js y asegúrate de que resources/css/app.scss está incluido en la configuración:
+
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    plugins: [
+        laravel({
+            input: ['resources/css/app.scss', 'resources/js/app.js'],
+            refresh: true,
+        }),
+    ],
+});
+
+Esto le dice a Vite que compile tu archivo SCSS correctamente.
+3. Verificar que el archivo Blade carga el SCSS
+
+Abre tu plantilla app.blade.php (o el layout que estés usando) y revisa que estás cargando correctamente el archivo SCSS:
+
+@vite('resources/css/app.scss')
+
+Si antes tenías @vite('resources/css/app.css'), cámbialo por app.scss.
+4. Reiniciar el servidor de desarrollo
+
+Después de hacer estos cambios, ejecuta los siguientes comandos para asegurarte de que todo esté limpio:
+
+rm -rf node_modules package-lock.json
+npm cache clean --force
+npm install
+npm run dev
+
+Esto reinstalará todo y recompilará tu SCSS correctamente.
+Explicación del problema
+
+El error ocurre porque Tailwind no puede procesar SCSS directamente si Vite no está configurado para manejarlo. Al hacer estos ajustes, Vite entenderá que debe compilar SCSS antes de procesar Tailwind.    
+
+
+Vamos a referiros a la guia 6.3.2 Instalación correcta de TailwindCSS
+
+Si vnmos a la vista welcome
+
+pegamos el h1, vmos que funciona
+
+Estamos listos prra utilizr Tailwindcss, no olvidemos que l estar en producción tendremos que ejecutar
+    $ npm run build
+
+Lo cual compilara las clases que se esten utilizando,
+
+Recapitulando, Para usar Tailwindcss para instalar en una aplicción de Laravel, es implemente:
+
+
+01
+Create your project
+
+Start by creating a new Laravel project if you don’t have one set up already. The most common approach is to use the Laravel installer.
+Terminal
+
+laravel new my-project
+cd my-project
+
+02
+Install Tailwind CSS
+
+Install @tailwindcss/vite and its peer dependencies via npm.
+Terminal
+
+npm install tailwindcss @tailwindcss/vite
+
+03
+Configure Vite Plugin
+
+Add the @tailwindcss/vite plugin to your Vite configuration.
+vite.config.ts
+
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+export default defineConfig({
+  plugins: [
+    tailwindcss(),
+    // …
+  ],
+})
+
+
+
+Aunque se propone la configuración anterior yo tilice:
+
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+
+export default defineConfig({
+    server: {
+        watch: {
+          usePolling: true,
+          interval: 300
+        }
+      },
+    plugins: [
+        laravel({
+            input: ['resources/css/app.scss', 'resources/js/app.js'],
+            refresh: true,
+        }),
+    ],
+});
+
+
+04
+Import Tailwind CSS
+
+Add an @import to ./resources/css/app.css that imports Tailwind CSS. Additionally, tell Tailwind CSS to scan your resources/views directory for utilities.
+app.css
+
+@import "tailwindcss";
+@source "../views";
+
+05
+Start your build process
+
+Run your build process with npm run dev.
+Terminal
+
+npm run dev
+
+06
+Start using Tailwind in your project
+
+Make sure your compiled CSS is included in the <head> then start using Tailwind’s utility classes to style your content.
+app.blade.php
+
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    @vite('resources/css/app.css')
+  </head>
+  <body>
+    <h1 class="text-3xl font-bold underline">
+      Hello world!
+    </h1>
+  </body>
+</html>
+

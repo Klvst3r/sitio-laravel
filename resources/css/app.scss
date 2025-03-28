@@ -1,19 +1,18 @@
-    $body-bg: #222222;
+//Trabajo con TailwindCSS
+ @tailwind base;
+ @tailwind components;
+ @tailwind utilities;
 
-    $primary: #999999;
 
-    @import 'bootstrap/scss/bootstrap';
+//Contenido eliinado por que es de Bootstrap el cual hemos desinstalado
+// $body-bg: #222222;
+    // $primary: #999999;
+    // @import 'bootstrap/scss/bootstrap';
 
-//$white: #ffffff;
+    //$white: #ffffff;
 
-body {
-    //background-color: darkred;
-}
-h1{
-   //color: $white; 
-}
-a{
-    //color: $white;
-}
+// body { background-color: darkred; }
+// h1{ color: $white;  }
+// a{ color: $white; }Unknow
 
 

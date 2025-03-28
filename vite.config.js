@@ -3,12 +3,14 @@ import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
     server: {
-        host: 'localhost',
-        port: 5173, // Debe ser 5173, no 8000 (8000 es el puerto de Laravel, no de Vite)
-    },
+        watch: {
+          usePolling: true,
+          interval: 300
+        }
+      },
     plugins: [
         laravel({
-            input: ['resources/css/app.scss', 'resources/js/app.js'], // Asegurar rutas correctas
+            input: ['resources/css/app.scss', 'resources/js/app.js'],
             refresh: true,
         }),
     ],

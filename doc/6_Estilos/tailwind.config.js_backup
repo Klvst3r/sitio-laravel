@@ -1,0 +1,10 @@
+module.exports = {
+  content: [
+    './resources/**/*.{js,vue,php}',
+    './node_modules/flowbite/**/*.js'
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
