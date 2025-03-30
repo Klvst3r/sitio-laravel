@@ -1,0 +1,32 @@
+1.5 Arracnque del proyecto importado
+
+Cuando importamos un poroyecto y queremos inicializarlo tenemos que ejecuatar un procedimiento basico.
+
+Para nuestra estructura dele proyecto vamos a considerar que nuestra carpeta de desarrollo esta en:
+
+	$ pwd
+	/Users/klvst3r/dev/
+
+
+1. Clonar el repositorio:
+
+El primer paso es clonar el repositorio para nuetsros caso haremos un ejemplo siguiente:
+
+	$ git clone git@gitlab.com:Klvst3r/klvst3r.git
+
+Ahora debemos ingresar a nuestra carpeta dele proyecto para trabajar con nuestro proyecto clonado
+	$ cd klvst3r
+
+2. Instalar composer
+	$ composer install
+
+3. Crear nuestro archivo enviroment
+	$ cp .env.example .env
+
+
+
+
+
+Importación de la BD
+
+
