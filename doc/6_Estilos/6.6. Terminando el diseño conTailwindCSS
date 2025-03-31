@@ -1,0 +1,304 @@
+Vamos a cnotinuar utilizando TailwindCSS para mejorar la apariencia de la aplicación.
+
+Tenemos encendido el servidor de Vite y vamos a comenzar con la vista welcome.
+
+A este titulos le vamos a agregar los enlaces del repositorio de los estilos
+
+Aplicando los estilos A
+
+    Home
+
+        <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Home</h1>
+
+    About
+
+        <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">About</h1>
+
+    Contact
+        <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Contact</h1>
+
+En el caso del Index del Blog
+
+    <header class="px-6 py-4 space-y-2 text-center">
+        <h1 class="font-serif text-3xl text-sky-600 dark:text-sky-500">Blog</h1>
+
+        
+       <a class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-center text-white uppercase transition duration-150 ease-in-out border border-transparent rounded-md dark:text-sky-200 bg-sky-800 hover:bg-sky-700 active:bg-sky-900 focus:outline-none focus:border-sky-900 focus:shadow-outline-sky" href="{{ route('posts.create') }}">Crear nuevo post</a>
+    
+    </header>
+
+
+
+debajo tenemos el foreach de los post
+
+
+Quitamos los estilos en linea que se tienen
+
+
+    <div style="display: flex; align-items: baseline">
+
+
+Al post que contienen los post individual
+
+    <div class="max-w-3xl px-4 py-2 space-y-4 bg-white rounded shadow dark:bg-slate-800">
+                <h2 class="text-xl text-slate-600 dark:text-slate-300 hover:underline">
+
+Afectando el div como el titulo secundario.
+
+El Link de editar con las clases de la siguiente manera:
+
+De esto:
+    <a href="{{ route('posts.edit', $post) }}">Edit </a>
+
+A estas clases:
+
+     <a class="inline-flex items-center text-xs font-semibold tracking-widest text-center uppercase transition duration-150 ease-in-out dark:text-slate-400 text-slate-500 hover:text-slate-600 dark:hover:text-slate-500 focus:outline-none focus:border-slate-200"  
+            href="{{ route('posts.edit', $post) }}">Edit </a>
+
+Asi tambien el boton que sirve para eliminar un post
+    <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit">Delete</button>
+            </form>
+
+
+Las clases para eliminar el post quedan de la siguiente manera
+        <button class="inline-flex items-center text-xs font-semibold tracking-widest text-center text-red-500 uppercase transition duration-150 ease-in-out dark:text-red-500/80 hover:text-red-600 focus:outline-none" type="submit">Delete</button>
+
+Para darle un efecto de profundidad
+
+Vamos a ir a layouts.app
+
+
+En el body
+
+    <body class="antialiased bg-slate-100 dark:bg-slate-900">
+
+Ya de regreso a Post Index
+Vamos a crear una etiqueta main para encerar el foreach con las siguientes clases
+
+     <main class="grid w-full gap-4 px-4 max-w-7xl sm:grid-cols-2 md:grid-cols-3"> para que se comporte como un grid
+
+Para que quede centrado en lo ancho de mi pantalla voy a dejar este estilo siguiente
+
+    <main class="grid w-full gap-4 px-4 max-w-8xl sm:grid-cols-2 md:grid-cols-3">
+
+Los botones de editar y borrar se van a colocar juntos para ello se van a colocar en un div
+Qquedando los botones d ela siguiente manera:
+
+     <div class="flex justify-between">
+                <a class="inline-flex items-center text-xs font-semibold tracking-widest text-center uppercase transition duration-150 ease-in-out dark:text-slate-400 text-slate-500 hover:text-slate-600 dark:hover:text-slate-500 focus:outline-none focus:border-slate-200"  
+                href="{{ route('posts.edit', $post) }}">Edit </a>
+                
+                <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button class="inline-flex items-center text-xs font-semibold tracking-widest text-center text-red-500 uppercase transition duration-150 ease-in-out dark:text-red-500/80 hover:text-red-600 focus:outline-none" type="submit">Delete</button>
+                </form>
+            </div>
+
+Funcionando incluso en modo dark
+
+Vamos ahora con el detalle del post
+
+al titulo le agregamos los siguientes clases
+
+    Partiendo de la estructura inidicial
+
+
+        <h1>{{ $post->title }}</h1>
+
+	<p>{{ $post->body }}</p>
+
+	<a href="/blog">Regresar</a>
+
+A la final
+
+
+
+Posterior a ello vamos con la vista del formulario para crear un post
+
+al titlulo le dejamos las siguientes clases
+
+     <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Create new post</h1>
+
+
+
+Formulario de crear
+--------------------
+Al formulario se le crean las siguientes clases
+
+    <form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('posts.store') }}" method="POST">
+
+Partiendo de la estructura inidicial
+
+    <form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('posts.store') }}" method="POST">
+    		@csrf
+    		{{-- Etiquetas del formulario --}}
+			@include('posts.form-fields')
+
+    		<button type="submit">Enviar</button> 
+    		<br/> 
+    	</form>
+    	<br/>
+	
+	<a href="{{ route('posts.index') }}">Regresar</a>
+
+
+
+
+A la final..
+
+
+   	<form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('posts.store') }}" method="POST">
+    		@csrf
+    		{{-- Etiquetas del formulario --}}
+			@include('posts.form-fields')
+ <div class="flex items-center justify-between mt-4">
+            <a class="text-sm font-semibold underline border-2 border-transparent rounded dark:text-slate-300 text-slate-600 focus:border-slate-500 focus:outline-none" href="{{ route('posts.index') }}">Regresar</a>
+
+            <button class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-center text-white uppercase transition duration-150 ease-in-out border border-2 border-transparent rounded-md dark:text-sky-200 bg-sky-800 hover:bg-sky-700 active:bg-sky-700 focus:outline-none focus:border-sky-500" type="submit">Enviar</button>
+        </div>
+    </form>
+
+
+Formulario de editar
+--------------------    
+
+Estructura inidicial
+
+        <h1>Editar Blog</h1>
+
+            {{-- @dump($post->toArray()) --}}
+
+            <form action="{{ route('posts.update', $post) }}" method="POST">
+                @csrf @method('PATCH')
+                {{-- Se incluyen los campos del formulario--}}
+
+                @include('posts.form-fields')
+                
+                <br/>
+                <button type="submit">Enviar</button> 
+                <br/> 
+            </form>
+            <br/>
+
+            
+            <a href="{{ route('posts.index') }}">Regresar</a>
+
+
+Estructura final
+        <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Editar un post</h1>
+
+            {{-- @dump($post->toArray()) --}}
+
+            <form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('posts.update', $post) }}" method="POST">
+                @csrf @method('PATCH')
+                {{-- Se incluyen los campos del formulario--}}
+
+                @include('posts.form-fields')
+                
+                <div class="flex items-center justify-between mt-4">
+                    <a class="text-sm font-semibold underline border-2 border-transparent rounded dark:text-slate-300 text-slate-600 focus:border-slate-500 focus:outline-none" href="{{ route('posts.index') }}">Regresar</a>
+
+                    <button class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-center text-white uppercase transition duration-150 ease-in-out border border-2 border-transparent rounded-md dark:text-sky-200 bg-sky-800 hover:bg-sky-700 active:bg-sky-700 focus:outline-none focus:border-sky-500" type="submit">Enviar</button>
+                </div>
+            </form>
+
+
+Estilos para formualrios
+------------------------
+Ahora solo nos queda estilizar el formualario tanto para crear como para editar los post
+
+Para ello abrimos un terminal para instalar tailwincss para formualrios
+
+    $ npm i @tailwindcss/forms --save-dev
+
+y lo guardamos en las dependencia sde desarrollo    
+
+
+Una vez instalado vamos al archivo de configuración de tailwindcss y regisrtreamos el plugin
+
+
+formfields tiene el siguiente estilo inicial
+
+        <label>
+            Title<br/>
+            <input type="text" name="title" value="{{ old('title', $post->title) }}">
+            
+            @error('title')
+                <br/>
+                <small style="color: red">{{ $message }}</small>
+            @enderror
+        </label><br/>
+        <label>
+            Body<br/>
+            <textarea name="body">{{ old('body', $post->body) }}</textarea>
+
+            @error('body')
+                <br/>
+                <small style="color: red">{{ $message }}</small>
+            @enderror
+
+
+        </label><br/>
+
+
+Estilo final
+
+    <div class="space-y-4">
+        <label class="flex flex-col">
+            <span class="font-serif text-slate-600 dark:text-slate-400">Title</span>
+            <input class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" name="title" type="text" value="{{ old('title', $post->title) }}">
+            @error('title')
+            <small class="font-bold text-red-500/80">{{ $message }}</small>
+            @enderror
+        </label>
+        <label class="flex flex-col">
+            <span class="font-serif text-slate-600 dark:text-slate-400">Body</span>
+            <textarea class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" name="body">{{old('body', $post->body)}}</textarea>
+            @error('body')
+            <small class="font-bold text-red-500/80">{{ $message }}</small>
+            @enderror
+        </label>
+    </div>
+
+
+Con los nuevos estilos se veran los estilos aplicados al formulario tanto de ediccion como de creación.
+
+
+Por ultimo tenemos el banner de la parte superior, para cuando se envia el post o se edita un post.
+
+Eso es en archivo
+    app.blade.php
+
+
+        Para los estilos cuando se haya creado un post
+
+Estilo inicial
+            @if(session('status'))
+        <div style="color: green;">
+            {{ session('status') }}
+        </div>
+    @endif
+
+
+Estilo final
+    @if(session('status'))
+    <div class="max-w-screen-xl px-3 py-2 mx-auto font-bold text-white sm:px-6 lg:px-8 bg-emerald-500 dark:bg-emerald-700">
+        {{ session('status') }}
+    </div>
+@endif
+
+
+con esto aplicara el mensaje flash para la creación como la edicion de los post
+
+
+Con esto hemos terminado los estilos de TailwindCss para nuestro proyecto.
+
+Para esta aplicación no se cuenta conninguna medida de seguridad ya que cualquier usuario puede venir y crear nuevos post, por ello la siguiente sección contemplara el bloque de seguridad, con el tema de autenticación.
+
+Referencia
+    https://github.com/aprendible/fundamentos-de-laravel-9/blob/main/resources/views/components/layouts/app.blade.php
+    https://github.com/aprendible/fundamentos-de-laravel-9/

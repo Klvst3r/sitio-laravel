@@ -24,6 +24,10 @@ npm install tailwindcss @tailwindcss/vite
 Configure Vite Plugin
 
 Add the @tailwindcss/vite plugin to your Vite configuration.
+
+En una segunda configuración tenia yo la segunda configuración pero al actualizar el repositorio, utilice la siguiente configuracion para el archivo:
+
+
 vite.config.ts
 
 import { defineConfig } from 'vite'

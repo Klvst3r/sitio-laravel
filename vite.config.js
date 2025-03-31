@@ -1,17 +1,9 @@
-import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
 export default defineConfig({
-    server: {
-        watch: {
-          usePolling: true,
-          interval: 300
-        }
-      },
-    plugins: [
-        laravel({
-            input: ['resources/css/app.scss', 'resources/js/app.js'],
-            refresh: true,
-        }),
-    ],
-});
+  plugins: [
+    tailwindcss(),
+    forms(),
+    
+  ],
+})

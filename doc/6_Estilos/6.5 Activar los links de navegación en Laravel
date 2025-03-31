@@ -1,0 +1,39 @@
+Ahora en la navegación y vamos a moficicar la estructura con las clases de TailwindCSS
+
+
+La estructura con la que se trabajara esta en el repositorio del codigo de github
+
+    https://github.com/aprendible/fundamentos-de-laravel-9/commit/a673018c7c2ba56767238c023d41a63954eecd97
+
+
+
+En el archivo
+
+navegation.blade.php
+
+Tenemos la estrcutura de navegación
+Pasamos los links hacia las etiquetas de <a> y procedemos a eliminar el primer menu
+
+
+Tenemos la navegación funcional.
+
+
+Los monus se activan con las clases 
+
+Vamos a toma como referencia el link de los post donde estan las publicaciones
+
+
+<a href="{{ route('posts.index') }}" class="px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white 
+                                {{ request()->routeIs('posts.*') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+ 
+
+                            Blog
+ 
+
+                        </a>
+
+Tenemos la sclases y ahora cada que exista una petición o la ruta sea la del post y  todos su contenido tomara los estilos que indican donde me encuentro en ese momento.
+
+Funciona tambien con el modo dark
+
+
