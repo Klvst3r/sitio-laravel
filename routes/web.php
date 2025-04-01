@@ -90,5 +90,12 @@ Route::resource('blog', Postcontroller::class, [
 
 
 // About
+//Route::view('/about', 'about')->name('about')->middleware('auth');
 Route::view('/about', 'about')->name('about');
+
+//Login
+
+Route::get('/login', function(){
+    return 'Login page';
+})->name('login');
 

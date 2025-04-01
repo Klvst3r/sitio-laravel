@@ -21,8 +21,12 @@
     @endif --}}
 
     
+    @auth
     <a class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-center text-white uppercase transition duration-150 ease-in-out border border-transparent rounded-md dark:text-sky-200 bg-sky-800 hover:bg-sky-700 active:bg-sky-900 focus:outline-none focus:border-sky-900 focus:shadow-outline-sky" 
     href="{{ route('posts.create') }}">Crear nuevo post</a>
+
+    @endauth
+
         {{-- @dump($posts) --}}
     </header>
     <main class="grid w-full gap-4 px-4 max-w-8xl sm:grid-cols-2 md:grid-cols-3">
@@ -37,9 +41,12 @@
                     {{ $post->title }}
                 </a>
             </h2>
+            @auth
             <div class="flex justify-between">
+                
                 <a class="inline-flex items-center text-xs font-semibold tracking-widest text-center uppercase transition duration-150 ease-in-out dark:text-slate-400 text-slate-500 hover:text-slate-600 dark:hover:text-slate-500 focus:outline-none focus:border-slate-200"  
                 href="{{ route('posts.edit', $post) }}">Edit </a>
+                
                 
                 <form action="{{ route('posts.destroy', $post) }}" method="POST">
                     @csrf
@@ -47,6 +54,7 @@
                     <button class="inline-flex items-center text-xs font-semibold tracking-widest text-center text-red-500 uppercase transition duration-150 ease-in-out dark:text-red-500/80 hover:text-red-600 focus:outline-none" type="submit">Delete</button>
                 </form>
             </div>
+            @endauth
         </div>
         @endforeach
     </main>

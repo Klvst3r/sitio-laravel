@@ -20,6 +20,12 @@ use Illuminate\View\View;
 
 class PostController extends Controller
 {
+    //constuctor que traen los middlewares gracia s que se extienden a este controlador
+    public function __construct(){
+      $this->middleware('auth', ['except' => ['index', 'show']]);
+     }
+
+
     //public function __invoke(){
     //public function methodname(){
         public function index(){

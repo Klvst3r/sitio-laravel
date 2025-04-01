@@ -1,0 +1,207 @@
+Vamos a prender dos formas de proteger rutas en Laravel
+
+Cuando se habla de proteger rutas, nos referimos a que solo los usuarios que hayan hecho login es decir que sean autenticados puedan acceder a dichas rutas.
+
+De momento se apage al servidor de vite y compilar los archivos para que funcionan sin el servidor de vite
+    $ npm run build
+
+
+Vamos a suponer que queremos proteger la ruta  about
+
+    Route::view('/about', 'about')->name('about');
+
+
+Para ello en la definición de la ruta podremos llamar al metodo middleware y agregar el middleware auth
+
+    Route::view('/about', 'about')->name('about')->middleware('auth);
+
+Los middleware son mecanismos que nos permiten filtrar e inspeccionar las peticiones entrantes en nuestra aplicación, en este caso estamos agregando  el middleware auth a la ruta about.
+
+
+Este middleware auth que viene con laravel, va a inspeccionar la petición y va a verificar si el usuario esta autenticado en la aplicación, y si lo esta va a dejarlo seguir y mostrar la vista about; caso contrario lo va a redireccionar al login.
+
+Si actualizamos en about veremos un error que la ruta login no ha sido definida, que es la ruta por defecto a la que redirecciona a los usuario no autenticados.
+
+Para saber donde, esta la logica del middleware podemos ir al archivos
+
+/app/Http/Kernel.php
+
+
+En el array $routeMiddleware tenemos varios middlewares que nos trae laravel por defecto y cada uo tiene un allave especifica que apunta a la clase del middleware,
+
+algo a notar es que la mayoria de los middleware, estan debajo del spacename "Illuminate...' y son parte del framework y no los debemos modificar.
+
+
+sin embargo hay dos middlewares
+    'auth' => \App\Http\Middleware\Authenticate::class,
+
+    'gest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+
+Dentro del namespace app
+
+
+Es decir son parte del nuestra aplicación y esta ahi para que los puedamos adaptar segun, nuestras necesidades.
+
+El middleware auth, contiene acceso si no estamos autenticado,  impide el acceso y nos redirige al login, el middleware guess hace lo contrario, es decir si estamos autenticado no permite pasar, este es ideal para agrgar a las ruta des login y regisrtro.
+
+
+Ya que no tiene sentido que un usuario autenticado acceda ala login, pero eso se vera mas adelante.
+    app\middleware\Authenticated
+
+Este middleware se extiende al middleware base del frameworks
+
+use illuminate\Auth\Middleware\Authenticate as Middleware.
+
+En este archivo se ecuentra la logica que verifica si estamos o no autenticados.
+
+No nos vamos a precupar por eso de momento, solo debemos a tener en cunata si determina si que no estamos autenticado va a ejecutar el metodo
+
+    redirectTO($request){
+        if(! $request->expectsJson()){
+            return route('login);
+        }
+    }
+
+Hace una verificación adicional preguntando si la peticion no espera un peticion JSON, entonces retorna la vista con la ruta login. y no  tenemos una ruta con este nombre.
+
+Podriamos cambiar el nombre del a ruta en lugar que sea login, aunque de manera recomendable es crear esta ruta para mostrar el formulario de login.
+
+
+De momento vamos al archivo de rutas web y debajo creamos una ruta de tipo get que responsa a /login y de momento vamos a retornar un clousure
+
+Route::get('/login', function(){
+    return 'Login page';
+});
+
+Se creara a futuro de mometno solo es para confirmar el redireccionamiento y que lo mas importante para que funcione es quetenga el nombre 'login'
+
+
+Route::get('/login', function(){
+    return 'Login page';
+})->name('login');
+
+Que ees el que se esta utilizando el en el middlewre Authenticate.php.
+
+
+si actualizamos nuevamente sobre about, nos indicara que debe aparecer el formulario del login.
+
+
+Si atualizamos nos indicara 
+
+    Login page
+
+about nos redirecciona al login, que de momento no es lo que queremos, asi que vamos a quitar el middleware    
+
+    Route::view('/about', 'about')->name('about');
+
+ Lo que si queremos es que cualquier usuario pueda acceder a la ruta post index para ver los post y tambien a al ruta post.show, para ver un detalle de u post-
+
+ ELresto de rutas como el de crear, editar y eliminar esten protegidas con el usuario y contraseña, 
+
+
+ Para ello podriamos agregar al middleware a este resources pero en este caso el middleware se va a aplicar a todas las rutas incluidas las rutas index y show.
+
+ entonces otra forma de palicar middlewares es hacerlo directamente desde el controlador.
+
+
+
+ Para ello en el controlador debemos crear un constructor, y desde aca llamar el metodo middleware que traen los controladores gracias a que se extienden a este controlador base y le indicamo que aplique el  
+
+    //Middlewares gracia s que se extienden a este controlador
+    public function __construct(){
+      $this->middleware('auth');
+    }
+
+Y le decimos que aplique el middleware auth, pero si lo deamos asi se va a aolicar a todos los metodos de este controlador index, show, edit, store, delete y destroy.
+
+Pero podemos pasarle como segundo parametro un array de configuración, y con ello la llave only que significa unicamente decirle que solo s aplque a los metodos create, edit, etc.
+
+ public function __construct(){
+      $this->middleware('auth',[only] => ['create, 'edit]]);
+    }
+
+
+Pero en este caso son menos los metodos a los que no queremos agregar el middleware, 
+
+Asi que en este caso podemos usar la llave except, que va a hacer lo opuesto.
+
+
+Va a agregar el middleware a todos los metodos, excepto a los que definamos ahi.
+
+public function __construct(){
+      $this->middleware('auth', ['except' => ['index', 'show']]);
+     }
+
+
+En este caso Index y show, todos los metodos estaran protegiddos por usuario y contraseña, menos estos dos.
+
+    public function __construct(){
+      $this->middleware('auth', ['except' => ['index', 'show']]);
+     }
+
+
+Probamos
+
+Y si intentamos crear un post nos redireccionara a la ruta login y por tanto al metodo login, lo mismo pasa con los metodos edit y destroy.
+
+justo como lo necesitamos, entonces ya hemos visto como proteger rutas vamos a ver ahora como mostrar y ocultar elemetos de la interfaz, como el boton de create new post a nivel de las vistas de blade 
+
+
+Para ello vamos a abrir la vista de post index
+
+y para que se muestren elementos solamente a los usuarios autenticados, tenemos disponible la directiva auth
+
+asi que vamos a encerarr el link de crear nuevo link entre esta directiva @auth
+
+@auth
+    <a class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-center text-white uppercase transition duration-150 ease-in-out border border-transparent rounded-md dark:text-sky-200 bg-sky-800 hover:bg-sky-700 active:bg-sky-900 focus:outline-none focus:border-sky-900 focus:shadow-outline-sky" 
+    href="{{ route('posts.create') }}">Crear nuevo post</a>
+
+    @endauth
+
+Lo que va a hacer es mostrar el link a los usuarios, que hayan hecho login, si actualizamos veremos que desaparece.
+
+Hamos los mismo con  los botones de editar y eliiminar en el index, los encerramos entre la directiva auth
+
+
+
+
+
+
+    @auth
+            <div class="flex justify-between">
+                
+                <a class="inline-flex items-center text-xs font-semibold tracking-widest text-center uppercase transition duration-150 ease-in-out dark:text-slate-400 text-slate-500 hover:text-slate-600 dark:hover:text-slate-500 focus:outline-none focus:border-slate-200"  
+                href="{{ route('posts.edit', $post) }}">Edit </a>
+                
+                
+                <form action="{{ route('posts.destroy', $post) }}" method="POST">
+                    @csrf
+                    @method('DELETE')
+                    <button class="inline-flex items-center text-xs font-semibold tracking-widest text-center text-red-500 uppercase transition duration-150 ease-in-out dark:text-red-500/80 hover:text-red-600 focus:outline-none" type="submit">Delete</button>
+                </form>
+            </div>
+            @endauth
+
+
+
+
+Adicional a esta directiva 
+
+Tenemos la directiva
+
+@guest
+
+@endguest
+
+
+Que hace lo contrario, dentro de esta directiva solo seran mostrados los usuarios que no hayan hecho login, actualizamos y ya los botones de car post, editar post y borrar post no seran visibles.
+
+
+Ahora solo nos falta implementar el login y es lo que haremos en la siguiente seccion.
+
+
+
+
+
+
