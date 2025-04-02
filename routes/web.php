@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Auth\RegisteredUserController;
+
 use App\Http\Controllers\PostController;
 
 use Illuminate\Support\Facades\Route;
@@ -99,3 +101,9 @@ Route::get('/login', function(){
     return 'Login page';
 })->name('login');
 
+
+//Ruta de registro
+Route::view('/register','auth.register')->name('register');
+
+
+Route::post('/register', [RegisteredUserController::class, 'store']);

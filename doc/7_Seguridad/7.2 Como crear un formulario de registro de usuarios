@@ -1,0 +1,456 @@
+Cuando se trata de agragar autenticación en una aplicacion en Laravel, podemos recomendar Laravel Breeze.
+
+Laravel Breeze nos provee de las rutas,  controladores y vistas necesarias para hacer login, registro, restablecimiento de contrasela, entre otras funcionalidades requeridas para la gran mayoria de aplicaciones web, ademas de que utiliza TailwindCss para la interfaz
+
+
+Ahora para utilizar Laravel Breeze es recomendableque tengamos una aplicación de Laravel recien instalada, ya que va a realizar algunos cambios sobre todo en el archivo de rutas web y puede causar comportamientos inesperados.
+
+En nuestro caso como ya hemos escrito este código y aunque es posible hacer funcionar Breee, no lo voy instalar en esta ocación ya que requiere de algunos pasos adicionales.
+
+Asi que se va a crear la funcionalidad de registro y de login manualmente sin utilizar ningun paquete adicional. 
+
+
+Laravel Breeze se puede aprender a utilizar en Curso de Desarrollo de una API con Laravel.
+
+
+Implementación:
+--------------
+
+Se va a comenzar implementando el egistro de usuarios en el archivo de navegación en el div, en el archivo que contiene los links de navegación
+
+navigation.blade.php. 
+
+Se duplica, dejando el siguiente contenido:
+
+
+{{-- Registro inicia --}}
+
+                <div class="ml-auto">
+                    <div class="flex space-x-4">
+                        
+                            <a href="{{ route('register') }}"
+                               class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('register') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+                                Register
+                            </a>
+                                                   
+                        
+                    </div>
+                </div>
+
+
+                {{-- Registro termina --}}
+ 
+
+
+Tenemos un link con el registro alineado a la derecha.
+
+Este link va a ir a la ruta register que aun no se tiene
+    <a href="{{ route('register') }}"
+
+y queremos que se active cuando estemos en dicha ruta, abrimos el archivo de rutas web.
+
+    Route::view('/register','auth.register')->name('register);
+
+Vamoa a crear una carpeta aut para agrupa las vistas de autenticación y por supuesto debemos de darle un nombre a esta ruta, le llaramermos Register
+
+Esta vista no se tiene se va a crear con la ayuda del pligin de Laravel Idea
+
+    Plugin PHPStorm: Laravel Idea
+
+Dentro de la carpeta resources views tenemos la vista register completamente vacia.
+
+Podemos copiar el contenid de la vista Contact
+
+    <x-layouts.app title="Contact" meta-description="'Contact meta Description'">
+
+        <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Contact</h1>
+
+
+    </x-layouts.app>
+
+Cambiando las coincidencias de contact por Register
+
+
+Ahora vamos a copiar el formulario que tenemos en la Vista Create
+
+    <form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('posts.store') }}" method="POST">
+    		@csrf
+    		{{-- Etiquetas del formulario --}}
+			@include('posts.form-fields')
+
+			<div class="flex items-center justify-between mt-4">
+				<a class="text-sm font-semibold underline border-2 border-transparent rounded dark:text-slate-300 text-slate-600 focus:border-slate-500 focus:outline-none" href="{{ route('posts.index') }}">Regresar</a>
+	
+				<button class="inline-flex items-center px-4 py-2 text-xs font-semibold tracking-widest text-center text-white uppercase transition duration-150 ease-in-out border border-2 border-transparent rounded-md dark:text-sky-200 bg-sky-800 hover:bg-sky-700 active:bg-sky-700 focus:outline-none focus:border-sky-500" type="submit">Enviar</button>
+			</div>
+		</form>
+
+Vamos a ir modificando lo que necesitemos, El primer error que nos aparece esque la variable post no existe.
+
+Vamos a comentar esa linea
+
+
+    @include('posts.form-fields')
+
+Que es donde hacemos referencia, a esa variable.
+
+El link de regresar, lo podemos cambiar a Login, que nos lleve a la ruta login si queremos que nos lleve a la ruta Login y el boton que envia el formulario que diga Register,
+
+Ahora en la acción del formualrio, el metodo post esta bien, y la ruta seria la misma register
+
+    <form class="max-w-xl px-8 py-4 mx-auto bg-white rounded shadow dark:bg-slate-800" action="{{ route('register') }}" method="POST">
+
+Puede que nos indique un error indicando que la ruta register no admite peticiones de tipo POST.
+
+
+Volvemos al archivo de rutas web para crear una ruta de tipo POST con la misma URL y en este caso vamos a llamar a un nuevo controlador.
+
+
+Route::post('/register', [RegisteredUserController::class, 'store']);
+
+Vamos a llamarle de la misma forma que en el paquete Laravel Breeze y que ejecute el metodo store, 
+
+
+Se crea el controlador, comantando primero la linea anterior para que no genere ningun error y con php artisan creamos el controlador.
+
+
+Lo creamos dentro de la carpeta Auth para agruparlos
+
+     php artisan make:controller Auth/RegisteredUserController
+
+
+Tenemos el controlador dentro de la carpeta Auth, y podemos descomentar la ruta del archvio web.
+
+Importamos el controlador, 
+
+    use App\Http\Controllers\Auth\RegisteredUserController;
+
+
+Y si reenviamos el formulario, nos indicara que el metodo store no existe, vamos a crearlo.
+
+    public function store(Request){
+
+Inyectamos la clase Request, retornandolo d emomento.
+
+    public function store(Request $request){
+        return $request;
+        
+    }
+
+Y en la vista nos devolvera el token del formulario.
+
+    _token	"Nq3e7hjparu9RuSKoE750bwZhDMH3Tv2M1W5uFQ4"
+
+Ya que es el unico campo que tenemos actualmente en el formulario.
+
+
+Se van a crear ahora los compos de entrada para el rgeistro.
+
+Si vamos al  archiovo form fields, tiene la estructura que quisieramos reutilizar, se recomienda crear un componente asi como se hizo con el layout para reutilizar todos estos elementos en los demas formularios que creemos a futuro,
+
+Par efectos practicos se copia el formualrio  y se pega en el formulario de registro
+
+
+    <div class="space-y-4">
+            <label class="flex flex-col">
+                <span class="font-serif text-slate-600 dark:text-slate-400">Name</span>
+                <input 
+                    class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" 
+                    name="name" 
+                    type="text" 
+                    value="{{ old('name') }}"
+                >
+                @error('name')
+                <small class="font-bold text-red-500/80">{{ $message }}</small>
+                @enderror
+            </label>
+        </div>
+
+
+si enviamos van a pareciendo en el request
+
+    _token	"Nq3e7hjparu9RuSKoE750bwZhDMH3Tv2M1W5uFQ4"
+name	"Klvst3r"
+
+
+Duplicamos para el campo email
+
+
+        <div class="space-y-4">
+            <label class="flex flex-col">
+                <span class="font-serif text-slate-600 dark:text-slate-400">email</span>
+                <input 
+                    class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" 
+                    name="email" 
+                    type="email" 
+                    value="{{ old('email') }}"
+                >
+                @error('email')
+                <small class="font-bold text-red-500/80">{{ $message }}</small>
+                @enderror
+            </label>
+        </div>
+
+
+duplicamos ahora para la contraseña
+
+        <label class="flex flex-col">
+                <span class="font-serif text-slate-600 dark:text-slate-400">Password</span>
+                <input 
+                    class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" 
+                    name="password" 
+                    type="password" 
+                    value="{{ old('password') }}"
+                >
+                @error('password')
+                <small class="font-bold text-red-500/80">{{ $message }}</small>
+                @enderror
+            </label>
+        </div>
+
+
+Ahora duplilcamos para el campo de confirmacion de conraseña
+
+
+
+hay una convencion que el campo que queremos confirmar se seguido de su gion confirmation
+
+
+
+        <label class="flex flex-col">
+            <span class="font-serif text-slate-600 dark:text-slate-400">Password confirmation</span>
+            <input 
+                class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" 
+                name="password_confirmation" 
+                type="password" 
+                value="{{ old('password_confirmation') }}"
+            >
+            @error('password_confirmation')
+            <small class="font-bold text-red-500/80">{{ $message }}</small>
+            @enderror
+        </label>
+
+
+Podemos enviar y ahora tendremos que implementar, el metodo store
+
+
+	
+_token	"Nq3e7hjparu9RuSKoE750bwZhDMH3Tv2M1W5uFQ4"
+name	"Klvst3r"
+email	"klvst3r@gmail.com"
+password	"mi_clave"
+password_confirmation	"mi_clave"
+
+
+Ahora tenemos que validar primero en el metodo store, pasamos la reglas del metodo store del controlador de Post
+
+
+La tabla users ya se tiene por defecto debido a que toda nueva aplicación de Laravel viene con un amigración de la tabla users y el momento de ejecuar php artisan migrate, se genera dicha estructura.
+
+
+Asi que no debemos crearla manualmente, ya se tiene creada.
+
+Finalmente el campo Password sera obligatorio, deberpa ser confirmado.
+
+al utilizar la regla confirm, automaicamente se va a comparar con un campo del mismo nombre seguido de _confirmation.
+
+      $validated = $request->validate([
+          'title' => ['required', 'string', 'max:255'],
+          'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+          'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+al final vemos que al retener reglas de Password, debemos importar         
+
+    
+    use Illuminate\Validation\Rules;
+
+Y basicamente nos agrega algunas reglas para que la contraseña sea bastante segura.
+
+
+Esta seguridad la podemos confirgurar, curso Desarrollo de una API con Laravel.
+
+Con esto ya tenemos la validación del formulario, si se envia tanto del front como del back veremos las vallidaciones.
+
+Si la vaidación pasa, ya podemos crear un usuario de forma segura, al igual que con la migración de la tabla users, Laravel tambein nos provee de un modelo de Eloquent llamado User para interacturar con dicha tabla.
+
+en la carpeta 
+
+
+    App\Http\Models\User.php
+
+Es un modelo especial, con funcionalidades adicionales para usuarios.
+
+entonces luego de validar podemos utilizar este modelo y llamar al método Create, 
+
+
+
+    User::create();
+
+No olvidando importar el modelo dentro del controlador.
+
+    use App\Models\user;
+
+Pasandole un array con el campo name que será igual a lo que ingreso el ususario en el formulario.
+
+
+    User::create([
+            'name' => $request->input('name'),
+        ]);
+
+
+
+Tambien podemos llamar al metodo directamente si queremos
+
+    User::create([
+            'name' => $request->'name',
+        ]);
+
+Y lo mismo con el email.
+
+En el caso del password es muy importante queno guardemos la conraseña tal como la recibimos.
+
+User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]);
+
+Eso es considerado un delito en ciertas partes del mundo y ademas es poco ético, por lo que es algo que debemos evitar siempre.
+
+
+En su lugar debemos encirptarla antes. PAra ello podemos hacer uso de la funcion Bcrypt que nos provee Laravel y listo.
+
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+        
+
+
+Tambien es probable que veamos utilizar el hash y llamar al metodo make y funciona de la misma forma
+
+        'password' => Hash::make($request->password),
+
+
+
+Luego de crear al usuario, podemos autenticarlo automaticamente o podemos redireccionarlo al login para que inicie sesión con los datos que se acaban de crear.
+
+
+Si queremos autenticarlo automaticamente podemos guardar al usuario en una variable y con el Phasade auth llamar al metodo login, con el usuario como parametro:
+
+
+ $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        Auth::login($user); 
+
+
+Otra opcion es no autenticarlo automaticamente y redireccionar al login con un mensaje que diga que la cuenta fue creada.
+
+
+    return to_route('login')->with('status', 'Account created!');
+
+Yo voy a dejar asi, pero depende de las necesidades de cada apliación.
+
+
+     User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return to_route('login')->with('status', 'Account created!');
+
+
+Entonces, ya tenemos la validación del formulario, luego creamos el usuario en la base de datos y finalmente lo redireccionamos al login para que inicie sesión con los datos recien creados.
+
+     $request->validate([
+          'name' => ['required', 'string', 'max:255'],
+          'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+          'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        //dd($validated);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+        ]);
+
+        return to_route('login')->with('status', 'Account created!');
+
+
+Antes de probarlo vamos a qitar estos value 
+
+
+    <label class="flex flex-col">
+                <span class="font-serif text-slate-600 dark:text-slate-400">Password</span>
+                <input 
+                    class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" 
+                    name="password" 
+                    type="password" 
+                    
+                >
+                @error('password')
+                <small class="font-bold text-red-500/80">{{ $message }}</small>
+                @enderror
+            </label>
+        
+
+
+        <label class="flex flex-col">
+            <span class="font-serif text-slate-600 dark:text-slate-400">Password confirmation</span>
+            <input 
+                class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" 
+                name="password_confirmation" 
+                type="password" 
+                
+            >
+            @error('password_confirmation')
+            <small class="font-bold text-red-500/80">{{ $message }}</small>
+            @enderror
+        </label>
+
+
+
+ Y para una mejor experiencia, vamos a enfocar el campo name tan pronto como cargue la página para que el usuario pueda comenzar a escribir inmediatamente.
+
+
+
+
+    <input 
+                    class="rounded-md shadow-sm border-slate-300 dark:bg-slate-900/80 text-slate-600 dark:text-slate-400 focus:ring focus:ring-slate-300 dark:focus:ring-slate-800 focus:ring-opacity-50 dark:focus:border-slate-700 focus:border-slate-300 dark:bg-slate-800 dark:border-slate-900 dark:text-slate-100 dark:placeholder:text-slate-400" 
+                    autofocus="autofocus"
+                    name="name" 
+                    type="text" 
+                    value="{{ old('name') }}"
+                >
+
+Registramos un usuario valido.
+
+Y eectivamente nos lleva al login:
+
+    http://localhost:8000/login
+
+Revisando la BD, ahi tememos el nuevo usuario con la contraseña encriptada.
+
+
+ select * from users;
++----+---------+-------------------+-------------------+---------------------------------------------+----------------+---------------------+---------------------+
+| id | name    | email             | email_verified_at | password                                                     | remember_token      | created_at          | updated_at          |
++----+---------+-------------------+-------------------+---------------------------------------------+----------------+---------------------+---------------------+
+|  1 | Klvst3r | klvst3r@gmail.com | NULL              | $2y$12$T6QqOyAXSsM63B5qzh.op./x6yYcb.wiHG/y | NULL           | 2025-04-02 17:29:56 | 2025-04-02 17:29:56 |
++----+---------+-------------------+-------------------+--------------------------------------------------------------+----------------+--------------------------+
+
+
+
+
+
+
