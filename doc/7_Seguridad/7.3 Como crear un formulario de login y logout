@@ -1,0 +1,18 @@
+Vamos ahora a implementar el login
+
+
+Encendemos el servidor de vie ya qu vamos a agregar algunas clases nuevas de TailwindCSS
+
+
+En el archivo de navegación.
+
+
+Duplicamos el lin y lo cambiamos por login
+
+    <a href="{{ route('login') }}"
+                            class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('login') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+                             Login
+                         </a>            
+
+si hacemos click nos llevara a la pagina de Login
+

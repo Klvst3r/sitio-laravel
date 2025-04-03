@@ -122,7 +122,10 @@
                                class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('register') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
                                 Register
                             </a>
-                                                   
+                            <a href="{{ route('login') }}"
+                            class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('login') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+                             Login
+                         </a>                                                   
                         
                     </div>
                 </div>

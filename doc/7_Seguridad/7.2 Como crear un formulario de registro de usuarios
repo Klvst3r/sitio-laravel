@@ -451,6 +451,9 @@ Revisando la BD, ahi tememos el nuevo usuario con la contraseña encriptada.
 
 
 
+Referencia:
+
+https://github.com/aprendible/fundamentos-de-laravel-9/blob/main/resources/views/components/layouts/navigation.blade.php
 
 
 
