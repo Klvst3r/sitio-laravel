@@ -15,10 +15,15 @@
 
     <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Home</h1>
 
-
-    <div class="bg-blue-500 text-white p-4">
-        Este es un texto con un fondo azul y texto blanco.
+    {{-- Datos a los que se puede acceder --}}
+    @auth
+    <div class="text-white">
+        Authenticated User: {{ Auth::user()->name }}
     </div>
+    <div class="text-white">
+        Authenticated User: {{ Auth::user()->email }}
+    </div>
+@endauth
 
 
 

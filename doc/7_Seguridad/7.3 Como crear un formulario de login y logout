@@ -16,3 +16,204 @@ Duplicamos el lin y lo cambiamos por login
 
 si hacemos click nos llevara a la pagina de Login
 
+
+
+Se crea la ruta para el login
+    Route::view('/login','auth.register')->name('login');
+
+
+No existe la ruta asi que se crea, dentro de resoureces/views/
+
+
+Para ganar tiempo vamos a copiar todo el contenido de la vista register
+
+
+Vamos a necesitar un controlador
+    $ php artisan make:controller AuthenticatedSessionController
+
+Creamos la ruta de tipo post
+    Route::post('/login',[AuthenticatedSessionController::class, 'store']);
+
+Probamos el metodo store    
+
+    class AuthenticatedSessionController extends Controller
+{
+    public function store(Request $request){
+        return $request;
+    }
+}
+
+
+Retorna correctamente el request
+Tambien si activamos el recuerdame aparace en el request
+
+    	
+    _token	"SSgglfNjpoiUJGkzCqSlD5IiwIt8GY0BzIzMyc9Z"
+    email	null
+    password	null
+    remember	"on"
+
+
+ahora vamos a validar la petición, 
+
+
+Quedando nuestro controladoe de login
+
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use Illuminate\Support\Facades\Auth;
+
+use Illuminate\Validation\ValidationException;
+
+class AuthenticatedSessionController extends Controller
+{
+    public function store(Request $request){
+        //return $request;
+        $credentials = $request->validate([
+            'email' => ['required', 'string', 'email'],
+            'password' => ['required', 'string'],
+        ]);
+
+        //return $credentials;
+
+        if ( ! Auth::attempt($credentials, $request->boolean('remember')) ) {
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed')
+            ]);
+        }
+
+         $request->session()->regenerate();
+
+         return redirect()->intended()
+             ->with('status', 'You are logged in');
+
+    }
+}
+
+
+ahora cuando estemos logeados no queremos ver los links de register y login, asi que vamos a la navegación
+
+
+Para que solo se pmuestrencuando no esta autenticado el usuario
+
+
+   @guest
+
+                            <a href="{{ route('register') }}"
+                               class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('register') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+                                Register
+                            </a>
+                            <a href="{{ route('login') }}"
+                            class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('login') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+                             Login
+                         </a>       
+                         
+                         @endguest
+
+Podriamos utilizar el else para mostrar el boton de salida
+
+ @guest
+
+                            <a href="{{ route('register') }}"
+                               class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('register') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+                                Register
+                            </a>
+                            <a href="{{ route('login') }}"
+                            class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white {{ request()->routeIs('login') ? 'text-sky-600 dark:text-white' : 'text-slate-400' }}">
+                             Login
+                         </a>       
+
+                         @else
+
+                            logout
+                         
+                         @endguest
+
+o utulizar la directiva @auth que es la que nos quedaremos con ella
+
+ @auth
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <a href="#"
+                                   class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white text-slate-400"
+                                   onclick="this.closest('form').submit()"
+                                >Logout</a>
+                            </form>
+                        @endauth
+
+Va a ser necesario la ruta del logout
+
+para ello tenemos 
+
+    Route::post('/logout',[AuthenticatedSessionController::class, 'destroy'])->name('laogout');
+
+Pero ahora va a ejecutar el metodo destroy    
+
+
+Se crea el metodo
+
+ public function destroy(Request $request)
+    {
+        Auth::guard('web')->logout();
+
+        $request->session()->invalidate();
+
+        $request->session()->regenerateToken();
+
+        return to_route('login')
+            ->with('status', 'You are logged out!');
+    }
+
+Para cerrar  session utilizamos el mismo facase Auth y para cerrar sesion, utilizamos el metodo logout, definiendo el guard web
+
+Luego a traves del request lo inyectamos, llamamos al metodo session, e invalidamos la sesion, luego regeneramos el token csrf y ya podemos redirecionar al usuario tal vez a la ruta login conun mensaje de sssion indicando que el usuario ya cerro sesion y ya se tiene.
+
+
+
+Si iniciamos sesion, vemos que nuevamante funciona.
+
+ahora debemos de mostrar algo en laravel.
+
+
+y es que si queremos utiliar un link dentro de un boton para que tenga las mismas propuedades que un btoon 
+
+queda de la situiente manera:
+
+
+    <a href="#"
+                                class="lg:px-3 py-2 text-sm font-medium rounded-md hover:text-sky-600 dark:hover:text-white text-slate-400"
+                                onclick="this.closest('form').submit()"
+                             >Logout</a>
+
+
+Por defecto al darle click a este link, no se envia directamente al formulario para que tenga es afuncionalidad le agregamos onlick acceder al formualrio mas cercano y llamar al metodo submit de esa forma va a funcionar.
+
+
+Por ultima para acceder al usuario autenticado..
+
+Dentro de la directiva auth
+
+
+Pdriamos imrpimir el nombre del usuario y se veria 
+
+
+en la vista Home podremos ver los datos que se pueden ver
+
+
+ {{-- Datos a los que se puede acceder --}}
+    @auth
+    <div class="text-white">
+        Authenticated User: {{ Auth::user()->name }}
+    </div>
+    <div class="text-white">
+        Authenticated User: {{ Auth::user()->email }}
+    </div>
+@endauth
+
+
+Ya tenemos registro, login y logout
+ahora podremos hacer deply esta aplicación para que sea publica

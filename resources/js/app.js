@@ -1,7 +1,8 @@
 
 // console.log('Js loaded')
-import './bootstrap'
-import '../css/app.css'
+import './bootstrap';
+
+import '../css/app.scss';
 
 //import '../css/app.css';
 
