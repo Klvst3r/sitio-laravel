@@ -10,11 +10,15 @@
 
 <x-layouts.app title="Home" :meta-description="'Home meta Description'" :sum="2 + 2">
 
-  @vite('resources/css/app.css')
-  {{-- @vite('resources/css/app.scss') --}}
+    @vite(['resources/css/app.scss', 'resources/js/app.js'])
+  
 
     <h1 class="my-4 font-serif text-3xl text-center text-sky-600 dark:text-sky-500">Home</h1>
 
+
+    <div class="bg-blue-500 text-white p-4">
+        Este es un texto con un fondo azul y texto blanco.
+    </div>
 
 
 

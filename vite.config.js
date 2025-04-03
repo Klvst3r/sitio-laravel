@@ -1,18 +1,17 @@
 import { defineConfig } from 'vite';
-import laravel from 'laravel-vite-plugin';
-import postcssConfig from './postcss.config.js';
 
 export default defineConfig({
-    server: {
-        watch: {
-            usePolling: true,
-            interval: 300
-        }
+  root: 'resources', // Asegúrate de que los recursos de Vite estén en la carpeta 'resources'
+  build: {
+    outDir: '../public/build', // Compilación de archivos en el directorio 'public/build'
+    rollupOptions: {
+      input: '/resources/index.html', // Define el archivo de entrada correcto (index.html)
     },
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
-    ],
+  },
+  server: {
+    watch: {
+      usePolling: true,  // Esto es para evitar el error "too many open files"
+      interval: 100,
+    },
+  },
 });
